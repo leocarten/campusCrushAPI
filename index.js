@@ -49,7 +49,12 @@ app.post('/verifyUser', async (req, res) => {
     }else{
       verifyUser = await authenticateUser(req,false);
     }
-    res.json(verifyUser);
+    if(verifyUser['success'] === true){
+      res.json({message:"We are now going to show the client what they want"});
+    }
+    else{
+      res.json({message:"Sorry, you are not authorized to the see information you want"});
+    }
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Internal Server Error verifyUser route.');
