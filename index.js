@@ -51,8 +51,11 @@ app.post('/verifyUser', async (req, res) => {
       // we need to assign the user new JWT token
       verifyUser = await authenticateUser(req,false);
     }
-    if(verifyUser['success'] === true){
-      res.json({message:"We are now going to show the client what they want"});
+    if(verifyUser['success'] === true && typeOfVerification != 'access'){
+      res.json({message:"We are now going to show the client what they want", verifyUser});
+    }
+    else if(verifyUser['success'] === true){
+      res.json({message:"We are now going to show the client what they want and don't need to re-assign anything."});
     }
     else{
       res.json({message:"Sorry, you are not authorized to the see information you want"});
