@@ -29,11 +29,17 @@ export const authenticateUser = (req, isAccessToken) => {
         }
         else{
             if(authenticateUsersJWT(tokenToUse, process.env.REFRESH_SECRET_KEY) != false){
-                // need to assign the user new JWT tokens and then allow them to access the resource
-                console.log('id:',authenticateUsersJWT(tokenToUse, process.env.REFRESH_SECRET_KEY)['id']);
-                resolve({success: true, message: "User has been authenticated!"})
+                const userID = authenticateUsersJWT(tokenToUse, process.env.REFRESH_SECRET_KEY)['id'];
+                const userFilters = authenticateUsersJWT(tokenToUse, process.env.REFRESH_SECRET_KEY)['filter'];
+                const accessAge = getRandomNumber(50,80);
+                const accessAgeToMinutes = accessAge * 60;
+                const refreshAge = getRandomNumber(7,11);
+                const refreshAgeToDays = refreshAge * 24 * 60 * 60;
+                const accessToken = generateAccessAndRefreshToken(userID, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, 'filter...');
+                const refreshToken = generateAccessAndRefreshToken(userID, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, 'filter...');
+                resolve({success: true, message:"We had to re-assign the access and refresh token", access: accessToken, refresh: refreshToken});
             }else{
-                resolve({success: false, message: "We need the client to login again..."})
+                resolve({success: false, message: "We need the client to login again..."});
             }
         }
     })

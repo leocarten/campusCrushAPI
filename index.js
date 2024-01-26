@@ -73,12 +73,15 @@ app.post('/showItemsInFeed', async (req, res) => {
       verifyUser = await authenticateUser(req,false);
     }
     if(verifyUser['success'] === true){
-      res.json({messgae: "hi"});
+      // show the person their feed !!
+      const feed = await showItemsInFeed(req);
+      res.json({feed})
+
     }else{
-      res.json({message: "nah"})
+      res.json({message: "We were unable to proceed in showItemsInFeed route."})
     }
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Internal Server Error verifyUser route.');
+    res.status(500).send('Internal Server Error showItemsInFeed route.');
   }
 });
