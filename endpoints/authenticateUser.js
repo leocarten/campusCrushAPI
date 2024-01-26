@@ -23,6 +23,7 @@ export const authenticateUser = (req, isAccessToken) => {
     return new Promise((resolve, reject) => {
         const tokenFromUser = req.body;
         const tokenToUse = tokenFromUser['tokenFromUser'];
+        console.log("the token from the user was:",tokenToUse);
         if(isAccessToken){
             // don't need to worry about assigning any JWTs
             if(authenticateUsersJWT(tokenToUse, process.env.ACCESS_SECRET_KEY) != false){

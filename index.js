@@ -70,14 +70,17 @@ app.post('/showItemsInFeed', async (req, res) => {
   try {
     const typeOfVerification = req.body['type'];
     let verifyUser;
+    console.log("You just sent me:",typeOfVerification);
     if(typeOfVerification === 'access'){
+      console.log("Reached access");
       verifyUser = await authenticateUser(req,true);
     }else{
+      console.log("Else access")
       verifyUser = await authenticateUser(req,false);
     }
     if(verifyUser['success'] === true){
       // show the person their feed !!
-      const feed = await showItemsInFeed(req);
+      const feed = await showItemsInFeed();
       res.json({success: true, results: feed})
 
     }else{
