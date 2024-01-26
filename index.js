@@ -45,8 +45,10 @@ app.post('/verifyUser', async (req, res) => {
     const typeOfVerification = req.body['type'];
     let verifyUser;
     if(typeOfVerification === 'access'){
+      // don't need to do anything here
       verifyUser = await authenticateUser(req,true);
     }else{
+      // we need to assign the user new JWT token
       verifyUser = await authenticateUser(req,false);
     }
     if(verifyUser['success'] === true){
