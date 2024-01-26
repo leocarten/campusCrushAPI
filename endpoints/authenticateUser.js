@@ -26,7 +26,11 @@ export const authenticateUser = (req, isAccessToken) => {
             }
         }
         else{
-            resolve({success: true, message: "This is us checking to see if the refresh token is valid."})
+            if(authenticateUsersJWT(tokenToUse, process.env.REFRESH_SECRET_KEY) != false){
+                resolve({success: true, message: "User has been authenticated!"})
+            }else{
+                resolve({success: false, message: "We need the client to login again..."})
+            }
         }
     })
 }
