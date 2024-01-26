@@ -16,9 +16,9 @@ export const authenticateUser = (req, isAccessToken) => {
             // assign the user a new access and refresh token
             // provide them the resource they want
     return new Promise((resolve, reject) => {
+        const tokenFromUser = req.body;
+        const tokenToUse = tokenFromUser['tokenFromUser'];
         if(isAccessToken){
-            const tokenFromUser = req.body;
-            const tokenToUse = tokenFromUser['tokenFromUser'];
             if(authenticateUsersJWT(tokenToUse, process.env.ACCESS_SECRET_KEY) != false){
                 resolve({success: true, message: "User has been authenticated!"})
             }else{
