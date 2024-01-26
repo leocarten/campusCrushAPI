@@ -78,7 +78,7 @@ app.post('/showItemsInFeed', async (req, res) => {
     if(verifyUser['success'] === true){
       // show the person their feed !!
       const feed = await showItemsInFeed(req);
-      res.json({feed})
+      res.json({success: true, results: feed})
 
     }else{
       res.json({message: "We were unable to proceed in showItemsInFeed route."})
