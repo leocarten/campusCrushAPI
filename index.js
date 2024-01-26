@@ -2,6 +2,7 @@ import express from 'express';
 import { getUsers } from './endpoints/getAllUsers.js'
 import { loginUser } from './endpoints/loginUser.js'
 import { createUser } from './endpoints/createUser.js';
+import { authenticateUser } from './endpoints/authenticateUser.js';
 
 const app = express();
 app.listen(5001,() => console.log("Api is running on port 5001"));
@@ -24,7 +25,7 @@ app.post('/login', async (req, res) => {
       res.json(user);
     } catch (err) {
       console.error(err.message);
-      res.status(500).send('Internal Server Error boi');
+      res.status(500).send('Internal Server Error from login route.');
     }
 });
 
@@ -34,6 +35,16 @@ app.post('/createUser', async (req, res) => {
     res.json(user);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Internal Server Error boi');
+    res.status(500).send('Internal Server Error createUser route.');
+  }
+});
+
+app.post('/verifyUser', async (req, res) => {
+  try {
+    const verifyUser = await authenticateUser(req);
+    res.json(verifyUser);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Internal Server Error verifyUser route.');
   }
 });
