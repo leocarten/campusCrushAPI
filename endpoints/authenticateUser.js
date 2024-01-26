@@ -30,7 +30,7 @@ export const authenticateUser = (req, isAccessToken) => {
         else{
             if(authenticateUsersJWT(tokenToUse, process.env.REFRESH_SECRET_KEY) != false){
                 // need to assign the user new JWT tokens and then allow them to access the resource
-                console.log(tokenToUse['id']);
+                console.log('id:',tokenToUse);
                 resolve({success: true, message: "User has been authenticated!"})
             }else{
                 resolve({success: false, message: "We need the client to login again..."})
