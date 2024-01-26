@@ -3,6 +3,10 @@ import dotenv from 'dotenv';
 dotenv.config();
 import { generateAccessAndRefreshToken } from '../jwt/createAccessAndRefresh.js'
 
+function getRandomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
 export const authenticateUser = (req, isAccessToken) => {
     // type will determine if we are recieving an access or refresh token
     // if we are recieving a refresh token
