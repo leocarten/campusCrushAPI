@@ -1,4 +1,4 @@
-import { authenticateUsersJWT } from "../jwt/verifyJwt"
+import { authenticateUsersJWT } from "../jwt/verifyJwt.js"
 import dotenv from 'dotenv';
 dotenv.config();
 

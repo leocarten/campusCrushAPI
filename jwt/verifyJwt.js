@@ -1,6 +1,6 @@
-import { verifyToken } from "../jwt/verifyJwt"
 import dotenv from 'dotenv';
 dotenv.config();
+import jwt from 'jsonwebtoken';
 
 export const authenticateUsersJWT = (token, key) => {
     try{

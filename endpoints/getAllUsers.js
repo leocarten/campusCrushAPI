@@ -1,5 +1,5 @@
 import pool from '../db/connectionPool.js';
-import { verifyToken } from '../jwt/verifyJwt.js';
+import { authenticateUsersJWT } from '../jwt/verifyJwt.js';
 
 export const getUsers = (req) => {
   return new Promise((resolve, reject) => {
