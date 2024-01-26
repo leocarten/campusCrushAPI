@@ -41,7 +41,13 @@ app.post('/createUser', async (req, res) => {
 
 app.post('/verifyUser', async (req, res) => {
   try {
-    const verifyUser = await authenticateUser(req);
+    const typeOfVerification = req.body['type'];
+    let verifyUser;
+    if(typeOfVerification === 'access'){
+      verifyUser = await authenticateUser(req,true);
+    }else{
+      verifyUser = await authenticateUser(req,false);
+    }
     res.json(verifyUser);
   } catch (err) {
     console.error(err.message);
