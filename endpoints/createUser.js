@@ -7,8 +7,10 @@ export const createUser = (req) => {
 
         const {
             username, password, firstname, birthday, bio, gender, bucket_list, interests_hobbies,
-            music_preference, pet_preference, app_purpose, wants_to_be_shown
+            music_preference, pet_preference, app_purpose, wants_to_be_shown, has_tattoos,
+            sleep_schedule, win_my_heart, job, workout
         } = req.body;
+        // ADD COLUMN column_name data_type DEFAULT default_value;
 
         var server_error = false;
         var new_interests = "";
@@ -68,15 +70,14 @@ export const createUser = (req) => {
                     } else {
                         if (results && results.length > 0 && results[0].max_id !== null) {
                             const user_id = results[0].max_id;
-                            const new_query = 'INSERT INTO info_to_display (id, first_name, dob, bio, gender, bucket_list, interests, pet_preference, app_purpose, bitmoji_type, pictures, is_verified, elo_score, location, has_top_placement, job, music_preference) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+                            const new_query = 'INSERT INTO info_to_display (id, first_name, dob, bio, gender, bucket_list, interests, pet_preference, app_purpose, bitmoji_type, pictures, is_verified, elo_score, location, has_top_placement, job, music_preference, has_tattoos, sleep_schedule, win_my_heart, workout) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
                             const bitmoji_type = 1;
                             const is_verified = 0;
                             const elo_score = 0.5;
                             const location = 0;
                             const has_top_placement = 0;
-                            const job = "Brogrammer";
                             const pictures = "Pictures";
-                            const new_values = [user_id, firstname, birthday, bio, gender, bucket_list, new_interests, pet_preference, app_purpose, bitmoji_type, pictures, is_verified, elo_score, location, has_top_placement, job, new_music_preference];
+                            const new_values = [user_id, firstname, birthday, bio, gender, bucket_list, new_interests, pet_preference, app_purpose, bitmoji_type, pictures, is_verified, elo_score, location, has_top_placement, job, new_music_preference, has_tattoos, sleep_schedule, win_my_heart, workout];
 
                             pool.query(new_query, new_values, (queryErr, result) => {
                                 if (queryErr) {
@@ -84,8 +85,6 @@ export const createUser = (req) => {
                                     server_error = true;
                                     reject(queryErr);
                                 } else {
-                                    // Both queries executed successfully
-                                    // Both queries executed successfully
                                     resolve({ success: true, message: "User created successfully." });
                                 }
                             });
