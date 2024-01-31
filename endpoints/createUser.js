@@ -1,5 +1,8 @@
 import crypto from 'crypto';
 import pool from '../db/connectionPool.js';
+import { generateAccessAndRefreshToken } from '../jwt/createAccessAndRefresh.js'
+import dotenv from 'dotenv';
+dotenv.config();
 
 export const createUser = (req) => {
     return new Promise((resolve, reject) => {
@@ -78,14 +81,21 @@ export const createUser = (req) => {
                             const has_top_placement = 0;
                             const pictures = "Pictures";
                             const new_values = [user_id, firstname, birthday, bio, gender, bucket_list, new_interests, pet_preference, app_purpose, bitmoji_type, pictures, is_verified, elo_score, location, has_top_placement, job, new_music_preference, has_tattoos, sleep_schedule, win_my_heart, workout];
-
                             pool.query(new_query, new_values, (queryErr, result) => {
                                 if (queryErr) {
                                     console.error('Error executing third query:', queryErr);
                                     server_error = true;
                                     reject(queryErr);
                                 } else {
-                                    resolve({ success: true, message: "User created successfully." });
+                                    // Create a JWT from the user and assign it to them!
+                                    const accessAge = getRandomNumber(50,80);
+                                    const accessAgeToMinutes = accessAge * 60;
+                                    const refreshAge = getRandomNumber(7,11);
+                                    const refreshAgeToDays = refreshAge * 24 * 60 * 60;
+                                    const accessToken = generateAccessAndRefreshToken(user_id, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, 'filter...');
+                                    const refreshToken = generateAccessAndRefreshToken(user_id, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, 'filter...');
+                                    resolve({id: user_id, success: true, access:accessToken, refresh: refreshToken });
+                                    // resolve({ success: true, message: "User created successfully." });
                                 }
                             });
                         } else {
