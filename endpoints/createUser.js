@@ -4,6 +4,10 @@ import { generateAccessAndRefreshToken } from '../jwt/createAccessAndRefresh.js'
 import dotenv from 'dotenv';
 dotenv.config();
 
+function getRandomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
 export const createUser = (req) => {
     return new Promise((resolve, reject) => {
         console.log('hello');
