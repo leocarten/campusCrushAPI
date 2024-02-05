@@ -80,7 +80,8 @@ app.post('/showItemsInFeed', async (req, res) => {
     }
     if(verifyUser['success'] === true){
       // show the person their feed !!
-      const feed = await showItemsInFeed();
+      const tokenToUse = req['tokenFromUser'];
+      const feed = await showItemsInFeed(tokenToUse);
       res.json({success: true, results: feed})
 
     }else{
