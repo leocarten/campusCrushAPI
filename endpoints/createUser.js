@@ -59,8 +59,8 @@ export const createUser = (req) => {
         nextDay.setHours(date.getHours() + 24);
         const end_time = nextDay.toISOString().slice(0, 19).replace('T', ' ');
 
-        const sql = 'INSERT INTO users (username, password, gender, points, messages_sent, end_time) VALUES (?, ?, ?, ?, ?, ?)';
-        const values = [username, hashedPassword, gender, points, messages_sent, end_time];
+        const sql = 'INSERT INTO users (username, password, gender, points, messages_sent, end_time, genderUserWantsToSee) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        const values = [username, hashedPassword, gender, points, messages_sent, end_time, wants_to_be_shown];
 
         pool.query(sql, values, (queryErr, result) => {
             if (queryErr) {
@@ -77,6 +77,7 @@ export const createUser = (req) => {
                     } else {
                         if (results && results.length > 0 && results[0].max_id !== null) {
                             const user_id = results[0].max_id;
+                            const genderUserWantsToBeShown = result[9].genderUserWantsToSee;
                             const new_query = 'INSERT INTO info_to_display (id, first_name, dob, bio, gender, bucket_list, interests, pet_preference, app_purpose, bitmoji_type, pictures, is_verified, elo_score, location, has_top_placement, job, music_preference, has_tattoos, sleep_schedule, win_my_heart, workout) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
                             const bitmoji_type = 1;
                             const is_verified = 0;
@@ -96,8 +97,8 @@ export const createUser = (req) => {
                                     const accessAgeToMinutes = accessAge * 60;
                                     const refreshAge = getRandomNumber(7,11);
                                     const refreshAgeToDays = refreshAge * 24 * 60 * 60;
-                                    const accessToken = generateAccessAndRefreshToken(user_id, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, 'filter...');
-                                    const refreshToken = generateAccessAndRefreshToken(user_id, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, 'filter...');
+                                    const accessToken = generateAccessAndRefreshToken(user_id, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, genderUserWantsToBeShown, 'filter...');
+                                    const refreshToken = generateAccessAndRefreshToken(user_id, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, genderUserWantsToBeShown, 'filter...');
                                     resolve({id: user_id, success: true, access:accessToken, refresh: refreshToken });
                                     // resolve({ success: true, message: "User created successfully." });
                                 }

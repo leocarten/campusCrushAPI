@@ -21,12 +21,13 @@ export const loginUser = (req) => {
           } else if(result.length > 0) {
             const userID = result[0].id;
             // still need to figure out the filters !!
+            const genderUserWantsToBeShown = result[9].genderUserWantsToSee;
             const accessAge = getRandomNumber(50,80);
             const accessAgeToMinutes = accessAge * 60;
             const refreshAge = getRandomNumber(7,11);
             const refreshAgeToDays = refreshAge * 24 * 60 * 60;
-            const accessToken = generateAccessAndRefreshToken(userID, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, 'filter...');
-            const refreshToken = generateAccessAndRefreshToken(userID, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, 'filter...');
+            const accessToken = generateAccessAndRefreshToken(userID, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, genderUserWantsToBeShown, 'filter...');
+            const refreshToken = generateAccessAndRefreshToken(userID, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, genderUserWantsToBeShown, 'filter...');
             resolve({id: userID, success: true, access:accessToken, refresh: refreshToken });
           }
           else{
