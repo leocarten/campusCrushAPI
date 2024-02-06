@@ -68,13 +68,13 @@ export const createUser = (req) => {
                 server_error = true;
                 reject(queryErr);
             } else {
-                console.log("first query:",result);
                 pool.query('SELECT MAX(id) as max_id, genderUserWantsToSee FROM users;', (error, results, fields) => {
                     if (error) {
                         console.error('Error executing second query:', error);
                         server_error = true;
                         reject(error);
                     } else {
+                        console.log("results:",results);
                         if (results && results.length > 0 && results[0].max_id !== null) {
                             const user_id = results[0].max_id;
                             const genderUserWantsToBeShown = result[0].genderUserWantsToSee;
