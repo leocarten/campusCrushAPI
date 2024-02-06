@@ -77,8 +77,6 @@ export const createUser = (req) => {
                         console.log("results:",results);
                         if (results && results.length > 0 && results[0].max_id !== null) {
                             const user_id = results[0].max_id;
-                            const genderUserWantsToBeShown = wants_to_be_shown;
-                            console.log("wants to be shown:",genderUserWantsToBeShown);
                             const new_query = 'INSERT INTO info_to_display (id, first_name, dob, bio, gender, bucket_list, interests, pet_preference, app_purpose, bitmoji_type, pictures, is_verified, elo_score, location, has_top_placement, job, music_preference, has_tattoos, sleep_schedule, win_my_heart, workout, genderUserWantsToSee) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
                             const bitmoji_type = 1;
                             const is_verified = 0;
