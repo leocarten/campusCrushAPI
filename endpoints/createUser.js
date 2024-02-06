@@ -78,14 +78,14 @@ export const createUser = (req) => {
                         if (results && results.length > 0 && results[0].max_id !== null) {
                             const user_id = results[0].max_id;
                             const genderUserWantsToBeShown = result[0].genderUserWantsToSee;
-                            const new_query = 'INSERT INTO info_to_display (id, first_name, dob, bio, gender, bucket_list, interests, pet_preference, app_purpose, bitmoji_type, pictures, is_verified, elo_score, location, has_top_placement, job, music_preference, has_tattoos, sleep_schedule, win_my_heart, workout) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+                            const new_query = 'INSERT INTO info_to_display (id, first_name, dob, bio, gender, bucket_list, interests, pet_preference, app_purpose, bitmoji_type, pictures, is_verified, elo_score, location, has_top_placement, job, music_preference, has_tattoos, sleep_schedule, win_my_heart, workout, genderUserWantsToSee) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
                             const bitmoji_type = 1;
                             const is_verified = 0;
                             const elo_score = 0.5;
                             const location = 0;
                             const has_top_placement = 0;
                             const pictures = "Pictures";
-                            const new_values = [user_id, firstname, birthday, bio, gender, bucket_list, new_interests, pet_preference, app_purpose, bitmoji_type, pictures, is_verified, elo_score, location, has_top_placement, job, new_music_preference, has_tattoos, sleep_schedule, win_my_heart, workout];
+                            const new_values = [user_id, firstname, birthday, bio, gender, bucket_list, new_interests, pet_preference, app_purpose, bitmoji_type, pictures, is_verified, elo_score, location, has_top_placement, job, new_music_preference, has_tattoos, sleep_schedule, win_my_heart, workout, genderUserWantsToBeShown];
                             pool.query(new_query, new_values, (queryErr, result) => {
                                 if (queryErr) {
                                     console.error('Error executing third query:', queryErr);
