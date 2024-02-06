@@ -21,7 +21,7 @@ export const loginUser = (req) => {
           } else if(result.length > 0) {
             const userID = result[0].id;
             // still need to figure out the filters !!
-            const genderUserWantsToBeShown = result[9].genderUserWantsToSee;
+            const genderUserWantsToBeShown = result[9];
             const accessAge = getRandomNumber(50,80);
             const accessAgeToMinutes = accessAge * 60;
             const refreshAge = getRandomNumber(7,11);
