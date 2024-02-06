@@ -68,8 +68,8 @@ export const createUser = (req) => {
                 server_error = true;
                 reject(queryErr);
             } else {
-                // Continue with the second query
-                pool.query('SELECT MAX(id) as max_id FROM users;', (error, results, fields) => {
+                console.log("first query:",result);
+                pool.query('SELECT MAX(id) as max_id, genderUserWantsToSee FROM users;', (error, results, fields) => {
                     if (error) {
                         console.error('Error executing second query:', error);
                         server_error = true;
