@@ -1,14 +1,14 @@
 import { NeuralNetwork } from 'brain.js';
-import { elo_statistics } from './statistics/elo.js';
-import { multiSelectionSimilarity } from './statistics/multiSelect.js';
-import { appPurposeStats } from './statistics/appPurpose.js';
-import { petStats } from './statistics/petPreference.js';
-import { sleepSchedule } from './statistics/sleepStats.js';
-import { movieStats } from './statistics/movieGenre.js';
-import { workoutStats } from './statistics/workout.js';
-import { communicationStats } from './statistics/communicationStyle.js';
-import { idealFirstMeetupStats } from './statistics/ideaFirstMeetup.js';
-import fs from 'fs';
+// import { elo_statistics } from './neuralNetwork/statistics/elo.js';
+// import { multiSelectionSimilarity } from './neuralNetwork/statistics/multiSelect.js';
+// import { appPurposeStats } from './neuralNetwork/statistics/appPurpose.js';
+// import { petStats } from './neuralNetwork/statistics/petPreference.js';
+// import { sleepSchedule } from './neuralNetwork/statistics/sleepStats.js';
+// import { movieStats } from './neuralNetwork/statistics/movieGenre.js';
+// import { workoutStats } from './neuralNetwork/statistics/workout.js';
+// import { communicationStats } from './neuralNetwork/statistics/communicationStyle.js';
+// import { idealFirstMeetupStats } from './neuralNetwork/statistics/ideaFirstMeetup.js';
+// import fs from 'fs';
 /*
 ELO Score
 App purpose
