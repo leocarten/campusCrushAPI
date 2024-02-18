@@ -3,6 +3,7 @@ import { authenticateUsersJWT } from '../jwt/verifyJwt.js';
 import { jwtDecode } from "jwt-decode";
 
 export const viewUserProfile = (req) => {
+    console.log('req from view endpoint:',req.body);
   return new Promise((resolve, reject) => {
     const token = req.body;
     if(verifyToken(token, process.env.ACCESS_SECRET_KEY) != false){
