@@ -4,6 +4,7 @@ import { loginUser } from './endpoints/loginUser.js'
 import { createUser } from './endpoints/createUser.js';
 import { authenticateUser } from './endpoints/authenticateUser.js';
 import { showItemsInFeed } from './endpoints/showUsersInFeed.js';
+import { viewUserProfile } from './endpoints/viewUserProfile.js';
 
 const app = express();
 app.listen(5001,() => console.log("Api is running on port 5001"));
@@ -81,6 +82,32 @@ app.post('/showItemsInFeed', async (req, res) => {
     if(verifyUser['success'] === true){
       const tokenToUse = req.body['tokenFromUser'];
       const feed = await showItemsInFeed(tokenToUse);
+      res.json({success: true, results: feed})
+
+    }else{
+      res.json({message: "We were unable to proceed in showItemsInFeed route."})
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Internal Server Error showItemsInFeed route.');
+  }
+});
+
+app.post('/viewUserProfile', async (req, res) => {
+  try {
+    const typeOfVerification = req.body['type'];
+    let verifyUser;
+    console.log("You just sent me:",typeOfVerification);
+    if(typeOfVerification === 'access'){
+      console.log("Reached access");
+      verifyUser = await authenticateUser(req,true);
+    }else{
+      console.log("Else access")
+      verifyUser = await authenticateUser(req,false);
+    }
+    if(verifyUser['success'] === true){
+      const tokenToUse = req.body['tokenFromUser'];
+      const feed = await viewUserProfile(tokenToUse);
       res.json({success: true, results: feed})
 
     }else{
