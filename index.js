@@ -96,6 +96,7 @@ app.post('/showItemsInFeed', async (req, res) => {
 app.post('/viewUserProfile', async (req, res) => {
   try {
     const typeOfVerification = req.body['type'];
+    console.log(typeOfVerification);
     let verifyUser;
     console.log("You just sent me:",typeOfVerification);
     if(typeOfVerification === 'access'){
@@ -107,6 +108,7 @@ app.post('/viewUserProfile', async (req, res) => {
     }
     if(verifyUser['success'] === true){
       const tokenToUse = req.body['tokenFromUser'];
+      console.log('token to use from view',tokenToUse);
       const thisUserProfile = await viewUserProfile(tokenToUse);
       res.json({success: true, results: thisUserProfile})
     }else{
