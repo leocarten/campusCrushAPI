@@ -5,7 +5,6 @@ import { jwtDecode } from "jwt-decode";
 export const viewUserProfile = (token) => {
     console.log('req from view endpoint:',req.body);
   return new Promise((resolve, reject) => {
-    const token = req.body;
     // if(verifyToken(token, process.env.ACCESS_SECRET_KEY) != false){
       const decodedToken = jwtDecode(token);
       const id = decodedToken['id'];
