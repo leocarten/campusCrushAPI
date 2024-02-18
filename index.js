@@ -107,9 +107,8 @@ app.post('/viewUserProfile', async (req, res) => {
     }
     if(verifyUser['success'] === true){
       const tokenToUse = req.body['tokenFromUser'];
-      const feed = await viewUserProfile(tokenToUse);
-      res.json({success: true, results: feed})
-
+      const thisUserProfile = await viewUserProfile(tokenToUse);
+      res.json({success: true, results: thisUserProfile})
     }else{
       res.json({message: "We were unable to proceed in showItemsInFeed route."})
     }

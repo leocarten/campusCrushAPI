@@ -1,5 +1,6 @@
 import pool from '../db/connectionPool.js';
 import { authenticateUsersJWT } from '../jwt/verifyJwt.js';
+import { jwtDecode } from "jwt-decode";
 
 export const viewUserProfile = (req) => {
   return new Promise((resolve, reject) => {
