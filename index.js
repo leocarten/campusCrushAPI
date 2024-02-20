@@ -5,6 +5,7 @@ import { createUser } from './endpoints/createUser.js';
 import { authenticateUser } from './endpoints/authenticateUser.js';
 import { showItemsInFeed } from './endpoints/showUsersInFeed.js';
 import { viewUserProfile } from './endpoints/viewUserProfile.js';
+import { updateUserProfile } from './endpoints/updateUserProfile.js';
 
 const app = express();
 app.listen(5001,() => console.log("Api is running on port 5001"));
