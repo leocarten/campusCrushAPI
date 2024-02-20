@@ -58,8 +58,10 @@ export const updateUserProfile = (token, thingsToUpdate) => {
                 musicFormatted = '"' + thingsToUpdate[value].join(", ") + '"';
                 updates.push(`${mapOfValues[value]} = ${musicFormatted}`);
             }
-            else{
+            else if (Number.isInteger(thingsToUpdate[value])) {
                 updates.push(`${mapOfValues[value]} = ${thingsToUpdate[value]}`);
+            } else {
+                updates.push(`${mapOfValues[value]} = '${thingsToUpdate[value]}'`);
             }
         }
     }
