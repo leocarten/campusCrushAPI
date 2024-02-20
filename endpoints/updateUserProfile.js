@@ -81,7 +81,7 @@ export const updateUserProfile = (token, thingsToUpdate) => {
             if (err) {
                 reject(err);
             } else {
-                resolve(result);
+                resolve(true);
             }
         });
       }
