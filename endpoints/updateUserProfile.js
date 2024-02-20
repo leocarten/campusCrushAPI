@@ -4,9 +4,22 @@ import { jwtDecode } from "jwt-decode";
 
 export const updateUserProfile = (token, thingsToUpdate) => {
 
-//   const mapOfValues = {
-//     ""
-//   }
+  const mapOfValues = {
+    "bio":"",
+    "bucket_list":"",
+    "interests_hobbies":"",
+    "music_preference":"",
+    "pet_preference":"",
+    "app_purpose":"",
+    "wants_to_be_shown":"",
+    "has_tattoos":"",
+    "sleep_schedule":"",
+    "win_my_heart":"",
+    "job":"",
+    "workout":"",
+    "communication_style":"",
+    "ideal_first_meetup":""
+  }
 
   return new Promise((resolve, reject) => {
     // if(verifyToken(token, process.env.ACCESS_SECRET_KEY) != false){
@@ -14,7 +27,7 @@ export const updateUserProfile = (token, thingsToUpdate) => {
       console.log('the decoded token:',decodedToken);
       const id = decodedToken['id'];
       console.log('id:',id);
-      console.log(thingsToUpdate);
+      console.log('\ndata from user:\n',thingsToUpdate);
       resolve("Done.");
     //   pool.query('UPDATE info_to_display  WHERE id = ?', [id], (err, result, fields) => {
     //     if (err) {
