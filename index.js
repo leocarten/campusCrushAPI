@@ -117,7 +117,7 @@ app.post('/viewUserProfile', async (req, res) => {
     }
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Internal Server Error showItemsInFeed route.');
+    res.status(500).send('Internal Server Error viewUserProfile route.');
   }
 });
 
@@ -140,7 +140,7 @@ app.post('/updateUserProfile', async (req, res) => {
       const thisUserProfile = await updateUserProfile(tokenToUse, req.body);
       res.json({success: true, results: thisUserProfile})
     }else{
-      res.json({message: "We were unable to proceed in showItemsInFeed route."})
+      res.json({message: "We were unable to proceed in updateUserProfile route."})
     }
   } catch (err) {
     console.error(err.message);

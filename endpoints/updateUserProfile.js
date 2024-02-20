@@ -31,28 +31,32 @@ export const updateUserProfile = (token, thingsToUpdate) => {
         // console.log('update:',thingsToUpdate[value]);
         if(thingsToUpdate[value] != "" && thingsToUpdate[value] != []){
             if(value == "interests_hobbies"){
-                for(var i = 0; i < thingsToUpdate[value].length; i++){
-                    if(i == thingsToUpdate[value].length -1){
-                        interestsFormatted += thingsToUpdate[value][i]
-                    }
-                    else{
-                        interestsFormatted += thingsToUpdate[value][i]
-                        interestsFormatted += ","
-                    }
-                }
-                updates.push(`${mapOfValues[value]} = ${interestsFormatted}`);    
+                // for(var i = 0; i < thingsToUpdate[value].length; i++){
+                //     if(i == thingsToUpdate[value].length -1){
+                //         interestsFormatted += thingsToUpdate[value][i]
+                //     }
+                //     else{
+                //         interestsFormatted += thingsToUpdate[value][i]
+                //         interestsFormatted += ","
+                //     }
+                // }
+                // updates.push(`${mapOfValues[value]} = ${interestsFormatted}`);    
+                interestsFormatted = '"' + thingsToUpdate[value].join(", ") + '"';
+                updates.push(`${mapOfValues[value]} = ${interestsFormatted}`);
             }
             else if(value == "music_preference"){
-                for(var i = 0; i < thingsToUpdate[value].length; i++){
-                    if(i == thingsToUpdate[value].length -1){
-                        musicFormatted += thingsToUpdate[value][i]
-                    }
-                    else{
-                        musicFormatted += thingsToUpdate[value][i]
-                        musicFormatted += ","
-                    }
-                }
-                updates.push(`${mapOfValues[value]} = ${musicFormatted}`);   
+                // for(var i = 0; i < thingsToUpdate[value].length; i++){
+                //     if(i == thingsToUpdate[value].length -1){
+                //         musicFormatted += thingsToUpdate[value][i]
+                //     }
+                //     else{
+                //         musicFormatted += thingsToUpdate[value][i]
+                //         musicFormatted += ","
+                //     }
+                // }
+                // updates.push(`${mapOfValues[value]} = ${musicFormatted}`);   
+                musicFormatted = '"' + thingsToUpdate[value].join(", ") + '"';
+                updates.push(`${mapOfValues[value]} = ${musicFormatted}`);
             }
             else{
                 updates.push(`${mapOfValues[value]} = ${thingsToUpdate[value]}`);
