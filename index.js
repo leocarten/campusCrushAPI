@@ -119,3 +119,30 @@ app.post('/viewUserProfile', async (req, res) => {
     res.status(500).send('Internal Server Error showItemsInFeed route.');
   }
 });
+
+app.post('/updateUserProfile', async (req, res) => {
+  try {
+    const typeOfVerification = req.body['type'];
+    console.log(typeOfVerification);
+    let verifyUser;
+    console.log("You just sent me:",typeOfVerification);
+    if(typeOfVerification === 'access'){
+      console.log("Reached access");
+      verifyUser = await authenticateUser(req,true);
+    }else{
+      console.log("Else access")
+      verifyUser = await authenticateUser(req,false);
+    }
+    if(verifyUser['success'] === true){
+      const tokenToUse = req.body['tokenFromUser'];
+      console.log('token to use from view',tokenToUse);
+      const thisUserProfile = await updateUserProfile(tokenToUse, req.body);
+      res.json({success: true, results: thisUserProfile})
+    }else{
+      res.json({message: "We were unable to proceed in showItemsInFeed route."})
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Internal Server Error showItemsInFeed route.');
+  }
+});
