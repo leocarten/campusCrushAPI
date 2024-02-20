@@ -23,9 +23,9 @@ export const updateUserProfile = (token, thingsToUpdate) => {
   }
 
   for(const value in thingsToUpdate){
-    console.log("value:",value);
-    console.log('update:',thingsToUpdate[value]);
     if(value != "type" && value != ""){
+        console.log("value:",value);
+        console.log('update:',thingsToUpdate[value]);
         if(thingsToUpdate[value] != "" && thingsToUpdate[value] != []){
             updates.push('${value} = ${thingsToUpdate[value]}');
         }
