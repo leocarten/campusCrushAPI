@@ -77,13 +77,13 @@ export const updateUserProfile = (token, thingsToUpdate) => {
         updateQuery += updates.join(", ");
         updateQuery += ` WHERE id = ?`;
         console.log(updateQuery);
-        // pool.query(updateQuery, [id], (err, result, fields) => {
-        //     if (err) {
-        //         reject(err);
-        //     } else {
-        //         resolve(result);
-        //     }
-        // });
+        pool.query(updateQuery, [id], (err, result, fields) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result);
+            }
+        });
       }
       else{
         resolve(true);
