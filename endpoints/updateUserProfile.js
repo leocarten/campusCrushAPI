@@ -23,7 +23,7 @@ export const updateUserProfile = (token, thingsToUpdate) => {
   }
 
   for(const value in thingsToUpdate){
-    if(value != "type" && value != "access" && value != "refresh"){
+    if(value != "type" && value != "tokenFromUser"){
         // console.log("value:",value);
         // console.log('update:',thingsToUpdate[value]);
         if(thingsToUpdate[value] != "" && thingsToUpdate[value] != []){
@@ -39,7 +39,9 @@ export const updateUserProfile = (token, thingsToUpdate) => {
       const id = decodedToken['id'];
       console.log('id:',id);
       if(updates.length > 0){
-        console.log('updates test:\n',updates);
+        updateQuery += updates.join(", ");
+        updateQuery += ` WHERE id = ?`;
+        console.log(updateQuery);
       }
     //   console.log('\ndata from user:\n',thingsToUpdate);
       resolve("Done.");
