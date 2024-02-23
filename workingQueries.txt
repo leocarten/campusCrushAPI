@@ -1,0 +1,23 @@
+SELECT 
+    id,
+    3958.756 * 2 * ASIN(
+        SQRT(
+            POWER(
+                SIN((lat2 - abs(lat1)) * pi()/180 / 2), 2
+            ) + COS(lat2 * pi()/180 ) * COS(abs(lat1) * pi()/180) * POWER(SIN((long2 - long1) * pi()/180 / 2), 2)
+        )
+    ) AS distance
+FROM 
+    (
+        SELECT 
+            id,
+            43.7570 AS lat2, 
+            71.6882 AS long2,
+            lat AS lat1, 
+            long_ AS long1
+        FROM 
+            info_to_display
+        WHERE
+            gender = 1
+    ) AS p
+HAVING distance < 20;
