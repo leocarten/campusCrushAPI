@@ -60,8 +60,8 @@ export const createUser = (req) => {
         nextDay.setHours(date.getHours() + 24);
         const end_time = nextDay.toISOString().slice(0, 19).replace('T', ' ');
 
-        const sql = 'INSERT INTO users (username, password, gender, points, messages_sent, end_time, genderUserWantsToSee) VALUES (?, ?, ?, ?, ?, ?, ?)';
-        const values = [username, hashedPassword, gender, points, messages_sent, end_time, wants_to_be_shown];
+        const sql = 'INSERT INTO users (username, password, gender, points, messages_sent, end_time, genderUserWantsToSee, lat, long_) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const values = [username, hashedPassword, gender, points, messages_sent, end_time, wants_to_be_shown, lat, long_];
 
         pool.query(sql, values, (queryErr, result) => {
             if (queryErr) {
@@ -97,8 +97,8 @@ export const createUser = (req) => {
                                     const accessAgeToMinutes = accessAge * 60;
                                     const refreshAge = getRandomNumber(7,11);
                                     const refreshAgeToDays = refreshAge * 24 * 60 * 60;
-                                    const accessToken = generateAccessAndRefreshToken(user_id, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, wants_to_be_shown, 'filter...');
-                                    const refreshToken = generateAccessAndRefreshToken(user_id, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, wants_to_be_shown, 'filter...');
+                                    const accessToken = generateAccessAndRefreshToken(user_id, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, wants_to_be_shown, 'filter...', lat, long_);
+                                    const refreshToken = generateAccessAndRefreshToken(user_id, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, wants_to_be_shown, 'filter...', lat, long_);
                                     resolve({id: user_id, success: true, access:accessToken, refresh: refreshToken });
                                     // resolve({ success: true, message: "User created successfully." });
                                 }
