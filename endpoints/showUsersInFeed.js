@@ -44,7 +44,7 @@ export const showItemsInFeed = (token) => {
                           FROM 
                               info_to_display
                           WHERE
-                              id != ? and gender = ?
+                              id != ? and gender = ? and lat != 0.0 and long_ != 0.0
                       ) AS p
               ) AS distance_table
           JOIN 
