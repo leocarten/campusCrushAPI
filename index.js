@@ -82,7 +82,6 @@ app.post('/showItemsInFeed', async (req, res) => {
     }
     if(verifyUser['success'] === true){
       const tokenToUse = req.body['tokenFromUser'];
-      console.log(proximity);
       const feed = await showItemsInFeed(tokenToUse);
       res.json({success: true, results: feed})
     }else{
