@@ -48,7 +48,7 @@ export const showItemsInFeed = (token) => {
           JOIN 
               info_to_display ON info_to_display.id = distance_table.id
           WHERE 
-          distance > 1`, [id, genderUserWantsToSee],(err, result, fields) => {
+          distance < 40`, [id, genderUserWantsToSee],(err, result, fields) => {
             if (err) {
               reject(err);
             } else {
