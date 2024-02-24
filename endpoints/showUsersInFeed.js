@@ -12,6 +12,7 @@ export const showItemsInFeed = (token) => {
         const genderUserWantsToSee = decodedToken['genderUserWantsToSee'];
         const lat = decodedToken['lat'];
         const long_ = decodedToken['long_'];
+        const proximity = decodedToken['proximity'];
         console.log("token:",decodedToken);
 
         // pool.query(`SELECT first_name,dob,bio,bucket_list,interests,pet_preference,app_purpose,bitmoji_type,pictures,is_verified,job,music_preference,has_tattoos,sleep_schedule,win_my_heart,workout,communication_style,ideal_first_meetup 
@@ -50,7 +51,7 @@ export const showItemsInFeed = (token) => {
           JOIN 
               info_to_display ON info_to_display.id = distance_table.id
           WHERE 
-          distance < 40`, [lat, long_, id, genderUserWantsToSee],(err, result, fields) => {
+          distance < ?`, [lat, long_, id, genderUserWantsToSee, proximity],(err, result, fields) => {
             if (err) {
               reject(err);
             } else {

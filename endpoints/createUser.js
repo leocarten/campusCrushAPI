@@ -97,8 +97,8 @@ export const createUser = (req) => {
                                     const accessAgeToMinutes = accessAge * 60;
                                     const refreshAge = getRandomNumber(7,11);
                                     const refreshAgeToDays = refreshAge * 24 * 60 * 60;
-                                    const accessToken = generateAccessAndRefreshToken(user_id, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, wants_to_be_shown, 'filter...', lat, long_);
-                                    const refreshToken = generateAccessAndRefreshToken(user_id, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, wants_to_be_shown, 'filter...', lat, long_);
+                                    const accessToken = generateAccessAndRefreshToken(user_id, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, wants_to_be_shown, 'filter...', lat, long_, 50);
+                                    const refreshToken = generateAccessAndRefreshToken(user_id, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, wants_to_be_shown, 'filter...', lat, long_, 50);
                                     resolve({id: user_id, success: true, access:accessToken, refresh: refreshToken });
                                     // resolve({ success: true, message: "User created successfully." });
                                 }

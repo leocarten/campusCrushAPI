@@ -22,13 +22,14 @@ export const loginUser = (req) => {
             const userID = result[0].id;
             const lat = result[0].lat;
             const long_ = result[0].long_;
+            const proximity = result[0].proximity;
             const genderUserWantsToBeShown = result[0].genderUserWantsToSee;
             const accessAge = getRandomNumber(50,80);
             const accessAgeToMinutes = accessAge * 60;
             const refreshAge = getRandomNumber(7,11);
             const refreshAgeToDays = refreshAge * 24 * 60 * 60;
-            const accessToken = generateAccessAndRefreshToken(userID, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, genderUserWantsToBeShown, 'filter...', lat, long_);
-            const refreshToken = generateAccessAndRefreshToken(userID, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, genderUserWantsToBeShown, 'filter...', lat, long_);
+            const accessToken = generateAccessAndRefreshToken(userID, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, genderUserWantsToBeShown, 'filter...', lat, long_, proximity);
+            const refreshToken = generateAccessAndRefreshToken(userID, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, genderUserWantsToBeShown, 'filter...', lat, long_, proximity);
             resolve({id: userID, success: true, access:accessToken, refresh: refreshToken });
           }
           else{
