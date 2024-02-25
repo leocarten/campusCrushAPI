@@ -12,7 +12,7 @@ export const showItemsInFeed = (token) => {
         const genderUserWantsToSee = decodedToken['genderUserWantsToSee'];
         const lat = decodedToken['lat'];
         const long_ = decodedToken['long_'];
-        const proximity = decodedToken['proximity'] * 70;
+        const proximity = decodedToken['proximity'];
         console.log("token:",decodedToken);
         console.log("proximity:",proximity);
         console.log(proximity*2);
