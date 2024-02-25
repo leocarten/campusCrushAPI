@@ -14,6 +14,8 @@ export const showItemsInFeed = (token) => {
         const long_ = decodedToken['long_'];
         const proximity = decodedToken['proximity'] * 70;
         console.log("token:",decodedToken);
+        console.log("proximity:",proximity);
+        console.log(proximity*2);
 
         // pool.query(`SELECT first_name,dob,bio,bucket_list,interests,pet_preference,app_purpose,bitmoji_type,pictures,is_verified,job,music_preference,has_tattoos,sleep_schedule,win_my_heart,workout,communication_style,ideal_first_meetup 
         //               FROM info_to_display 
