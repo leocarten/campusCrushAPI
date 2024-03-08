@@ -172,7 +172,7 @@ app.post('/sendFirstMessage', async (req, res) => {
     if(verifyUser['success'] === true){
       const tokenToUse = req.body['tokenFromUser'];
       const feed = await sendFirstMessage(tokenToUse);
-      res.json({success: true, results: feed})
+      res.json({results: feed})
     }else{
       // this is where we can ask the client for their refresh token
       res.json({message: "We were unable to proceed in sendFirstMessage route."})
