@@ -36,7 +36,7 @@ export const sendAdditionalMessages = (token, message) => {
                         server_error = true;
                         reject(queryErr);
                     } else {
-                        const updateLastSentMessage = 'UPDATE all_messages_interface set mostRecentMessage = ?, IdOfPersonWhoSentLastMessage = ?, hasOpenedMessage = ?, WHERE convoID = ?'
+                        const updateLastSentMessage = 'UPDATE all_messages_interface SET mostRecentMessage = ?, IdOfPersonWhoSentLastMessage = ?, hasOpenedMessage = ? WHERE convoID = ?';
                         pool.query(updateLastSentMessage, [message, senderID, hasOpenedMessage, convoID], (queryError, result) =>{
                             if(queryError){
                                 console.error('Error executing third query:', queryError);
@@ -50,7 +50,7 @@ export const sendAdditionalMessages = (token, message) => {
                     }
                 });
             } else {
-                resolve({ success: false, message: "Conversation already started." });
+                resolve({ success: false, message: "Conversation not started." });
             }
         });
     });
