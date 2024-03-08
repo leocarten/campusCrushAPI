@@ -160,6 +160,7 @@ app.post('/updateUserProfile', async (req, res) => {
 app.post('/sendFirstMessage', async (req, res) => {
   try {
     const typeOfVerification = req.body['type'];
+    const message = req.body['message'];
     let verifyUser;
     console.log("You just sent me:",typeOfVerification);
     if(typeOfVerification === 'access'){
@@ -171,7 +172,7 @@ app.post('/sendFirstMessage', async (req, res) => {
     }
     if(verifyUser['success'] === true){
       const tokenToUse = req.body['tokenFromUser'];
-      const feed = await sendFirstMessage(tokenToUse);
+      const feed = await sendFirstMessage(tokenToUse, message);
       res.json({results: feed})
     }else{
       // this is where we can ask the client for their refresh token
