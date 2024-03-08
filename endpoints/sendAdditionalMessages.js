@@ -28,16 +28,16 @@ export const sendAdditionalMessages = (token, message) => {
                 return;
             } else if (queryCheckResults.length !== 0) { // it exists!
                 const convoID = queryCheckResults[0].convoID;
-                const insertIntoMessagesQuery = 'INSERT INTO messages (convoID, messageContent, senderID, hasOpenedMessage, recieverID) VALUES (?, ?, ?, ?, ?)';
-                const values = [convoID, message, IdOfPersonWhoSentLastMessage, hasOpenedMessage, recieverID];
+                const insertIntoMessagesQuery = 'INSERT INTO messages (convoID, messageContent, senderID) VALUES (?, ?, ?)';
+                const values = [convoID, message, IdOfPersonWhoSentLastMessage];
                 pool.query(insertIntoMessagesQuery, values, (queryErr, result) => {
                     if (queryErr) {
                         console.error('Error executing second query:', queryErr);
                         server_error = true;
                         reject(queryErr);
                     } else {
-                        const updateLastSentMessage = 'UPDATE all_messages_interface set mostRecentMessage = ?, IdOfPersonWhoSentLastMessage = ? WHERE convoID = ?'
-                        pool.query(updateLastSentMessage, [message, senderID, convoID], (queryError, result) =>{
+                        const updateLastSentMessage = 'UPDATE all_messages_interface set mostRecentMessage = ?, IdOfPersonWhoSentLastMessage = ?, hasOpenedMessage = ?, WHERE convoID = ?'
+                        pool.query(updateLastSentMessage, [message, senderID, hasOpenedMessage, convoID], (queryError, result) =>{
                             if(queryError){
                                 console.error('Error executing third query:', queryError);
                                 server_error = true;
