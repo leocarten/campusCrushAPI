@@ -45,7 +45,7 @@ export const sendFirstMessage = (token) => {
                 server_error = true;
                 reject(queryErr);
             } else {
-                pool.query('SELECT MAX(id) as max_id FROM all_messages_interface;', (error, results, fields) => {
+                pool.query('SELECT MAX(convoID) as max_id FROM all_messages_interface;', (error, results, fields) => {
                     if (error) {
                         console.error('Error executing second query:', error);
                         server_error = true;
