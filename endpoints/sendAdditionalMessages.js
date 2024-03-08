@@ -2,7 +2,7 @@ import pool from '../db/connectionPool.js';
 import { authenticateUsersJWT } from '../jwt/verifyJwt.js';
 import { jwtDecode } from "jwt-decode";
 
-export const sendAdditionalMessages = (token, message) => {
+export const sendAdditionalMessages = (token, message, recieverID) => {
     return new Promise((resolve, reject) => {
         // get the sender ID from token
         // get the receiver ID from the body
@@ -15,7 +15,7 @@ export const sendAdditionalMessages = (token, message) => {
         const senderID = decodedToken['id'];
         console.log('sender id:', senderID);
 
-        const recieverID = 69;
+        // const recieverID = 69;
         // const message = "Howdy!";
         const IdOfPersonWhoSentLastMessage = senderID;
         const hasOpenedMessage = 0;
@@ -25,7 +25,7 @@ export const sendAdditionalMessages = (token, message) => {
         pool.query(getConvoID, [senderID, recieverID], (queryErr, queryCheckResults) => {
             if (queryErr) {
                 console.error('Error executing first query: ', queryErr);
-                return;
+                reject(queryErr);
             } else if (queryCheckResults.length !== 0) { // it exists!
                 const convoID = queryCheckResults[0].convoID;
                 const insertIntoMessagesQuery = 'INSERT INTO messages (convoID, messageContent, senderID) VALUES (?, ?, ?)';

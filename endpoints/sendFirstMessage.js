@@ -2,7 +2,7 @@ import pool from '../db/connectionPool.js';
 import { authenticateUsersJWT } from '../jwt/verifyJwt.js';
 import { jwtDecode } from "jwt-decode";
 
-export const sendFirstMessage = (token, message) => {
+export const sendFirstMessage = (token, message, recieverID) => {
     return new Promise((resolve, reject) => {
         // get the sender ID from token
 
@@ -30,7 +30,7 @@ export const sendFirstMessage = (token, message) => {
         const senderID = decodedToken['id'];
         console.log('sender id:',senderID);
 
-        const recieverID = 69;
+        // const recieverID = 69;
         // const message = "Howdy!";
         const IdOfPersonWhoSentLastMessage = senderID;
         const hasOpenedMessage = 0;
