@@ -6,11 +6,14 @@ import { authenticateUser } from './endpoints/authenticateUser.js';
 import { showItemsInFeed } from './endpoints/showUsersInFeed.js';
 import { viewUserProfile } from './endpoints/viewUserProfile.js';
 import { updateUserProfile } from './endpoints/updateUserProfile.js';
+import { sendFirstMessage } from './endpoints/sendFirstMessage.js';
 
 const app = express();
 app.listen(5001,() => console.log("Api is running on port 5001"));
 
+
 app.use(express.json());
+
 
 app.post('/', async (req, res) => {
   try {
@@ -21,6 +24,7 @@ app.post('/', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
 
 app.post('/login', async (req, res) => {
     try {
@@ -41,6 +45,7 @@ app.post('/createUser', async (req, res) => {
     res.status(500).send('Internal Server Error createUser route.');
   }
 });
+
 
 app.post('/verifyUser', async (req, res) => {
   try {
@@ -68,6 +73,7 @@ app.post('/verifyUser', async (req, res) => {
   }
 });
 
+
 app.post('/showItemsInFeed', async (req, res) => {
   try {
     const typeOfVerification = req.body['type'];
@@ -85,6 +91,7 @@ app.post('/showItemsInFeed', async (req, res) => {
       const feed = await showItemsInFeed(tokenToUse);
       res.json({success: true, results: feed})
     }else{
+      // this is where we can ask the client for their refresh token
       res.json({message: "We were unable to proceed in showItemsInFeed route."})
     }
   } catch (err) {
@@ -92,6 +99,7 @@ app.post('/showItemsInFeed', async (req, res) => {
     res.status(500).send('Internal Server Error showItemsInFeed route.');
   }
 });
+
 
 app.post('/viewUserProfile', async (req, res) => {
   try {
@@ -120,6 +128,7 @@ app.post('/viewUserProfile', async (req, res) => {
   }
 });
 
+
 app.post('/updateUserProfile', async (req, res) => {
   try {
     const typeOfVerification = req.body['type'];
@@ -144,5 +153,32 @@ app.post('/updateUserProfile', async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Internal Server Error showItemsInFeed route.');
+  }
+});
+
+
+app.post('/sendFirstMessage', async (req, res) => {
+  try {
+    const typeOfVerification = req.body['type'];
+    let verifyUser;
+    console.log("You just sent me:",typeOfVerification);
+    if(typeOfVerification === 'access'){
+      console.log("Reached access");
+      verifyUser = await authenticateUser(req,true);
+    }else{
+      console.log("Else access")
+      verifyUser = await authenticateUser(req,false);
+    }
+    if(verifyUser['success'] === true){
+      const tokenToUse = req.body['tokenFromUser'];
+      const feed = await sendFirstMessage(tokenToUse);
+      res.json({success: true, results: feed})
+    }else{
+      // this is where we can ask the client for their refresh token
+      res.json({message: "We were unable to proceed in sendFirstMessage route."})
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Internal Server Error sendFirstMessage route.');
   }
 });
