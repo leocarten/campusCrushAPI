@@ -19,7 +19,7 @@ export const displayConversations = (token) => {
                 console.error('Error executing first query: ', queryErr);
                 reject(queryErr)
             } else if (resultsForConversation.length !== 0) { // it exists!
-                resolve({success: true, results: resultsForConversation});
+                resolve({success: true, conversations: resultsForConversation});
             } else {
                 resolve({ success: false, message: "You have no messages yet." });
             }
