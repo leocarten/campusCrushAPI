@@ -9,6 +9,7 @@ import { updateUserProfile } from './endpoints/updateUserProfile.js';
 import { sendFirstMessage } from './endpoints/sendFirstMessage.js';
 import { sendAdditionalMessages } from './endpoints/sendAdditionalMessages.js';
 import { getMessages } from './endpoints/getMessages.js';
+import { displayConversations } from './endpoints/displayMessagesOnConversationsPage.js';
 
 const app = express();
 app.listen(5001,() => console.log("Api is running on port 5001"));
@@ -233,6 +234,33 @@ app.post('/getMessages', async (req, res) => {
     if(verifyUser['success'] === true){
       const tokenToUse = req.body['tokenFromUser'];
       const feed = await getMessages(tokenToUse, recieverID);
+      res.json({results: feed})
+    }else{
+      // this is where we can ask the client for their refresh token
+      res.json({message: "We were unable to proceed in getMessages route."})
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Internal Server Error getMessages route.');
+  }
+});
+
+
+app.post('/getConversations', async (req, res) => {
+  try {
+    const typeOfVerification = req.body['type'];
+    let verifyUser;
+    console.log("You just sent me:",typeOfVerification);
+    if(typeOfVerification === 'access'){
+      console.log("Reached access");
+      verifyUser = await authenticateUser(req,true);
+    }else{
+      console.log("Else access")
+      verifyUser = await authenticateUser(req,false);
+    }
+    if(verifyUser['success'] === true){
+      const tokenToUse = req.body['tokenFromUser'];
+      const feed = await displayConversations(tokenToUse);
       res.json({results: feed})
     }else{
       // this is where we can ask the client for their refresh token
