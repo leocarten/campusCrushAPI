@@ -29,7 +29,7 @@ export const displayConversations = (token) => {
         //     console.log(convos[i]);
         // }
         console.log(convos);
-        // resolve({success:true})
+        resolve({success:true});
 
     });
 };
