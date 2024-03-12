@@ -30,7 +30,7 @@ export const getMessages = (token, recieverID) => {
                         reject(queryError)
                     }
                     else{
-                        resolve({success: true, messages: results});
+                        resolve({success: true, messages: results, requestersID: requestID});
                     }
                 })
             } else {
