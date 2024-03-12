@@ -25,7 +25,7 @@ export const getMessages = (token, senderID, recID) => {
                 reject(queryErr)
             } else if (queryCheckResults.length !== 0) { // it exists!
                 const convoID = queryCheckResults[0].convoID;
-                const getMessagesQuery = 'SELECT messageID,messageContent,senderID,timestamp FROM messages WHERE convoID = ? ORDER BY timestamp ASC'
+                const getMessagesQuery = 'SELECT messageID,messageContent,senderID,timestamp FROM messages WHERE convoID = ? ORDER BY timestamp DESC'
                 pool.query(getMessagesQuery, [convoID], (queryError, results) => {
                     if(queryError){
                         console.error('Error executing second query: ', queryError);
