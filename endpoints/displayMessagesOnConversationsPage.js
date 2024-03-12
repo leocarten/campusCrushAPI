@@ -32,7 +32,7 @@ export const displayConversations = (token, otherUserId) => {
                                 console.error('Error executing second query: ', queryErr);
                                 reject(queryErr);
                             }else if(nameOfUser.length == 1){
-                                namesOfPersonHavingConvoWith.append(nameOfUser);
+                                namesOfPersonHavingConvoWith.push(nameOfUser);
                             }else{
                                 resolve({ success: false, message: "Error" });
                             }
@@ -45,7 +45,7 @@ export const displayConversations = (token, otherUserId) => {
                                 console.error('Error executing second query: ', queryErr);
                                 reject(queryErr);
                             }else if(nameOfUser.length == 1){
-                                namesOfPersonHavingConvoWith.append(nameOfUser);
+                                namesOfPersonHavingConvoWith.push(nameOfUser);
                             }else{
                                 resolve({ success: false, message: "Error" });
                             }
