@@ -19,42 +19,42 @@ export const displayConversations = (token, otherUserId) => {
                 console.error('Error executing first query: ', queryErr);
                 reject(queryErr)
             } else if (resultsForConversation.length !== 0) { // it exists!
-                console.log("Response:",resultsForConversation);
-                const idsOfSenders = resultsForConversation.map(result => result.originalSenderID);
-                const idsOfRecievers = resultsForConversation.map(result => result.originalRecieverID);
-                var namesOfPersonHavingConvoWith = []
-                // var i = idsOfSenders.length;
-                for(var i = 0; i < idsOfSenders.length; i++){
-                    if (requestID == idsOfSenders[i]){
-                        const nameQuery = 'SELECT first_name from info_to_display where id = ?';
-                        pool.query(nameQuery, [requestID], (nameQueryError, nameOfUser) => {
-                            if(nameQueryError){
-                                console.error('Error executing second query: ', queryErr);
-                                reject(queryErr);
-                            }else if(nameOfUser.length == 1){
-                                namesOfPersonHavingConvoWith.push(nameOfUser);
-                            }else{
-                                resolve({ success: false, message: "Error" });
-                            }
-                        } )
-                    }
-                    else{
-                        const nameQuery = 'SELECT first_name from info_to_display where id = ?';
-                        pool.query(nameQuery, [idsOfRecievers[i]], (nameQueryError, nameOfUser) => {
-                            if(nameQueryError){
-                                console.error('Error executing second query: ', queryErr);
-                                reject(queryErr);
-                            }else if(nameOfUser.length == 1){
-                                namesOfPersonHavingConvoWith.push(nameOfUser);
-                            }else{
-                                resolve({ success: false, message: "Error" });
-                            }
-                        } )
-                    }
-                }
+                // console.log("Response:",resultsForConversation);
+                // const idsOfSenders = resultsForConversation.map(result => result.originalSenderID);
+                // const idsOfRecievers = resultsForConversation.map(result => result.originalRecieverID);
+                // var namesOfPersonHavingConvoWith = []
+                // // var i = idsOfSenders.length;
+                // for(var i = 0; i < idsOfSenders.length; i++){
+                //     if (requestID == idsOfSenders[i]){
+                //         const nameQuery = 'SELECT first_name from info_to_display where id = ?';
+                //         pool.query(nameQuery, [requestID], (nameQueryError, nameOfUser) => {
+                //             if(nameQueryError){
+                //                 console.error('Error executing second query: ', queryErr);
+                //                 reject(queryErr);
+                //             }else if(nameOfUser.length == 1){
+                //                 namesOfPersonHavingConvoWith.push(nameOfUser);
+                //             }else{
+                //                 resolve({ success: false, message: "Error" });
+                //             }
+                //         } )
+                //     }
+                //     else{
+                //         const nameQuery = 'SELECT first_name from info_to_display where id = ?';
+                //         pool.query(nameQuery, [idsOfRecievers[i]], (nameQueryError, nameOfUser) => {
+                //             if(nameQueryError){
+                //                 console.error('Error executing second query: ', queryErr);
+                //                 reject(queryErr);
+                //             }else if(nameOfUser.length == 1){
+                //                 namesOfPersonHavingConvoWith.push(nameOfUser);
+                //             }else{
+                //                 resolve({ success: false, message: "Error" });
+                //             }
+                //         } )
+                //     }
+                // }
 
                 // console.log(ids);
-                resolve({success: true, conversations: resultsForConversation, names: namesOfPersonHavingConvoWith});
+                resolve({success: true, conversations: resultsForConversation});
 
 
                 // const getNameOfOtherUser = 'SELECT first_name from first_name where id = ?'
