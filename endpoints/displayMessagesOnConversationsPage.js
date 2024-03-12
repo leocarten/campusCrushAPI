@@ -2,7 +2,7 @@ import pool from '../db/connectionPool.js';
 import { authenticateUsersJWT } from '../jwt/verifyJwt.js';
 import { jwtDecode } from "jwt-decode";
 
-export const displayConversations = (token) => {
+export const displayConversations = (token, otherUserId) => {
     return new Promise((resolve, reject) => {
         
         // select mostRecentMessage, IdOfPersonWhoSentLastMessage, hasOpenedMessage where originalSenderID = id OR originalRecieverID = id
@@ -19,7 +19,11 @@ export const displayConversations = (token) => {
                 console.error('Error executing first query: ', queryErr);
                 reject(queryErr)
             } else if (resultsForConversation.length !== 0) { // it exists!
+                console.log("Response:",resultsForConversation);
                 resolve({success: true, conversations: resultsForConversation});
+
+                // const getNameOfOtherUser = 'SELECT first_name from first_name where id = ?'
+                // pool.query(getNameOfOtherUser, [])
             } else {
                 resolve({ success: false, message: "You have no messages yet." });
             }
