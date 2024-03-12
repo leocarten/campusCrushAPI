@@ -55,42 +55,90 @@ import { jwtDecode } from "jwt-decode";
 //     });
 // };
 
-export const displayConversations = (token, id1, id2) => {
+// export const displayConversations = (token, id1, id2) => {
+//     return new Promise((resolve, reject) => {
+        
+//         const decodedToken = jwtDecode(token);
+//         const requestID = decodedToken['id'];
+
+//         let otherName;
+
+//         const nameQuery = 'SELECT first_name FROM info_to_display WHERE id = ?';
+//         const otherUserID = (requestID == id1) ? id2 : id1;
+
+//         pool.query(nameQuery, [otherUserID], (nameQueryError, resultsForName) => {
+//             if (nameQueryError) {
+//                 console.error('Error executing name query: ', nameQueryError);
+//                 reject(nameQueryError);
+//             }
+
+//             if (resultsForName.length === 1) {
+//                 otherName = resultsForName[0].first_name;
+//                 console.log('name:',otherName);
+
+//                 const getConversationsQuery = 'SELECT mostRecentMessage, IdOfPersonWhoSentLastMessage, hasOpenedMessage, originalSenderID, originalRecieverID FROM all_messages_interface WHERE originalSenderID = ? OR originalRecieverID = ?';
+
+//                 pool.query(getConversationsQuery, [requestID, requestID], (queryErr, resultsForConversation) => {
+//                     if (queryErr) {
+//                         console.error('Error executing first query: ', queryErr);
+//                         reject(queryErr);
+//                     } else if (resultsForConversation.length !== 0) {
+//                         resolve({ success: true, conversations: resultsForConversation, nameOfUser: otherName });
+//                     } else {
+//                         resolve({ success: false, message: "You have no messages yet." });
+//                     }
+//                 });
+//             } else {
+//                 reject("Error: User not found.");
+//             }
+//         });
+//     });
+// };
+
+export const displayConversations = (token) => {
     return new Promise((resolve, reject) => {
         
         const decodedToken = jwtDecode(token);
         const requestID = decodedToken['id'];
 
-        let otherName;
+        const getConversationsQuery = `
+            SELECT 
+                m.mostRecentMessage, 
+                m.IdOfPersonWhoSentLastMessage, 
+                m.hasOpenedMessage, 
+                m.originalSenderID, 
+                m.originalRecieverID,
+                sender.first_name AS sender_name,
+                receiver.first_name AS receiver_name
+            FROM 
+                all_messages_interface AS m
+            JOIN 
+                info_to_display AS sender ON m.originalSenderID = sender.id
+            JOIN 
+                info_to_display AS receiver ON m.originalRecieverID = receiver.id
+            WHERE 
+                m.originalSenderID = ? OR m.originalRecieverID = ?;
+        `;
 
-        const nameQuery = 'SELECT first_name FROM info_to_display WHERE id = ?';
-        const otherUserID = (requestID == id1) ? id2 : id1;
-
-        pool.query(nameQuery, [otherUserID], (nameQueryError, resultsForName) => {
-            if (nameQueryError) {
-                console.error('Error executing name query: ', nameQueryError);
-                reject(nameQueryError);
+        pool.query(getConversationsQuery, [requestID, requestID], (queryErr, resultsForConversation) => {
+            if (queryErr) {
+                console.error('Error executing query: ', queryErr);
+                reject(queryErr);
+                return;
             }
 
-            if (resultsForName.length === 1) {
-                otherName = resultsForName[0].first_name;
-                console.log('name:',otherName);
-
-                const getConversationsQuery = 'SELECT mostRecentMessage, IdOfPersonWhoSentLastMessage, hasOpenedMessage, originalSenderID, originalRecieverID FROM all_messages_interface WHERE originalSenderID = ? OR originalRecieverID = ?';
-
-                pool.query(getConversationsQuery, [requestID, requestID], (queryErr, resultsForConversation) => {
-                    if (queryErr) {
-                        console.error('Error executing first query: ', queryErr);
-                        reject(queryErr);
-                    } else if (resultsForConversation.length !== 0) {
-                        resolve({ success: true, conversations: resultsForConversation, nameOfUser: otherName });
-                    } else {
-                        resolve({ success: false, message: "You have no messages yet." });
-                    }
+            if (resultsForConversation.length !== 0) {
+                // Determine other user ID for each conversation
+                const conversationsWithOtherUser = resultsForConversation.map(conversation => {
+                    const otherUserID = (requestID == conversation.originalSenderID) ? conversation.originalRecieverID : conversation.originalSenderID;
+                    return { ...conversation, otherUserID };
                 });
+
+                resolve({ success: true, conversations: conversationsWithOtherUser });
             } else {
-                reject("Error: User not found.");
+                resolve({ success: false, message: "You have no messages yet." });
             }
         });
     });
 };
+
