@@ -11,47 +11,25 @@ export const displayConversations = (token) => {
         console.log('the decoded token:', decodedToken);
         const requestID = decodedToken['id'];
         console.log('sender id:', requestID);
+        var convos;
 
-        // var otherName;
-        // if(requestID == id1){
-        //     // get name of id2
-        //     const nameQuery = 'SELECT first_name from info_to_display where id = ?';
-        //     pool.query(nameQuery, [id2], (nameQueryError, resultsForName) => {
-        //         if(nameQuery){
-        //             console.error('Error executing name query: ', nameQueryError);
-        //             reject(nameQueryError);
-        //         }else if(resultsForName.length == 1){
-        //             otherName = resultsForName.first_name;
-        //         }else{
-        //             reject("Error.")
-        //         }
-        //     });
-        // }else{
-        //     const nameQuery = 'SELECT first_name from info_to_display where id = ?';
-        //     pool.query(nameQuery, [requestID], (nameQueryError, resultsForName) => {
-        //         if(nameQuery){
-        //             console.error('Error executing name query: ', nameQueryError);
-        //             reject(nameQueryError);
-        //         }else if(resultsForName.length == 1){
-        //             otherName = resultsForName.first_name;
-        //         }else{
-        //             reject("Error.")
-        //         }
-        //     });
-        // }
-
-        // query to make sure it doesn't exist:
         const getConversations = 'SELECT mostRecentMessage, IdOfPersonWhoSentLastMessage, hasOpenedMessage, originalSenderID, originalRecieverID FROM all_messages_interface WHERE originalSenderID = ? OR originalRecieverID = ?';
         pool.query(getConversations, [requestID, requestID], (queryErr, resultsForConversation) => {
             if (queryErr) {
                 console.error('Error executing first query: ', queryErr);
                 reject(queryErr)
             } else if (resultsForConversation.length !== 0) { // it exists!
-                resolve({success: true, conversations: resultsForConversation});
+                convos = resultsForConversation;
             } else {
                 resolve({ success: false, message: "You have no messages yet." });
             }
         });
+
+        for(var i = 0; i < convos.length; i++){
+            console.log(convos[i]);
+        }
+        resolve({success:true})
+
     });
 };
 
@@ -104,13 +82,6 @@ export const displayConversations = (token) => {
         
 //         const decodedToken = jwtDecode(token);
 //         const requestID = decodedToken['id'];
-
-//         let id_of_name_i_want_to_show;
-//         if (requestID == id1) {
-//             id_of_name_i_want_to_show = id2;
-//         } else {
-//             id_of_name_i_want_to_show = requestID;
-//         }
 
 //         const getConversationsQuery = `
 //             SELECT 
