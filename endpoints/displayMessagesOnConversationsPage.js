@@ -1,6 +1,6 @@
-// import pool from '../db/connectionPool.js';
-// import { authenticateUsersJWT } from '../jwt/verifyJwt.js';
-// import { jwtDecode } from "jwt-decode";
+import pool from '../db/connectionPool.js';
+import { authenticateUsersJWT } from '../jwt/verifyJwt.js';
+import { jwtDecode } from "jwt-decode";
 
 // export const displayConversations = (token, id1, id2) => {
 //     return new Promise((resolve, reject) => {
