@@ -95,11 +95,18 @@ import { jwtDecode } from "jwt-decode";
 //     });
 // };
 
-export const displayConversations = (token) => {
+export const displayConversations = (token, id1, id2) => {
     return new Promise((resolve, reject) => {
         
         const decodedToken = jwtDecode(token);
         const requestID = decodedToken['id'];
+
+        let id_of_name_i_want_to_show;
+        if (requestID == id1) {
+            id_of_name_i_want_to_show = id2;
+        } else {
+            id_of_name_i_want_to_show = id1;
+        }
 
         const getConversationsQuery = `
             SELECT 
@@ -110,21 +117,21 @@ export const displayConversations = (token) => {
                 m.originalRecieverID,
                 sender.first_name AS sender_name,
                 receiver.first_name AS receiver_name,
-                CASE 
-                    WHEN m.originalSenderID = ? THEN receiver.first_name
-                    ELSE sender.first_name
-                END AS other_user_name
+                other_user.first_name AS other_user_name
             FROM 
                 all_messages_interface AS m
             JOIN 
                 info_to_display AS sender ON m.originalSenderID = sender.id
             JOIN 
                 info_to_display AS receiver ON m.originalRecieverID = receiver.id
+            JOIN
+                info_to_display AS other_user ON other_user.id = ?
             WHERE 
-                m.originalSenderID = ? OR m.originalRecieverID = ?;
+                (m.originalSenderID = ? OR m.originalRecieverID = ?)
+                AND (sender.id = other_user.id OR receiver.id = other_user.id);
         `;
 
-        pool.query(getConversationsQuery, [requestID, requestID, requestID], (queryErr, resultsForConversation) => {
+        pool.query(getConversationsQuery, [id_of_name_i_want_to_show, requestID, requestID], (queryErr, resultsForConversation) => {
             if (queryErr) {
                 console.error('Error executing query: ', queryErr);
                 reject(queryErr);
@@ -139,5 +146,3 @@ export const displayConversations = (token) => {
         });
     });
 };
-
-
