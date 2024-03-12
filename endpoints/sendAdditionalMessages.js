@@ -9,7 +9,7 @@ export const sendAdditionalMessages = (token, message, id1, id2) => {
         // get convo id (check to make sure it exists)
         // add message to message table
         // add most recent message to interface table
-        let trueSender;
+        var trueSender = 0;
         const decodedToken = jwtDecode(token);
         console.log('the decoded token:', decodedToken);
         const senderID = decodedToken['id'];
@@ -34,6 +34,7 @@ export const sendAdditionalMessages = (token, message, id1, id2) => {
                 }else{
                     trueSender = id2;
                 }
+                console.log('true sender:',trueSender);
                 const values = [convoID, message, trueSender];
                 pool.query(insertIntoMessagesQuery, values, (queryErr, result) => {
                     if (queryErr) {
