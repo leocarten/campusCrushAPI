@@ -30,8 +30,8 @@ export const sendAdditionalMessages = (token, message, id1, id2) => {
         }
 
         // query to make sure it doesn't exist:
-        const getConvoID = 'SELECT convoID FROM all_messages_interface WHERE originalSenderID = ? AND originalRecieverID = ?';
-        pool.query(getConvoID, [senderID, trueReciever], (queryErr, queryCheckResults) => {
+        const getConvoID = 'SELECT convoID FROM all_messages_interface WHERE originalSenderID = ? AND originalRecieverID = ? or originalSenderID = ? AND originalRecieverI';
+        pool.query(getConvoID, [trueSender, trueReciever, trueReciever, trueSender], (queryErr, queryCheckResults) => {
             if (queryErr) {
                 console.error('Error executing first query: ', queryErr);
                 reject(queryErr);
