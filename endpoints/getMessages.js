@@ -2,11 +2,10 @@ import pool from '../db/connectionPool.js';
 import { authenticateUsersJWT } from '../jwt/verifyJwt.js';
 import { jwtDecode } from "jwt-decode";
 
-export const getMessages = (token, recieverID) => {
+export const getMessages = (token) => {
     return new Promise((resolve, reject) => {
         
         // get requesters id
-        // get recievers id
         // get the convo id in all_messages_interface table
         // select messages and senderID from messages table with that convo id
 
@@ -16,8 +15,8 @@ export const getMessages = (token, recieverID) => {
         console.log('sender id:', requestID);
 
         // query to make sure it doesn't exist:
-        const getConvoID = 'SELECT convoID FROM all_messages_interface WHERE originalSenderID = ? AND originalRecieverID = ? or originalSenderID = ? AND originalRecieverID = ?';
-        pool.query(getConvoID, [requestID, recieverID, recieverID, requestID], (queryErr, queryCheckResults) => {
+        const getConvoID = 'SELECT convoID FROM all_messages_interface WHERE originalSenderID = ? or originalRecieverID = ?';
+        pool.query(getConvoID, [requestID, requestID], (queryErr, queryCheckResults) => {
             if (queryErr) {
                 console.error('Error executing first query: ', queryErr);
                 reject(queryErr)

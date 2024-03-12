@@ -221,7 +221,7 @@ app.post('/sendAdditionalMessage', async (req, res) => {
 app.post('/getMessages', async (req, res) => {
   try {
     const typeOfVerification = req.body['type'];
-    const recieverID = req.body['recieverID'];
+    // const recieverID = req.body['recieverID'];
     let verifyUser;
     console.log("You just sent me:",typeOfVerification);
     if(typeOfVerification === 'access'){
@@ -233,7 +233,7 @@ app.post('/getMessages', async (req, res) => {
     }
     if(verifyUser['success'] === true){
       const tokenToUse = req.body['tokenFromUser'];
-      const feed = await getMessages(tokenToUse, recieverID);
+      const feed = await getMessages(tokenToUse);
       res.json({results: feed})
     }else{
       // this is where we can ask the client for their refresh token
