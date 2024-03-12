@@ -42,6 +42,7 @@ export const displayConversations = (token) => {
                         conversation.receiver_name = getNameByID(conversation.originalSenderID);
                     }
                 });
+                resolve({ success: true, conversations: resultsForConversation });
             } else {
                 resolve({ success: false, message: "You have no messages yet." });
             }
