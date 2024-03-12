@@ -109,7 +109,11 @@ export const displayConversations = (token) => {
                 m.originalSenderID, 
                 m.originalRecieverID,
                 sender.first_name AS sender_name,
-                receiver.first_name AS receiver_name
+                receiver.first_name AS receiver_name,
+                CASE 
+                    WHEN m.originalSenderID = ? THEN receiver.first_name
+                    ELSE sender.first_name
+                END AS other_user_name
             FROM 
                 all_messages_interface AS m
             JOIN 
@@ -120,7 +124,7 @@ export const displayConversations = (token) => {
                 m.originalSenderID = ? OR m.originalRecieverID = ?;
         `;
 
-        pool.query(getConversationsQuery, [requestID, requestID], (queryErr, resultsForConversation) => {
+        pool.query(getConversationsQuery, [requestID, requestID, requestID], (queryErr, resultsForConversation) => {
             if (queryErr) {
                 console.error('Error executing query: ', queryErr);
                 reject(queryErr);
@@ -128,17 +132,12 @@ export const displayConversations = (token) => {
             }
 
             if (resultsForConversation.length !== 0) {
-                // Determine other user ID for each conversation
-                const conversationsWithOtherUser = resultsForConversation.map(conversation => {
-                    const otherUserID = (requestID == conversation.originalSenderID) ? conversation.originalRecieverID : conversation.originalSenderID;
-                    return { ...conversation, otherUserID };
-                });
-
-                resolve({ success: true, conversations: conversationsWithOtherUser });
+                resolve({ success: true, conversations: resultsForConversation });
             } else {
                 resolve({ success: false, message: "You have no messages yet." });
             }
         });
     });
 };
+
 
