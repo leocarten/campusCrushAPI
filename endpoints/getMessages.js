@@ -10,10 +10,12 @@ export const getMessages = (token, senderID, recID) => {
         // select messages and senderID from messages table with that convo id
 
         const decodedToken = jwtDecode(token);
-        console.log('the decoded token:', decodedToken);
+        // console.log('the decoded token:', decodedToken);
         const requestID = decodedToken['id'];
         console.log('sender id:', requestID);
-
+        console.log("senderID:",senderID);
+        console.log("rec id:",recID);
+        
     
         // query to make sure it doesn't exist:
         const getConvoID = 'SELECT convoID FROM all_messages_interface WHERE originalSenderID = ? and originalRecieverID = ? OR originalSenderID = ? and originalRecieverID = ?';
