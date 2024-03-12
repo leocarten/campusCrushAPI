@@ -70,11 +70,11 @@ export const displayConversations = (token, id1, id2) => {
             if (nameQueryError) {
                 console.error('Error executing name query: ', nameQueryError);
                 reject(nameQueryError);
-                return;
             }
 
             if (resultsForName.length === 1) {
                 otherName = resultsForName[0].first_name;
+                console.log('name:',otherName);
 
                 const getConversationsQuery = 'SELECT mostRecentMessage, IdOfPersonWhoSentLastMessage, hasOpenedMessage, originalSenderID, originalRecieverID FROM all_messages_interface WHERE originalSenderID = ? OR originalRecieverID = ?';
 
