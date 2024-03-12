@@ -10,6 +10,7 @@ export const sendAdditionalMessages = (token, message, id1, id2) => {
         // add message to message table
         // add most recent message to interface table
         var trueSender = 0;
+        var trueReciever = 0;
         const decodedToken = jwtDecode(token);
         console.log('the decoded token:', decodedToken);
         const senderID = decodedToken['id'];
@@ -20,20 +21,23 @@ export const sendAdditionalMessages = (token, message, id1, id2) => {
         // const IdOfPersonWhoSentLastMessage = senderID;
         const hasOpenedMessage = 0;
 
+        if(id1 == senderID){
+            trueSender = senderID;
+            trueReciever = id2;
+        }else{
+            trueSender = id2;
+            trueReciever = id1;
+        }
+
         // query to make sure it doesn't exist:
         const getConvoID = 'SELECT convoID FROM all_messages_interface WHERE originalSenderID = ? AND originalRecieverID = ?';
-        pool.query(getConvoID, [senderID, recieverID], (queryErr, queryCheckResults) => {
+        pool.query(getConvoID, [senderID, trueReciever], (queryErr, queryCheckResults) => {
             if (queryErr) {
                 console.error('Error executing first query: ', queryErr);
                 reject(queryErr);
             } else if (queryCheckResults.length !== 0) { // it exists!
                 const convoID = queryCheckResults[0].convoID;
                 const insertIntoMessagesQuery = 'INSERT INTO messages (convoID, messageContent, senderID) VALUES (?, ?, ?)';
-                if(id1 == senderID){
-                    trueSender = senderID;
-                }else{
-                    trueSender = id2;
-                }
                 console.log('true sender:',trueSender);
                 const values = [convoID, message, trueSender];
                 pool.query(insertIntoMessagesQuery, values, (queryErr, result) => {
