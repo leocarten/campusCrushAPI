@@ -97,6 +97,10 @@ import { jwtDecode } from "jwt-decode";
 
 export const displayConversations = (token, id1, id2) => {
     return new Promise((resolve, reject) => {
+
+        console.log('id1:',id1);
+        console.log('id2:',id2);
+
         
         const decodedToken = jwtDecode(token);
         const requestID = decodedToken['id'];
@@ -105,7 +109,7 @@ export const displayConversations = (token, id1, id2) => {
         if (requestID == id1) {
             id_of_name_i_want_to_show = id2;
         } else {
-            id_of_name_i_want_to_show = id1;
+            id_of_name_i_want_to_show = requestID;
         }
 
         const getConversationsQuery = `
