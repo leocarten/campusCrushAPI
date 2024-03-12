@@ -20,7 +20,9 @@ export const displayConversations = (token, otherUserId) => {
                 reject(queryErr)
             } else if (resultsForConversation.length !== 0) { // it exists!
                 console.log("Response:",resultsForConversation);
-                resolve({success: true, conversations: resultsForConversation['RowDataPacket']['IdOfPersonWhoSentLastMessage']});
+                const ids = resultsForConversation.map(result => result.IdOfPersonWhoSentLastMessage);
+                console.log(ids);
+                resolve({success: true, conversations: resultsForConversation});
 
                 // const getNameOfOtherUser = 'SELECT first_name from first_name where id = ?'
                 // pool.query(getNameOfOtherUser, [])
