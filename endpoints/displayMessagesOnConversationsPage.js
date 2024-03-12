@@ -86,9 +86,11 @@ export const displayConversations = async (token) => {
         const conversationsWithNames = await Promise.all(resultsForConversation.map(async conversation => {
             if (conversation.originalSenderID === requestID) {
                 conversation.receiver_name = await getNameByID(conversation.originalRecieverID);
+                conversation.requesterID = requestID;
             }
             if (conversation.originalRecieverID === requestID) {
                 conversation.receiver_name = await getNameByID(conversation.originalSenderID);
+                conversation.requesterID = requestID;
             }
             return conversation;
         }));
