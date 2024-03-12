@@ -25,10 +25,11 @@ export const displayConversations = (token) => {
             }
         });
 
-        for(var i = 0; i < convos.length; i++){
-            console.log(convos[i]);
-        }
-        resolve({success:true})
+        // for(var i = 0; i < convos.length; i++){
+        //     console.log(convos[i]);
+        // }
+        console.log(convos);
+        // resolve({success:true})
 
     });
 };
