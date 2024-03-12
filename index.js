@@ -254,8 +254,8 @@ app.post('/getConversations', async (req, res) => {
   try {
     const typeOfVerification = req.body['type'];
     let verifyUser;
-    const id1 = req.body['id1'];
-    const id2 = req.body['id2'];
+    // const id1 = req.body['id1'];
+    // const id2 = req.body['id2'];
 
     console.log("You just sent me:",typeOfVerification);
     if(typeOfVerification === 'access'){
@@ -267,7 +267,7 @@ app.post('/getConversations', async (req, res) => {
     }
     if(verifyUser['success'] === true){
       const tokenToUse = req.body['tokenFromUser'];
-      const feed = await displayConversations(tokenToUse, id1, id2);
+      const feed = await displayConversations(tokenToUse);
       res.json({results: feed})
     }else{
       // this is where we can ask the client for their refresh token
