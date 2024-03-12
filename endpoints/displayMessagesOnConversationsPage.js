@@ -2,6 +2,20 @@ import pool from '../db/connectionPool.js';
 import { authenticateUsersJWT } from '../jwt/verifyJwt.js';
 import { jwtDecode } from "jwt-decode";
 
+function getNameByID(id) {
+    return new Promise((resolve, reject) => {
+        const query = 'SELECT first_name FROM info_to_display WHERE id = ?';
+        pool.query(query, [id], (queryError, nameResults) => {
+            if (queryError) {
+                reject(queryError);
+            } else {
+                resolve(nameResults.length > 0 ? nameResults[0].first_name : "");
+            }
+        });
+    });
+}
+
+
 export const displayConversations = (token) => {
     return new Promise((resolve, reject) => {
         
@@ -11,7 +25,6 @@ export const displayConversations = (token) => {
         console.log('the decoded token:', decodedToken);
         const requestID = decodedToken['id'];
         console.log('sender id:', requestID);
-        var convos;
 
         const getConversations = 'SELECT mostRecentMessage, IdOfPersonWhoSentLastMessage, hasOpenedMessage, originalSenderID, originalRecieverID FROM all_messages_interface WHERE originalSenderID = ? OR originalRecieverID = ?';
         pool.query(getConversations, [requestID, requestID], (queryErr, resultsForConversation) => {
@@ -19,18 +32,20 @@ export const displayConversations = (token) => {
                 console.error('Error executing first query: ', queryErr);
                 reject(queryErr)
             } else if (resultsForConversation.length !== 0) { // it exists!
-                convos = resultsForConversation;
+                // resolve({success: true, conversations: resultsForConversation});
+                resultsForConversation.forEach(conversation => {
+                    // Check if either originalSenderID or originalReceiverID equals 127
+                    if (conversation.originalSenderID === requestID) {
+                        conversation.receiver_name = getNameByID(conversation.originalRecieverID);
+                    }
+                    if (conversation.originalRecieverID === requestID) {
+                        conversation.receiver_name = getNameByID(conversation.originalSenderID);
+                    }
+                });
             } else {
                 resolve({ success: false, message: "You have no messages yet." });
             }
         });
-
-        // for(var i = 0; i < convos.length; i++){
-        //     console.log(convos[i]);
-        // }
-        console.log(convos);
-        resolve({success:true});
-
     });
 };
 
