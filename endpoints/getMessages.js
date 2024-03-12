@@ -12,7 +12,7 @@ export const getMessages = (token, senderID, recID) => {
         const decodedToken = jwtDecode(token);
         // console.log('the decoded token:', decodedToken);
         const requestID = decodedToken['id'];
-        console.log('sender id:', requestID);
+        console.log('true sender id from JWT:', requestID);
         console.log("senderID:",senderID);
         console.log("rec id:",recID);
         
