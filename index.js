@@ -28,7 +28,13 @@ io.on('connection', (socket) => {
     console.log('user disconnected');
   });
 });
- 
+
+// listen on sockets
+server.listen(3000, () => {
+  console.log('Socket.io server listening on *:3000');
+}); 
+
+
 app.post('/', async (req, res) => {
   try {
     const users = await getUsers(req);
