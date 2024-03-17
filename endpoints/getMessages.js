@@ -24,15 +24,24 @@ export const getMessages = (token, senderID, recID) => {
                 console.error('Error executing first query: ', queryErr);
                 reject(queryErr)
             } else if (queryCheckResults.length !== 0) { // it exists!
+                // this is where we should mark is as read!
                 const convoID = queryCheckResults[0].convoID;
-                const getMessagesQuery = 'SELECT messageID,messageContent,senderID,timestamp FROM messages WHERE convoID = ? ORDER BY timestamp DESC'
-                pool.query(getMessagesQuery, [convoID], (queryError, results) => {
-                    if(queryError){
-                        console.error('Error executing second query: ', queryError);
-                        reject(queryError)
-                    }
-                    else{
-                        resolve({success: true, messages: results, requestersID: requestID});
+                const updateQuery = 'UPDATE all_messages_interface SET hasOpenedMessage = 1 WHERE id = ?';
+                pool.query(updateQuery, [convoID], (updateQueryError, success) => {
+                    if(updateQueryError){
+                        console.error('Error executing update query: ', updateQueryError);
+                        reject(updateQueryError)
+                    }else{
+                        const getMessagesQuery = 'SELECT messageID,messageContent,senderID,timestamp FROM messages WHERE convoID = ? ORDER BY timestamp DESC'
+                        pool.query(getMessagesQuery, [convoID], (queryError, results) => {
+                            if(queryError){
+                                console.error('Error executing second query: ', queryError);
+                                reject(queryError)
+                            }
+                            else{
+                                resolve({success: true, messages: results, requestersID: requestID});
+                            }
+                        })
                     }
                 })
             } else {
