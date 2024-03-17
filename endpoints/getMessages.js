@@ -26,7 +26,7 @@ export const getMessages = (token, senderID, recID) => {
             } else if (queryCheckResults.length !== 0) { // it exists!
                 // this is where we should mark is as read!
                 const convoID = queryCheckResults[0].convoID;
-                const updateQuery = 'UPDATE all_messages_interface SET hasOpenedMessage = 1 WHERE id = ?';
+                const updateQuery = 'UPDATE all_messages_interface SET hasOpenedMessage = 1 WHERE convoID = ?';
                 pool.query(updateQuery, [convoID], (updateQueryError, success) => {
                     if(updateQueryError){
                         console.error('Error executing update query: ', updateQueryError);
