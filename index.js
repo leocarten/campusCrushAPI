@@ -1,4 +1,6 @@
 import express from 'express';
+import http from 'http';
+import { Server } from "socket.io";
 import { getUsers } from './endpoints/getAllUsers.js'
 import { loginUser } from './endpoints/loginUser.js'
 import { createUser } from './endpoints/createUser.js';
@@ -11,13 +13,22 @@ import { sendAdditionalMessages } from './endpoints/sendAdditionalMessages.js';
 import { getMessages } from './endpoints/getMessages.js';
 import { displayConversations } from './endpoints/displayMessagesOnConversationsPage.js';
 
+
+// Global variables
 const app = express();
 app.listen(5001,() => console.log("Api is running on port 5001"));
-
-
 app.use(express.json());
+const server = http.createServer(app);
+const io = new Server(server);
 
-
+// socket testing
+io.on('connection', (socket) => {
+  console.log('a user connected!');
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
+});
+ 
 app.post('/', async (req, res) => {
   try {
     const users = await getUsers(req);
@@ -27,7 +38,6 @@ app.post('/', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
-
 
 app.post('/login', async (req, res) => {
     try {
