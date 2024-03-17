@@ -21,18 +21,27 @@ app.use(express.json());
 const server = http.createServer(app);
 const io = new Server(server);
 
-// socket testing
-io.on('connection', (socket) => {
-  console.log('a user connected!');
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
-  });
-});
-
 // listen on sockets
 server.listen(3000, () => {
   console.log('Socket.io server listening on *:3000');
 }); 
+
+// socket testing
+app.get('/socket', async (req, res) => {
+  try {
+    io.on('connection', (socket) => {
+      console.log('a user connected!');
+      socket.on('disconnect', () => {
+        console.log('user disconnected');
+      });
+    });
+    res.json({message: "hello from socket."});
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 
 
 app.post('/', async (req, res) => {
