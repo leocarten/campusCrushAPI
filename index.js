@@ -325,7 +325,7 @@ app.post('/testSocket', async (req, res) => {
     }
     if(verifyUser['success'] === true){
       const tokenToUse = req.body['tokenFromUser'];
-      const feed = await socketTesting(tokenToUse);
+      const feed = await socketTesting(tokenToUse, io);
       res.json({results: feed})
     }else{
       // this is where we can ask the client for their refresh token
