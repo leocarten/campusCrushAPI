@@ -12,30 +12,30 @@ export const socketTesting = (token) => {
         const id = decodedToken['id'];
         console.log('id:', id);
 
-        const server = http.createServer();
-        const io = new Server(server);
+        // const server = http.createServer();
+        // const io = new Server(server);
 
-        const PORT = 3001;
+        // const PORT = 3001;
 
-        server.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
-        });
+        // server.listen(PORT, () => {
+        //     console.log(`Server running on port ${PORT}`);
+        // });
 
-        io.on('connection', (socket) => {
-            console.log('A user connected');
+        // io.on('connection', (socket) => {
+        //     console.log('A user connected');
 
-            // Handle messages
-            socket.on('message', (data) => {
-                console.log('Message received:', data);
-                // Broadcast the message to all connected clients
-                io.emit('message', data);
-            });
+        //     // Handle messages
+        //     socket.on('message', (data) => {
+        //         console.log('Message received:', data);
+        //         // Broadcast the message to all connected clients
+        //         io.emit('message', data);
+        //     });
 
-            // Handle disconnections
-            socket.on('disconnect', () => {
-                console.log('A user disconnected');
-            });
-        });
+        //     // Handle disconnections
+        //     socket.on('disconnect', () => {
+        //         console.log('A user disconnected');
+        //     });
+        // });
 
         resolve("socket");
     });
