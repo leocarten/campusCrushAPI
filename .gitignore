@@ -1,3 +1,4 @@
 .env
 otherQuery.txt
 workingQueries.txt
+node_modules/
