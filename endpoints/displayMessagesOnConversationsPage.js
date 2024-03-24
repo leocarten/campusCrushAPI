@@ -16,11 +16,24 @@ function getNameByID(id) {
     });
 }
 
+function getConvoIdFromIds(senderId, recId) {
+    return new Promise((resolve, reject) => {
+        const query = 'SELECT convoID FROM all_messages_interface WHERE originalSenderID = ? AND originalRecieverID = ?';
+        pool.query(query, [senderId, recId], (queryError, nameResults) => {
+            if (queryError) {
+                reject(queryError);
+            } else {
+                resolve(nameResults.length > 0 ? nameResults[0].first_name : "");
+            }
+        });
+    });
+}
+
 export const displayConversations = async (token) => {
     try {
         const decodedToken = jwtDecode(token);
         const requestID = decodedToken['id'];
-        const getConversations = 'SELECT convoID, mostRecentMessage, IdOfPersonWhoSentLastMessage, hasOpenedMessage, originalSenderID, originalRecieverID FROM all_messages_interface WHERE originalSenderID = ? OR originalRecieverID = ?';
+        const getConversations = 'SELECT mostRecentMessage, IdOfPersonWhoSentLastMessage, hasOpenedMessage, originalSenderID, originalRecieverID FROM all_messages_interface WHERE originalSenderID = ? OR originalRecieverID = ?';
 
         const resultsForConversation = await new Promise((resolve, reject) => {
             pool.query(getConversations, [requestID, requestID], (queryErr, results) => {
@@ -36,10 +49,12 @@ export const displayConversations = async (token) => {
         const conversationsWithNames = await Promise.all(resultsForConversation.map(async conversation => {
             if (conversation.originalSenderID === requestID) {
                 conversation.receiver_name = await getNameByID(conversation.originalRecieverID);
+                conversation.convoID = await getConvoIdFromIds(requestID, originalRecieverID);
                 conversation.requesterID = requestID;
             }
-            if (conversation.originalRecieverID === requestID) {
+            else if (conversation.originalRecieverID === requestID) {
                 conversation.receiver_name = await getNameByID(conversation.originalSenderID);
+                conversation.convoID = await getConvoIdFromIds(originalRecieverID, requestID);
                 conversation.requesterID = requestID;
             }
             return conversation;
