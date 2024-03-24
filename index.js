@@ -24,7 +24,7 @@ app.use(express.json());
 
 // Create a separate HTTP server for WebSocket
 app.use(cors());
-const server = http.createServer(app);
+const server = http.createServer();
 const io = new Server(server, {
   cors: {
     origin: "*",
