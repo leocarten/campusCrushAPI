@@ -15,46 +15,31 @@ import { displayConversations } from './endpoints/displayMessagesOnConversations
 import { socketTesting } from './endpoints/testSocket.js';
 import cors from 'cors';
 
-
-// Global variables
 const app = express();
-app.listen(5001,() => console.log("Api is running on port 5001"));
+const server = http.createServer(app); // Pass the express app to createServer
+
+// Express setup
+app.listen(5001, () => console.log("API is running on port 5001"));
 app.use(express.json());
-
-
-// Create a separate HTTP server for WebSocket
 app.use(cors());
-const server = http.createServer();
+
+// WebSocket server setup
 const io = new Server(server, {
   cors: {
     origin: "*",
-    methods: ["GET","POST"]
+    methods: ["GET", "POST"]
   }
 });
 
-// WebSocket server setup
 io.on('connection', (socket) => {
-
   console.log('A client connected');
   console.log(socket.id);
-
-  // Handle incoming messages from clients
-  socket.on('message', (data) => {
-      console.log('Received message from client:', data);
-      // Add your logic to handle the received message
-  });
-
-  // Handle disconnection
-  socket.on('disconnect', () => {
-      console.log('A client disconnected');
-  });
 });
 
 const WS_PORT = 5002; // WebSocket server port
 server.listen(WS_PORT, () => {
-    console.log(`WebSocket server running on port ${WS_PORT}`);
+  console.log(`WebSocket server running on port ${WS_PORT}`);
 });
-
 
 
 app.post('/', async (req, res) => {
