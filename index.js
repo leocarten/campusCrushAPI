@@ -14,6 +14,7 @@ import { getMessages } from './endpoints/getMessages.js';
 import { displayConversations } from './endpoints/displayMessagesOnConversationsPage.js';
 import { socketTesting } from './endpoints/testSocket.js';
 import cors from 'cors';
+import { authenticateUserInSocket } from './sockets/authenticateUserInSocket.js';
 
 // ports
 const WS_PORT = 5002; // WebSocket server port
@@ -40,18 +41,45 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
   console.log('A client connected');
   console.log(socket.id);
-  socket.on("send_message", (data) => {
-    // data should be: {id1: id1, id2: id2, jwt: jwt, convoID: convoID, messageContent: messageContent}
-    // FIRST, we are actually going to wait to athorize the JWT
-    // remember, the id field of the JWT is the sender ID, the other ID is the receiver ID
-    // based on the logic from above, we can update the tables accordingly (messages table and interface message table)
-    // lastly, we can emit the message to everyone who is also in the socket (based on the convoID number)
+  socket.on("send_message", async (data) => {
+    // data should be: {id1: id1, id2: id2, jwt: jwt, convoID: convoID, messageContent: messageContent, typeOfVerification: typeOfVerification}
+    const jwt = data.jwt;
+    const id1 = data.id1
+    const id2 = data.id2;
+    const convoID = data.convoID;
+    const messageContent = data.messageContent;
+    const typeOfVerification = data.typeOfVerification;
 
+
+    // FIRST, we are actually going to wait to athorize the JWT
+    try {
+      let verifyUser;
+      if(typeOfVerification === 'access'){
+        console.log("Reached access");
+        verifyUser = await authenticateUserInSocket(jwt,true);
+      }else{
+        console.log("Else access")
+        verifyUser = await authenticateUserInSocket(jwt,false);
+      }
+      if(verifyUser['success'] === true){
+        // const sendMessage = await sendAdditionalMessages(jwt, messageContent, id1, id2);
+        // we can emit the message to everyone who is also in the socket (based on the convoID number)
+        res.json({message: `Now we just need to emit the message to the socket based on: ${convoID}`})
+        // res.json({results: sendMessage})
+      }else{
+        // this is where we can ask the client for their refresh token
+        res.json({message: "We were unable to proceed in socket."})
+      }
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Internal Server Error getMessages route.');
+    }
 
 
     console.log('from client: ',data.message);
   });
 });
+
 
 // LISTEN FOR SOCKET CONNECTIONS
 server.listen(WS_PORT, () => {
