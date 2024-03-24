@@ -35,6 +35,17 @@ const io = new Server(server, {
   }
 });
 
+
+// SOCKET STUFF BELOW
+io.on('connection', (socket) => {
+  console.log('A client connected');
+  console.log(socket.id);
+  socket.on("send_message", (data) => {
+    console.log('from client: ',data);
+  });
+});
+
+// LISTEN FOR SOCKET CONNECTIONS
 server.listen(WS_PORT, () => {
   console.log(`WebSocket server running on port ${WS_PORT}`);
 });
@@ -50,6 +61,7 @@ app.post('/', async (req, res) => {
   }
 });
 
+
 app.post('/login', async (req, res) => {
     try {
       const user = await loginUser(req);
@@ -59,6 +71,7 @@ app.post('/login', async (req, res) => {
       res.status(500).send('Internal Server Error from login route.');
     }
 });
+
 
 app.post('/createUser', async (req, res) => {
   try {
@@ -289,34 +302,6 @@ app.post('/getConversations', async (req, res) => {
     if(verifyUser['success'] === true){
       const tokenToUse = req.body['tokenFromUser'];
       const feed = await displayConversations(tokenToUse);
-      res.json({results: feed})
-    }else{
-      // this is where we can ask the client for their refresh token
-      res.json({message: "We were unable to proceed in getMessages route."})
-    }
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Internal Server Error getMessages route.');
-  }
-});
-
-
-app.post('/testSocket', async (req, res) => {
-  try {
-    const typeOfVerification = req.body['type'];
-    let verifyUser;
-
-    console.log("You just sent me:",typeOfVerification);
-    if(typeOfVerification === 'access'){
-      console.log("Reached access");
-      verifyUser = await authenticateUser(req,true);
-    }else{
-      console.log("Else access")
-      verifyUser = await authenticateUser(req,false);
-    }
-    if(verifyUser['success'] === true){
-      const tokenToUse = req.body['tokenFromUser'];
-      const feed = await socketTesting(tokenToUse, io);
       res.json({results: feed})
     }else{
       // this is where we can ask the client for their refresh token
