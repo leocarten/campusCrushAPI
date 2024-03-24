@@ -13,6 +13,7 @@ import { sendAdditionalMessages } from './endpoints/sendAdditionalMessages.js';
 import { getMessages } from './endpoints/getMessages.js';
 import { displayConversations } from './endpoints/displayMessagesOnConversationsPage.js';
 import { socketTesting } from './endpoints/testSocket.js';
+import cors from 'cors';
 
 
 // Global variables
@@ -22,8 +23,14 @@ app.use(express.json());
 
 
 // Create a separate HTTP server for WebSocket
-const server = http.createServer();
-const io = new Server(server);
+app.use(cors());
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET","POST"]
+  }
+});
 
 // WebSocket server setup
 io.on('connection', (socket) => {
