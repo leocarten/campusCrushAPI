@@ -15,11 +15,15 @@ import { displayConversations } from './endpoints/displayMessagesOnConversations
 import { socketTesting } from './endpoints/testSocket.js';
 import cors from 'cors';
 
+// ports
+const WS_PORT = 5002; // WebSocket server port
+const API_PORT = 5001;
+
 const app = express();
 const server = http.createServer(app); // Pass the express app to createServer
 
 // Express setup
-app.listen(5002, () => console.log("API is running on port 5001"));
+app.listen(API_PORT, () => console.log(`WebSocket server running on port ${API_PORT}`));
 app.use(express.json());
 app.use(cors());
 
@@ -36,7 +40,6 @@ io.on('connection', (socket) => {
   console.log(socket.id);
 });
 
-const WS_PORT = 5001; // WebSocket server port
 server.listen(WS_PORT, () => {
   console.log(`WebSocket server running on port ${WS_PORT}`);
 });
