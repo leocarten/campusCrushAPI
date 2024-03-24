@@ -50,7 +50,6 @@ io.on('connection', (socket) => {
     const messageContent = data.messageContent;
     const typeOfVerification = data.typeOfVerification;
 
-
     // FIRST, we are actually going to wait to athorize the JWT
     try {
       let verifyUser;
@@ -64,15 +63,15 @@ io.on('connection', (socket) => {
       if(verifyUser['success'] === true){
         // const sendMessage = await sendAdditionalMessages(jwt, messageContent, id1, id2);
         // we can emit the message to everyone who is also in the socket (based on the convoID number)
-        res.json({message: `Now we just need to emit the message to the socket based on: ${convoID}`})
+        socket.emit({message: `Now we just need to emit the message to the socket based on: ${convoID}`})
         // res.json({results: sendMessage})
       }else{
         // this is where we can ask the client for their refresh token
-        res.json({message: "We were unable to proceed in socket."})
+        socket.emit({message: "We were unable to proceed in socket."})
       }
     } catch (err) {
       console.error(err.message);
-      res.status(500).send('Internal Server Error getMessages route.');
+      socket.emit('Internal Server Error in socket.');
     }
 
 
