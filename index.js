@@ -50,7 +50,7 @@ io.on('connection', (socket) => {
   });
 });
 
-const WS_PORT = 5001; // WebSocket server port
+const WS_PORT = 5002; // WebSocket server port
 server.listen(WS_PORT, () => {
     console.log(`WebSocket server running on port ${WS_PORT}`);
 });
