@@ -54,7 +54,7 @@ export const displayConversations = async (token) => {
             }
             if (conversation.originalRecieverID === requestID) {
                 conversation.receiver_name = await getNameByID(conversation.originalSenderID);
-                conversation.convoID = await getConvoIdFromIds(conversation.originalRecieverID, requestID);
+                conversation.convoID = await getConvoIdFromIds(conversation.originalSenderID, requestID);
                 conversation.requesterID = requestID;
             }
             return conversation;
