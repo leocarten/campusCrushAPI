@@ -40,45 +40,44 @@ const io = new Server(server, {
 // SOCKET STUFF BELOW
 io.on('connection', (socket) => {
   console.log('A client connected');
-  console.log(socket.id);
+
+  socket.on("join_conversation", (convoID) => {
+      // Join the room corresponding to the conversation ID
+      socket.join(convoID);
+      console.log(`Socket ${socket.id} joined conversation room ${convoID}`);
+  });
+
   socket.on("send_message", async (data) => {
-    // data should be: {id1: id1, id2: id2, jwt: jwt, convoID: convoID, messageContent: messageContent, typeOfVerification: typeOfVerification}
-    const jwt = data.jwt;
-    const id1 = data.id1
-    const id2 = data.id2;
-    const convoID = data.convoID;
-    const messageContent = data.messageContent;
-    const typeOfVerification = data.typeOfVerification;
+      const jwt = data.jwt;
+      const id1 = data.id1;
+      const id2 = data.id2;
+      const convoID = data.convoID;
+      const messageContent = data.messageContent;
+      const typeOfVerification = data.typeOfVerification;
 
-    // FIRST, we are actually going to wait to athorize the JWT
-    try {
-      let verifyUser;
-      if(typeOfVerification === 'access'){
-        console.log("Reached access");
-        verifyUser = await authenticateUserInSocket(jwt,true);
-      }else{
-        console.log("Else access")
-        verifyUser = await authenticateUserInSocket(jwt,false);
+      try {
+          let verifyUser;
+          if (typeOfVerification === 'access') {
+              verifyUser = await authenticateUserInSocket(jwt, true);
+          } else {
+              verifyUser = await authenticateUserInSocket(jwt, false);
+          }
+
+          if (verifyUser['success'] === true) {
+              // Emit the message to clients in the conversation room
+              io.to(convoID).emit('new_message', { message: messageContent });
+              // await sendAdditionalMessages(jwt, messageContent, id1, id2);
+          } else {
+              // Emit an error message to the client
+              socket.emit('authentication_error', { message: "Authentication failed." });
+          }
+      } catch (err) {
+          console.error(err.message);
+          socket.emit('server_error', { message: 'Internal Server Error' });
       }
-      if(verifyUser['success'] === true){
-        // const sendMessage = await sendAdditionalMessages(jwt, messageContent, id1, id2);
-        // we can emit the message to everyone who is also in the socket (based on the convoID number)
-        console.log("Successful yay!!")
-        socket.emit('new_message', { message: messageContent });
-        // res.json({results: sendMessage})
-      }else{
-        // this is where we can ask the client for their refresh token
-        socket.emit('authentication_error', { message: "Authentication failed." });
-      }
-    } catch (err) {
-      console.error(err.message);
-      socket.emit('server_error', { message: 'Internal Server Error' });
-    }
-
-
-    console.log('from client: ',messageContent);
   });
 });
+
 
 
 // LISTEN FOR SOCKET CONNECTIONS
