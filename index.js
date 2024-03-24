@@ -34,18 +34,20 @@ const io = new Server(server, {
 
 // WebSocket server setup
 io.on('connection', (socket) => {
-    console.log('A client connected');
 
-    // Handle incoming messages from clients
-    socket.on('message', (data) => {
-        console.log('Received message from client:', data);
-        // Add your logic to handle the received message
-    });
+  console.log('A client connected');
+  console.log(socket.id);
 
-    // Handle disconnection
-    socket.on('disconnect', () => {
-        console.log('A client disconnected');
-    });
+  // Handle incoming messages from clients
+  socket.on('message', (data) => {
+      console.log('Received message from client:', data);
+      // Add your logic to handle the received message
+  });
+
+  // Handle disconnection
+  socket.on('disconnect', () => {
+      console.log('A client disconnected');
+  });
 });
 
 const WS_PORT = 3001; // WebSocket server port
