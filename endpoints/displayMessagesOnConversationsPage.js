@@ -23,7 +23,7 @@ function getConvoIdFromIds(senderId, recId) {
             if (queryError) {
                 reject(queryError);
             } else {
-                resolve(nameResults.length > 0 ? nameResults[0].first_name : "");
+                resolve(nameResults.length > 0 ? nameResults[0].convoID : "");
             }
         });
     });
@@ -52,7 +52,7 @@ export const displayConversations = async (token) => {
                 conversation.convoID = await getConvoIdFromIds(requestID, conversation.originalRecieverID);
                 conversation.requesterID = requestID;
             }
-            else if (conversation.originalRecieverID === requestID) {
+            if (conversation.originalRecieverID === requestID) {
                 conversation.receiver_name = await getNameByID(conversation.originalSenderID);
                 conversation.convoID = await getConvoIdFromIds(conversation.originalRecieverID, requestID);
                 conversation.requesterID = requestID;
