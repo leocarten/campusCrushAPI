@@ -12,20 +12,9 @@ export const socketTesting = (token, io) => {
         console.log('id:', id);
 
         io.on('connection', (socket) => {
-            console.log('A user connected');
-
-            // Handle messages
-            socket.on('message', (data) => {
-                console.log('Message received:', data);
-                // Broadcast the message to all connected clients
-                io.emit('message', data);
-            });
-
-            // Handle disconnections
-            socket.on('disconnect', () => {
-                console.log('A user disconnected');
-            });
-        });
+            console.log('A client connected');
+            console.log(socket.id);
+          });
 
         resolve("socket");
     });

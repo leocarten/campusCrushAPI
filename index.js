@@ -23,7 +23,7 @@ const app = express();
 const server = http.createServer(app); // Pass the express app to createServer
 
 // Express setup
-app.listen(API_PORT, () => console.log(`WebSocket server running on port ${API_PORT}`));
+app.listen(API_PORT, () => console.log(`API server running on port ${API_PORT}`));
 app.use(express.json());
 app.use(cors());
 
@@ -33,11 +33,6 @@ const io = new Server(server, {
     origin: "*",
     methods: ["GET", "POST"]
   }
-});
-
-io.on('connection', (socket) => {
-  console.log('A client connected');
-  console.log(socket.id);
 });
 
 server.listen(WS_PORT, () => {
