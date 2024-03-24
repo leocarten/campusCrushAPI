@@ -41,7 +41,7 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
   console.log('A client connected');
   console.log(socket.id);
-  socket.on("send_message", async (data, res) => {
+  socket.on("send_message", async (data) => {
     // data should be: {id1: id1, id2: id2, jwt: jwt, convoID: convoID, messageContent: messageContent, typeOfVerification: typeOfVerification}
     const jwt = data.jwt;
     const id1 = data.id1
@@ -63,6 +63,7 @@ io.on('connection', (socket) => {
       if(verifyUser['success'] === true){
         // const sendMessage = await sendAdditionalMessages(jwt, messageContent, id1, id2);
         // we can emit the message to everyone who is also in the socket (based on the convoID number)
+        console.log("Successful yay!!")
         socket.emit({message: `Now we just need to emit the message to the socket based on: ${convoID}`})
         // res.json({results: sendMessage})
       }else{
@@ -75,7 +76,7 @@ io.on('connection', (socket) => {
     }
 
 
-    console.log('from client: ',data.message);
+    console.log('from client: ',messageContent);
   });
 });
 
