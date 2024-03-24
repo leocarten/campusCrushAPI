@@ -41,7 +41,15 @@ io.on('connection', (socket) => {
   console.log('A client connected');
   console.log(socket.id);
   socket.on("send_message", (data) => {
-    console.log('from client: ',data);
+    // data should be: {id1: id1, id2: id2, jwt: jwt, convoID: convoID, messageContent: messageContent}
+    // FIRST, we are actually going to wait to athorize the JWT
+    // remember, the id field of the JWT is the sender ID, the other ID is the receiver ID
+    // based on the logic from above, we can update the tables accordingly (messages table and interface message table)
+    // lastly, we can emit the message to everyone who is also in the socket (based on the convoID number)
+
+
+
+    console.log('from client: ',data.message);
   });
 });
 
