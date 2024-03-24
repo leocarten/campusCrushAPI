@@ -20,7 +20,7 @@ export const displayConversations = async (token) => {
     try {
         const decodedToken = jwtDecode(token);
         const requestID = decodedToken['id'];
-        const getConversations = 'SELECT mostRecentMessage, IdOfPersonWhoSentLastMessage, hasOpenedMessage, originalSenderID, originalRecieverID FROM all_messages_interface WHERE originalSenderID = ? OR originalRecieverID = ?';
+        const getConversations = 'SELECT convoID, mostRecentMessage, IdOfPersonWhoSentLastMessage, hasOpenedMessage, originalSenderID, originalRecieverID FROM all_messages_interface WHERE originalSenderID = ? OR originalRecieverID = ?';
 
         const resultsForConversation = await new Promise((resolve, reject) => {
             pool.query(getConversations, [requestID, requestID], (queryErr, results) => {
