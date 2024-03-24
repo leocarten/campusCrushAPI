@@ -41,7 +41,7 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
   console.log('A client connected');
   console.log(socket.id);
-  socket.on("send_message", async (data) => {
+  socket.on("send_message", async (data, res) => {
     // data should be: {id1: id1, id2: id2, jwt: jwt, convoID: convoID, messageContent: messageContent, typeOfVerification: typeOfVerification}
     const jwt = data.jwt;
     const id1 = data.id1
