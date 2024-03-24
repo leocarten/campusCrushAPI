@@ -64,15 +64,15 @@ io.on('connection', (socket) => {
         // const sendMessage = await sendAdditionalMessages(jwt, messageContent, id1, id2);
         // we can emit the message to everyone who is also in the socket (based on the convoID number)
         console.log("Successful yay!!")
-        socket.emit({message: `Now we just need to emit the message to the socket based on: ${convoID}`})
+        socket.emit('new_message', { message: messageContent });
         // res.json({results: sendMessage})
       }else{
         // this is where we can ask the client for their refresh token
-        socket.emit({message: "We were unable to proceed in socket."})
+        socket.emit('authentication_error', { message: "Authentication failed." });
       }
     } catch (err) {
       console.error(err.message);
-      socket.emit('Internal Server Error in socket.');
+      socket.emit('server_error', { message: 'Internal Server Error' });
     }
 
 
