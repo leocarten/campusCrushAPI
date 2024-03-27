@@ -44,7 +44,7 @@ export const sendAdditionalMessages = (token, message, id1, id2) => {
                 const convoID = queryCheckResults[0].convoID;
                 const insertIntoMessagesQuery = 'INSERT INTO messages (convoID, messageContent, senderID) VALUES (?, ?, ?)';
                 console.log('true sender:', trueSender);
-                const values = [convoID, message, trueSender];
+                const values = [convoID, message, senderID];
                 pool.query(insertIntoMessagesQuery, values, (queryErr, result) => {
                     if (queryErr) {
                         console.error('Error executing second query:', queryErr);
@@ -75,7 +75,7 @@ export const sendAdditionalMessages = (token, message, id1, id2) => {
                         const convoID = queryCheckResults[0].convoID;
                         const insertIntoMessagesQuery = 'INSERT INTO messages (convoID, messageContent, senderID) VALUES (?, ?, ?)';
                         console.log('true sender:', trueSender);
-                        const values = [convoID, message, trueSender];
+                        const values = [convoID, message, senderID];
                         pool.query(insertIntoMessagesQuery, values, (queryErr, result) => {
                             if (queryErr) {
                                 console.error('Error executing second query:', queryErr);
