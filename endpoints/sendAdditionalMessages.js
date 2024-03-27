@@ -62,7 +62,11 @@ export const sendAdditionalMessages = (token, message, id1, id2) => {
                 });
             } else {
                 const getConvoIDv2 = 'SELECT convoID FROM all_messages_interface WHERE originalSenderID = ? AND originalRecieverID = ?';
-                pool.query(getConvoIDv2, [trueReciever, trueSender], (queryErr, queryCheckResults) => {
+                let temp;
+                temp = trueReciever;
+                trueReciever = trueSender;
+                trueSender = temp;
+                pool.query(getConvoIDv2, [trueSender, trueReciever], (queryErr, queryCheckResults) => {
                     if (queryErr) {
                         console.error('Error executing first query: ', queryErr);
                         reject(queryErr);
