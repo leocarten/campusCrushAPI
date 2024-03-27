@@ -65,22 +65,17 @@ export const sendAdditionalMessages = (token, message, id1, id2) => {
                 });
             } else {
                 const getConvoIDv2 = 'SELECT convoID FROM all_messages_interface WHERE originalSenderID = ? AND originalRecieverID = ?';
-                var temp = 0;
-                temp = trueReciever;
-                trueReciever = trueSender;
-                trueSender = temp;
-                console.log("Made it to temp var");
-                pool.query(getConvoIDv2, [trueSender, trueReciever], (queryErr, queryCheckResults) => {
+                pool.query(getConvoIDv2, [trueReciever, trueSender], (queryErr, queryCheckResults) => {
                     if (queryErr) {
                         console.error('Error executing first query: ', queryErr);
                         reject(queryErr);
                     } else if (queryCheckResults.length == 1) { // it exists for 1 conversation
-                        console.log("Else if temp");
+                        console.log("IT EXISTS HERE!");
                         console.log("the results for the query:", queryCheckResults)
                         const convoID = queryCheckResults[0].convoID;
                         const insertIntoMessagesQuery = 'INSERT INTO messages (convoID, messageContent, senderID) VALUES (?, ?, ?)';
-                        console.log('true sender:', trueReciever);
-                        const values = [convoID, message, trueReciever];
+                        console.log('true sender:', trueSender);
+                        const values = [convoID, message, trueSender];
                         pool.query(insertIntoMessagesQuery, values, (queryErr, result) => {
                             if (queryErr) {
                                 console.error('Error executing second query:', queryErr);
@@ -99,6 +94,9 @@ export const sendAdditionalMessages = (token, message, id1, id2) => {
                                 })
                             }
                         });
+                    } else {
+                        const getConvoIDv2 = 'SELECT convoID FROM all_messages_interface WHERE originalSenderID = ? AND originalRecieverID = ?';
+                        
                     }
                 });
             }
