@@ -33,6 +33,7 @@ export const sendAdditionalMessages = (token, message, id1, id2) => {
                     console.error('Error executing first query: ', queryErr);
                     reject(queryErr);
                 } else if (queryCheckResults.length !== 0) { // it exists!
+                    console.log("the results for the query:",queryCheckResults)
                     const convoID = queryCheckResults[0].convoID;
                     const insertIntoMessagesQuery = 'INSERT INTO messages (convoID, messageContent, senderID) VALUES (?, ?, ?)';
                     console.log('true sender:',trueSender);
