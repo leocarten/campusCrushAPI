@@ -264,8 +264,8 @@ app.post('/sendAdditionalMessage', async (req, res) => {
     const message = req.body['message'];
     const id1 = req.body['id1'];
     const id2 = req.body['id2'];
-    console.log('in route, id1:',id1);
-    console.log('in route, id2:',id2);
+    // console.log('in route, id1:',id1);
+    // console.log('in route, id2:',id2);
     let verifyUser;
     console.log("You just sent me:",typeOfVerification);
     if(typeOfVerification === 'access'){

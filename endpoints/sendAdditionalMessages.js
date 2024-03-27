@@ -12,7 +12,7 @@ export const sendAdditionalMessages = (token, message, id1, id2) => {
         var trueSender = 0;
         var trueReciever = 0;
         const decodedToken = jwtDecode(token);
-        console.log('the decoded token:', decodedToken);
+        // console.log('the decoded token:', decodedToken);
         const senderID = decodedToken['id'];
         console.log('sender id:', senderID);
 
@@ -30,6 +30,8 @@ export const sendAdditionalMessages = (token, message, id1, id2) => {
         } else {
             resolve({ success: false, message: "Error with IDs." });
         }
+
+        console.log("The sender of this request was id:",senderID);
         
         const getConvoID = 'SELECT convoID FROM all_messages_interface WHERE originalSenderID = ? AND originalRecieverID = ?';
         pool.query(getConvoID, [trueSender, trueReciever], (queryErr, queryCheckResults) => {
@@ -37,6 +39,7 @@ export const sendAdditionalMessages = (token, message, id1, id2) => {
                 console.error('Error executing first query: ', queryErr);
                 reject(queryErr);
             } else if (queryCheckResults.length == 1) { // it exists for 1 conversation
+                console.log("IT EXISTS HERE!");
                 console.log("the results for the query:", queryCheckResults)
                 const convoID = queryCheckResults[0].convoID;
                 const insertIntoMessagesQuery = 'INSERT INTO messages (convoID, messageContent, senderID) VALUES (?, ?, ?)';
@@ -62,15 +65,17 @@ export const sendAdditionalMessages = (token, message, id1, id2) => {
                 });
             } else {
                 const getConvoIDv2 = 'SELECT convoID FROM all_messages_interface WHERE originalSenderID = ? AND originalRecieverID = ?';
-                let temp;
+                var temp = 0;
                 temp = trueReciever;
                 trueReciever = trueSender;
                 trueSender = temp;
+                console.log("Made it to temp var");
                 pool.query(getConvoIDv2, [trueSender, trueReciever], (queryErr, queryCheckResults) => {
                     if (queryErr) {
                         console.error('Error executing first query: ', queryErr);
                         reject(queryErr);
                     } else if (queryCheckResults.length == 1) { // it exists for 1 conversation
+                        console.log("Else if temp");
                         console.log("the results for the query:", queryCheckResults)
                         const convoID = queryCheckResults[0].convoID;
                         const insertIntoMessagesQuery = 'INSERT INTO messages (convoID, messageContent, senderID) VALUES (?, ?, ?)';
