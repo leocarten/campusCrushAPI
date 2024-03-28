@@ -64,6 +64,8 @@ io.on('connection', (socket) => {
               verifyUser = await authenticateUserInSocket(jwt, false);
           }
 
+          console.log("verify user:",verifyUser);
+
           if (verifyUser['success'] === true) {
               // Emit the message to clients in the conversation room
               io.to(convoID).emit('new_message', { message: messageContent });
