@@ -94,10 +94,7 @@ export const sendAdditionalMessages = (token, message, id1, id2) => {
                                 })
                             }
                         });
-                    } else {
-                        const getConvoIDv2 = 'SELECT convoID FROM all_messages_interface WHERE originalSenderID = ? AND originalRecieverID = ?';
-                        
-                    }
+                    } 
                 });
             }
         });

@@ -66,6 +66,7 @@ io.on('connection', (socket) => {
           if (verifyUser['success'] === true) {
               // Emit the message to clients in the conversation room
               io.to(convoID).emit('new_message', { message: messageContent });
+              console.log("The user just said:",messageContent);
               // await sendAdditionalMessages(jwt, messageContent, id1, id2);
           } else {
               // Emit an error message to the client
