@@ -48,6 +48,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on("send_message", async (data) => {
+      console.log("IN SEND MESSAGE")
       const jwt = data.jwt;
       const id1 = data.id1;
       const id2 = data.id2;
