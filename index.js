@@ -49,7 +49,7 @@ io.on('connection', (socket) => {
 
   socket.on("send_message", async (data) => {
       console.log("IN SEND MESSAGE")
-      const jwt = data.jwt;
+      const jwt = data.jwt['_j'];
       const id1 = data.id1;
       const id2 = data.id2;
       const convoID = data.convoID;
@@ -69,7 +69,7 @@ io.on('connection', (socket) => {
           if (verifyUser['success'] === true) {
               // Emit the message to clients in the conversation room
               io.to(convoID).emit('new_message', { message: messageContent });
-              console.log("The user just said:",messageContent);
+              console.log("The user just said:",messageContent, "in room: ",convoID);
               // await sendAdditionalMessages(jwt, messageContent, id1, id2);
           } else {
               // Emit an error message to the client
