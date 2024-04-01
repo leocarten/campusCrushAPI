@@ -7,6 +7,31 @@ import { petStats } from '../neuralNetwork_v2/statistics/petPreference.js';
 import { sleepSchedule } from '../neuralNetwork_v2/statistics/sleepStats.js';
 import { workoutStats } from '../neuralNetwork_v2/statistics/workout.js';
 
+function getRequesterData(idOfRequester) {
+    return new Promise((resolve, reject) => {
+        const getUserData = 'SELECT app_purpose, interests, music_preference, pet_preference, sleep_schedule, workout from info_to_display WHERE id = ?';
+        pool.query(getUserData, [idOfRequester], (queryErr, userDataQuery) => {
+            if (queryErr) {
+                console.error('Error executing query in neural network: ', queryErr);
+                reject(queryErr);
+            } else if (userDataQuery.length == 1) {
+                const requesterData = {
+                    appPurpose: userDataQuery.app_purpose,
+                    interests: userDataQuery.interests.split(','),
+                    music: userDataQuery.music_preference.split(','),
+                    pet: userDataQuery.pet_preference,
+                    sleep: userDataQuery.sleep_schedule,
+                    workout: userDataQuery.workout
+                };
+                resolve(requesterData);
+            } else {
+                reject(new Error('No data found for the requester'));
+            }
+        });
+    });
+}
+
+
 function calculateCompatibility(row, idOfRequester){
     // row will contain everything of the OTHER user
     const otherAppPurpose = row.app_purpose;
@@ -24,40 +49,72 @@ function calculateCompatibility(row, idOfRequester){
     let requesterPet;
     let requesterSleep;
     let requesterWorkout;
-    const getUserData = 'SELECT app_purpose, interests, music_preference, pet_preference, sleep_schedule, workout from info_to_display WHERE id = ?';
-    pool.query(getUserData, [idOfRequester], (queryErr, userDataQuery) => {
-        if (queryErr) {
-            console.error('Error executing query in neural network: ', queryErr);
-            requesterAppPurpose = 0;
-            requesterInterests = 0;
-            requesterMusic = 0;
-            requesterPet = 0;
-            requesterSleep = 0;
-            requesterWorkout = 0;
-            reject(queryErr)
-        }else if(userDataQuery.length == 1){
-            requesterAppPurpose = userDataQuery.app_purpose;
-            requesterInterests = userDataQuery.interests.split(',');
-            requesterMusic = userDataQuery.music_preference.split(',');
-            requesterPet = userDataQuery.pet_preference;
-            requesterSleep = userDataQuery.sleep_schedule;
-            requesterWorkout = userDataQuery.workout;
-            resolve({success: true});
-        }
-    })
 
-    const eloBetweenUsers = .9;
-    const appPurposeBetweenUsers = appPurposeStats(otherAppPurpose, requesterAppPurpose);
-    const interestsBetweenUsers = multiSelectionSimilarity(otherInterests, requesterInterests);
-    const MusicsBetweenUsers = multiSelectionSimilarity(otherMusic, requesterMusic);
-    const movieBetweenUsers = 1;
-    const petsBetweenUsers = petStats(otherPet, requesterPet);
-    const sleepBetweenUSers = sleepSchedule(otherSleep, requesterSleep);
-    const workoutBetweenUsers = workoutStats(otherWorkout, requesterWorkout);
-    const communicationBetweenUsers = 1;
-    const meetupBetweenUsers = 1;
-    const modelResult = trainedNet([eloBetweenUsers, appPurposeBetweenUsers, interestsBetweenUsers, MusicsBetweenUsers, movieBetweenUsers, petsBetweenUsers, sleepBetweenUSers, workoutBetweenUsers, communicationBetweenUsers, meetupBetweenUsers])[0];
-    return modelResult;
+    getRequesterData(idOfRequester)
+    .then(requesterData => {
+        // Use requesterData here
+        requesterAppPurpose = requesterData.app_purpose;
+        requesterInterests = requesterData.interests.split(',');
+        requesterMusic = requesterData.music_preference.split(',');
+        requesterPet = requesterData.pet_preference;
+        requesterSleep = requesterData.sleep_schedule;
+        requesterWorkout = requesterData.workout;
+
+        const eloBetweenUsers = .9;
+        const appPurposeBetweenUsers = appPurposeStats(otherAppPurpose, requesterAppPurpose);
+        const interestsBetweenUsers = multiSelectionSimilarity(otherInterests, requesterInterests);
+        const MusicsBetweenUsers = multiSelectionSimilarity(otherMusic, requesterMusic);
+        const movieBetweenUsers = 1;
+        const petsBetweenUsers = petStats(otherPet, requesterPet);
+        const sleepBetweenUSers = sleepSchedule(otherSleep, requesterSleep);
+        const workoutBetweenUsers = workoutStats(otherWorkout, requesterWorkout);
+        const communicationBetweenUsers = 1;
+        const meetupBetweenUsers = 1;
+        const modelResult = trainedNet([eloBetweenUsers, appPurposeBetweenUsers, interestsBetweenUsers, MusicsBetweenUsers, movieBetweenUsers, petsBetweenUsers, sleepBetweenUSers, workoutBetweenUsers, communicationBetweenUsers, meetupBetweenUsers])[0];
+        return modelResult;
+
+    })
+    .catch(error => {
+        // Handle error
+        console.error(error);
+        return 0;
+    });
+
+
+    // const getUserData = 'SELECT app_purpose, interests, music_preference, pet_preference, sleep_schedule, workout from info_to_display WHERE id = ?';
+    // pool.query(getUserData, [idOfRequester], (queryErr, userDataQuery) => {
+    //     if (queryErr) {
+    //         console.error('Error executing query in neural network: ', queryErr);
+    //         requesterAppPurpose = 0;
+    //         requesterInterests = 0;
+    //         requesterMusic = 0;
+    //         requesterPet = 0;
+    //         requesterSleep = 0;
+    //         requesterWorkout = 0;
+    //         reject(queryErr)
+    //     }else if(userDataQuery.length == 1){
+    //         requesterAppPurpose = userDataQuery.app_purpose;
+    //         requesterInterests = userDataQuery.interests.split(',');
+    //         requesterMusic = userDataQuery.music_preference.split(',');
+    //         requesterPet = userDataQuery.pet_preference;
+    //         requesterSleep = userDataQuery.sleep_schedule;
+    //         requesterWorkout = userDataQuery.workout;
+    //         resolve({success: true});
+    //     }
+    // })
+
+    // const eloBetweenUsers = .9;
+    // const appPurposeBetweenUsers = appPurposeStats(otherAppPurpose, requesterAppPurpose);
+    // const interestsBetweenUsers = multiSelectionSimilarity(otherInterests, requesterInterests);
+    // const MusicsBetweenUsers = multiSelectionSimilarity(otherMusic, requesterMusic);
+    // const movieBetweenUsers = 1;
+    // const petsBetweenUsers = petStats(otherPet, requesterPet);
+    // const sleepBetweenUSers = sleepSchedule(otherSleep, requesterSleep);
+    // const workoutBetweenUsers = workoutStats(otherWorkout, requesterWorkout);
+    // const communicationBetweenUsers = 1;
+    // const meetupBetweenUsers = 1;
+    // const modelResult = trainedNet([eloBetweenUsers, appPurposeBetweenUsers, interestsBetweenUsers, MusicsBetweenUsers, movieBetweenUsers, petsBetweenUsers, sleepBetweenUSers, workoutBetweenUsers, communicationBetweenUsers, meetupBetweenUsers])[0];
+    // return modelResult;
 }
 
 export const showItemsInFeed = (token) => {
@@ -111,13 +168,32 @@ export const showItemsInFeed = (token) => {
                 if (err) {
                     reject(err);
                 } else {
-                    // console.log("Result before adding compatibility:", result);
+                    // // console.log("Result before adding compatibility:", result);
+                    // result.forEach(row => {
+                    //     // Calculate compatibility here based on the fields in the 'row'
+                    //     row.compatibility = calculateCompatibility(row);
+                    //     console.log("Compatibility calculated for row:", row.compatibility, id);
+                    // });
+                    // // console.log("Result after adding compatibility:", result);
+                    // resolve(result);
+
+                    
+                    // Loop through each row in the result array
                     result.forEach(row => {
-                        // Calculate compatibility here based on the fields in the 'row'
-                        row.compatibility = calculateCompatibility(row);
-                        console.log("Compatibility calculated for row:", row.compatibility, id);
+                        // Call calculateCompatibility for each row
+                        calculateCompatibility(row, idOfRequester)
+                            .then(modelResult => {
+                                // Once the compatibility is calculated, assign it to the row
+                                row.compatibility = modelResult;
+                                console.log("Compatibility calculated for row:", row.compatibility);
+                            })
+                            .catch(error => {
+                                // Handle any errors that occur during compatibility calculation
+                                console.error("Error calculating compatibility for row:", error);
+                            });
                     });
-                    // console.log("Result after adding compatibility:", result);
+
+                    // Resolve the result array after all compatibility calculations are done
                     resolve(result);
                 }
             });
@@ -158,14 +234,34 @@ export const showItemsInFeed = (token) => {
                 if (err) {
                     reject(err);
                 } else {
-                    // console.log("Result before adding compatibility:", result);
+                    // // console.log("Result before adding compatibility:", result);
+                    // result.forEach(row => {
+                    //     // Calculate compatibility here based on the fields in the 'row'
+                    //     row.compatibility = calculateCompatibility(row);
+                    //     console.log("Compatibility calculated for row:", row.compatibility, id);
+                    // });
+                    // // console.log("Result after adding compatibility:", result);
+                    // resolve(result);
+                    // Assuming you're already inside a function or a block of code
+
+                    // Loop through each row in the result array
                     result.forEach(row => {
-                        // Calculate compatibility here based on the fields in the 'row'
-                        row.compatibility = calculateCompatibility(row);
-                        console.log("Compatibility calculated for row:", row.compatibility);
+                        // Call calculateCompatibility for each row
+                        calculateCompatibility(row, idOfRequester)
+                            .then(modelResult => {
+                                // Once the compatibility is calculated, assign it to the row
+                                row.compatibility = modelResult;
+                                console.log("Compatibility calculated for row:", row.compatibility);
+                            })
+                            .catch(error => {
+                                // Handle any errors that occur during compatibility calculation
+                                console.error("Error calculating compatibility for row:", error);
+                            });
                     });
-                    // console.log("Result after adding compatibility:", result);
+
+                    // Resolve the result array after all compatibility calculations are done
                     resolve(result);
+
                 }
             });
         }
