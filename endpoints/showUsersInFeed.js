@@ -20,22 +20,22 @@ function getRequesterData(idOfRequester) {
                 console.log("Query:", userData);
                 if (userData.interests && userData.music_preference) {
                     const requesterData = {
-                        appPurpose: userData.app_purpose,
+                        app_purpose: userData.app_purpose,
                         interests: userData.interests.split(','),
-                        music: userData.music_preference.split(','),
-                        pet: userData.pet_preference,
-                        sleep: userData.sleep_schedule,
+                        music_preference: userData.music_preference.split(','),
+                        pet_preference: userData.pet_preference,
+                        sleep_schedule: userData.sleep_schedule,
                         workout: userData.workout
                     };
                     resolve(requesterData);
                 } 
                 else {
                     const requesterData = {
-                        appPurpose: userData.app_purpose,
+                        app_purpose: userData.app_purpose,
                         interests: 0.5,
-                        music: 0.5,
-                        pet: userData.pet_preference,
-                        sleep: userData.sleep_schedule,
+                        music_preference: 0.5,
+                        pet_preference: userData.pet_preference,
+                        sleep_schedule: userData.sleep_schedule,
                         workout: userData.workout
                     };
                     resolve(requesterData);
