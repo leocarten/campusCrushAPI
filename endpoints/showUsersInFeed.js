@@ -1,6 +1,11 @@
 import pool from '../db/connectionPool.js';
 import { jwtDecode } from "jwt-decode";
+import trainedNet from '../neuralNetwork_v2/trained-net.js';
 
+function calculateCompatibility(row){
+    const modelResult = trainedNet([1,1,1,1,1,1,1,1,1,1])[0];
+    return modelResult;
+}
 
 export const showItemsInFeed = (token) => {
     return new Promise((resolve, reject) => {
@@ -55,9 +60,13 @@ export const showItemsInFeed = (token) => {
           WHERE 
           distance < ?`, [lat, long_, id, genderUserWantsToSee, proximity],(err, result, fields) => {
             if (err) {
-              reject(err);
+                reject(err);
             } else {
-              resolve(result);
+                result.forEach(row => {
+                    // Calculate compatibility here based on the fields in the 'row'
+                    row.compatibility = calculateCompatibility(row);
+                });
+                resolve(result);
             }
           });
     });
