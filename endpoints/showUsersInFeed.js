@@ -49,8 +49,20 @@ function calculateCompatibility(row, idOfRequester) {
     return new Promise((resolve, reject) => {
         // row will contain everything of the OTHER user
         const otherAppPurpose = row.app_purpose;
-        const otherInterests = row.interests.split(',');
-        const otherMusic = row.music_preference.split(',');
+        var otherInterests = row.interests;
+        var otherMusic = row.music_preference;
+        if(otherInterests != null && otherInterests != ""){
+            otherInterests = otherInterests.split(',');
+        }else{
+            otherInterests = [];
+        }
+
+        if(otherMusic != null && otherMusic != ""){
+            otherMusic = otherMusic.split(',');
+        }else{
+            otherMusic = [];
+        }
+
         const otherPet = row.pet_preference;
         const otherSleep = row.sleep_schedule;
         const otherWorkout = row.workout;
