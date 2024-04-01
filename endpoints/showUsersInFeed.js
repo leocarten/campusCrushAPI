@@ -62,10 +62,13 @@ export const showItemsInFeed = (token) => {
             if (err) {
                 reject(err);
             } else {
+                console.log("Result before adding compatibility:", result);
                 result.forEach(row => {
                     // Calculate compatibility here based on the fields in the 'row'
                     row.compatibility = calculateCompatibility(row);
+                    console.log("Compatibility calculated for row:", row.compatibility);
                 });
+                console.log("Result after adding compatibility:", result);
                 resolve(result);
             }
           });
