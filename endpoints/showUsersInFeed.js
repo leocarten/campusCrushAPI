@@ -250,23 +250,55 @@ export const showItemsInFeed = (token) => {
                     // resolve(result);
 
 
-                    // Loop through each row in the result array
-                    result.forEach(row => {
-                        calculateCompatibility(row, id)
-                            .then(compatibility => {
-                                // Once the compatibility is calculated, assign it to the row
-                                row.compatibility = compatibility;
-                                console.log("Compatibility calculated for row:", row.compatibility);
-                            })
-                            .catch(error => {
-                                // Handle any errors that occur during compatibility calculation
-                                row.compatibility = 0;
-                                console.error("Error calculating compatibility for row:", error);
-                            });
-                    });
+                    // // Loop through each row in the result array
+                    // result.forEach(row => {
+                    //     calculateCompatibility(row, id)
+                    //         .then(compatibility => {
+                    //             // Once the compatibility is calculated, assign it to the row
+                    //             row.compatibility = compatibility;
+                    //             console.log("Compatibility calculated for row:", row.compatibility);
+                    //         })
+                    //         .catch(error => {
+                    //             // Handle any errors that occur during compatibility calculation
+                    //             row.compatibility = 0;
+                    //             console.error("Error calculating compatibility for row:", error);
+                    //         });
+                    // });
                     
-                    // Resolve the result array after all compatibility calculations are done
-                    resolve(result);
+                    // // Resolve the result array after all compatibility calculations are done
+                    // resolve(result);
+
+                    const compatibilityPromises = [];
+
+                    result.forEach(row => {
+                        // Push each compatibility calculation promise into the array
+                        compatibilityPromises.push(
+                            calculateCompatibility(row, id)
+                                .then(compatibility => {
+                                    // Once the compatibility is calculated, assign it to the row
+                                    row.compatibility = compatibility;
+                                    console.log("Compatibility calculated for row:", row.compatibility);
+                                })
+                                .catch(error => {
+                                    // Handle any errors that occur during compatibility calculation
+                                    row.compatibility = 0;
+                                    console.error("Error calculating compatibility for row:", error);
+                                })
+                        );
+                    });
+
+                    // Wait for all compatibility calculations to complete
+                    Promise.all(compatibilityPromises)
+                        .then(() => {
+                            // Once all calculations are done, resolve result
+                            resolve(result);
+                        })
+                        .catch(error => {
+                            // Handle any errors that occur during compatibility calculations
+                            console.error("Error calculating compatibility for one or more rows:", error);
+                            // Still resolve result if an error occurs, or you may choose to reject
+                            resolve(result);
+                        });
                 }
             });
         }
@@ -316,21 +348,55 @@ export const showItemsInFeed = (token) => {
                     // resolve(result);
                     // Assuming you're already inside a function or a block of code
 
+                    // result.forEach(row => {
+                    //     calculateCompatibility(row, id)
+                    //         .then(compatibility => {
+                    //             // Once the compatibility is calculated, assign it to the row
+                    //             row.compatibility = compatibility;
+                    //             console.log("Compatibility calculated for row:", row.compatibility);
+                    //         })
+                    //         .catch(error => {
+                    //             // Handle any errors that occur during compatibility calculation
+                    //             row.compatibility = 0;
+                    //             console.error("Error calculating compatibility for row:", error);
+                    //         });
+                    // });
+
+                    // resolve(result);
+
+                    // Array to hold promises for compatibility calculations
+                    const compatibilityPromises = [];
+
                     result.forEach(row => {
-                        calculateCompatibility(row, id)
-                            .then(compatibility => {
-                                // Once the compatibility is calculated, assign it to the row
-                                row.compatibility = compatibility;
-                                console.log("Compatibility calculated for row:", row.compatibility);
-                            })
-                            .catch(error => {
-                                // Handle any errors that occur during compatibility calculation
-                                row.compatibility = 0;
-                                console.error("Error calculating compatibility for row:", error);
-                            });
+                        // Push each compatibility calculation promise into the array
+                        compatibilityPromises.push(
+                            calculateCompatibility(row, id)
+                                .then(compatibility => {
+                                    // Once the compatibility is calculated, assign it to the row
+                                    row.compatibility = compatibility;
+                                    console.log("Compatibility calculated for row:", row.compatibility);
+                                })
+                                .catch(error => {
+                                    // Handle any errors that occur during compatibility calculation
+                                    row.compatibility = 0;
+                                    console.error("Error calculating compatibility for row:", error);
+                                })
+                        );
                     });
 
-                    resolve(result);
+                    // Wait for all compatibility calculations to complete
+                    Promise.all(compatibilityPromises)
+                        .then(() => {
+                            // Once all calculations are done, resolve result
+                            resolve(result);
+                        })
+                        .catch(error => {
+                            // Handle any errors that occur during compatibility calculations
+                            console.error("Error calculating compatibility for one or more rows:", error);
+                            // Still resolve result if an error occurs, or you may choose to reject
+                            resolve(result);
+                        });
+
 
                 }
             });
