@@ -69,8 +69,8 @@ function calculateCompatibility(row, idOfRequester){
     .then(requesterData => {
         // Use requesterData here
         requesterAppPurpose = requesterData.app_purpose;
-        requesterInterests = requesterData.interests.split(',');
-        requesterMusic = requesterData.music_preference.split(',');
+        requesterInterests = requesterData.interests;
+        requesterMusic = requesterData.music_preference;
         requesterPet = requesterData.pet_preference;
         requesterSleep = requesterData.sleep_schedule;
         requesterWorkout = requesterData.workout;
