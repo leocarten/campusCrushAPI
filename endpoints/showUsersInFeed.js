@@ -90,6 +90,18 @@ function calculateCompatibility(row, idOfRequester){
         const workoutBetweenUsers = workoutStats(otherWorkout, requesterWorkout);
         const communicationBetweenUsers = 1;
         const meetupBetweenUsers = 1;
+        
+        console.log("eloBetweenUsers:", eloBetweenUsers);
+        console.log("appPurposeBetweenUsers:", appPurposeBetweenUsers);
+        console.log("interestsBetweenUsers:", interestsBetweenUsers);
+        console.log("MusicsBetweenUsers:", MusicsBetweenUsers);
+        console.log("movieBetweenUsers:", movieBetweenUsers);
+        console.log("petsBetweenUsers:", petsBetweenUsers);
+        console.log("sleepBetweenUSers:", sleepBetweenUSers);
+        console.log("workoutBetweenUsers:", workoutBetweenUsers);
+        console.log("communicationBetweenUsers:", communicationBetweenUsers);
+        console.log("meetupBetweenUsers:", meetupBetweenUsers);
+
         const modelResult = trainedNet([eloBetweenUsers, appPurposeBetweenUsers, interestsBetweenUsers, MusicsBetweenUsers, movieBetweenUsers, petsBetweenUsers, sleepBetweenUSers, workoutBetweenUsers, communicationBetweenUsers, meetupBetweenUsers])[0];
         return modelResult;
     })
