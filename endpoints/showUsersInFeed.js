@@ -58,11 +58,11 @@ function calculateCompatibility(row, idOfRequester) {
         getRequesterData(idOfRequester)
             .then(requesterData => {
                 // Use requesterData here
-                const requesterAppPurpose = requesterData.appPurpose;
+                const requesterAppPurpose = requesterData.app_purpose;
                 const requesterInterests = requesterData.interests;
-                const requesterMusic = requesterData.music;
-                const requesterPet = requesterData.pet;
-                const requesterSleep = requesterData.sleep;
+                const requesterMusic = requesterData.music_preference;
+                const requesterPet = requesterData.pet_preference;
+                const requesterSleep = requesterData.sleep_schedule;
                 const requesterWorkout = requesterData.workout;
 
                 const eloBetweenUsers = 0.9;
@@ -260,6 +260,7 @@ export const showItemsInFeed = (token) => {
                             })
                             .catch(error => {
                                 // Handle any errors that occur during compatibility calculation
+                                row.compatibility = 0;
                                 console.error("Error calculating compatibility for row:", error);
                             });
                     });
@@ -324,6 +325,7 @@ export const showItemsInFeed = (token) => {
                             })
                             .catch(error => {
                                 // Handle any errors that occur during compatibility calculation
+                                row.compatibility = 0;
                                 console.error("Error calculating compatibility for row:", error);
                             });
                     });
