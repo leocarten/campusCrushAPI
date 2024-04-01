@@ -15,15 +15,27 @@ function getRequesterData(idOfRequester) {
                 console.error('Error executing query in neural network: ', queryErr);
                 reject(queryErr);
             } else if (userDataQuery.length == 1) {
-                const requesterData = {
-                    appPurpose: userDataQuery.app_purpose,
-                    interests: userDataQuery.interests.split(','),
-                    music: userDataQuery.music_preference.split(','),
-                    pet: userDataQuery.pet_preference,
-                    sleep: userDataQuery.sleep_schedule,
-                    workout: userDataQuery.workout
-                };
-                resolve(requesterData);
+                if(userDataQuery.interests.length >= 1 && userDataQuery.music_preference.length >= 1){
+                    const requesterData = {
+                        appPurpose: userDataQuery.app_purpose,
+                        interests: userDataQuery.interests.split(','),
+                        music: userDataQuery.music_preference.split(','),
+                        pet: userDataQuery.pet_preference,
+                        sleep: userDataQuery.sleep_schedule,
+                        workout: userDataQuery.workout
+                    };
+                    resolve(requesterData);
+                }else{
+                    const requesterData = {
+                        appPurpose: userDataQuery.app_purpose,
+                        interests: 0.5,
+                        music: 0.5,
+                        pet: userDataQuery.pet_preference,
+                        sleep: userDataQuery.sleep_schedule,
+                        workout: userDataQuery.workout
+                    };
+                    resolve(requesterData);
+                }
             } else {
                 reject(new Error('No data found for the requester'));
             }
