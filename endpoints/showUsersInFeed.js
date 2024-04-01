@@ -18,7 +18,7 @@ function getRequesterData(idOfRequester) {
             else if (userDataQuery.length === 1) {
                 const userData = userDataQuery[0]; // Get the first element of the array
                 console.log("Query:", userData);
-                if (userData.interests && userData.music_preference) {
+                if (userData.interests != null && userData.music_preference != null && (userData.interests != "" && userData.music_preference != "") ) {
                     const requesterData = {
                         app_purpose: userData.app_purpose,
                         interests: userData.interests.split(','),
