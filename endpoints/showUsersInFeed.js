@@ -45,108 +45,149 @@ function getRequesterData(idOfRequester) {
     });
 }
 
+function calculateCompatibility(row, idOfRequester) {
+    return new Promise((resolve, reject) => {
+        // row will contain everything of the OTHER user
+        const otherAppPurpose = row.app_purpose;
+        const otherInterests = row.interests.split(',');
+        const otherMusic = row.music_preference.split(',');
+        const otherPet = row.pet_preference;
+        const otherSleep = row.sleep_schedule;
+        const otherWorkout = row.workout;
 
+        getRequesterData(idOfRequester)
+            .then(requesterData => {
+                // Use requesterData here
+                const requesterAppPurpose = requesterData.appPurpose;
+                const requesterInterests = requesterData.interests;
+                const requesterMusic = requesterData.music;
+                const requesterPet = requesterData.pet;
+                const requesterSleep = requesterData.sleep;
+                const requesterWorkout = requesterData.workout;
 
-function calculateCompatibility(row, idOfRequester){
-    // row will contain everything of the OTHER user
-    const otherAppPurpose = row.app_purpose;
-    const otherInterests = row.interests.split(',');
-    const otherMusic = row.music_preference.split(',');
-    const otherPet = row.pet_preference;
-    const otherSleep = row.sleep_schedule;
-    const otherWorkout = row.workout;
+                const eloBetweenUsers = 0.9;
+                const appPurposeBetweenUsers = appPurposeStats(otherAppPurpose, requesterAppPurpose);
+                const interestsBetweenUsers = multiSelectionSimilarity(otherInterests, requesterInterests);
+                const musicBetweenUsers = multiSelectionSimilarity(otherMusic, requesterMusic);
+                const petsBetweenUsers = petStats(otherPet, requesterPet);
+                const sleepBetweenUsers = sleepSchedule(otherSleep, requesterSleep);
+                const workoutBetweenUsers = workoutStats(otherWorkout, requesterWorkout);
+                const communicationBetweenUsers = 1;
+                const meetupBetweenUsers = 1;
 
-
-    // query based on requester ID
-    let requesterAppPurpose;
-    let requesterInterests;
-    let requesterMusic;
-    let requesterPet;
-    let requesterSleep;
-    let requesterWorkout;
-
-    getRequesterData(idOfRequester)
-    .then(requesterData => {
-        // Use requesterData here
-        requesterAppPurpose = requesterData.app_purpose;
-        requesterInterests = requesterData.interests;
-        requesterMusic = requesterData.music_preference;
-        requesterPet = requesterData.pet_preference;
-        requesterSleep = requesterData.sleep_schedule;
-        requesterWorkout = requesterData.workout;
-
-        console.log(otherInterests);
-        console.log(otherMusic);
-        console.log(requesterInterests);
-        console.log(requesterMusic);
-
-        const eloBetweenUsers = .9;
-        const appPurposeBetweenUsers = appPurposeStats(otherAppPurpose, requesterAppPurpose);
-        const interestsBetweenUsers = multiSelectionSimilarity(otherInterests, requesterInterests);
-        const MusicsBetweenUsers = multiSelectionSimilarity(otherMusic, requesterMusic);
-        const movieBetweenUsers = 1;
-        const petsBetweenUsers = petStats(otherPet, requesterPet);
-        const sleepBetweenUSers = sleepSchedule(otherSleep, requesterSleep);
-        const workoutBetweenUsers = workoutStats(otherWorkout, requesterWorkout);
-        const communicationBetweenUsers = 1;
-        const meetupBetweenUsers = 1;
-
-        console.log("eloBetweenUsers:", eloBetweenUsers);
-        console.log("appPurposeBetweenUsers:", appPurposeBetweenUsers);
-        console.log("interestsBetweenUsers:", interestsBetweenUsers);
-        console.log("MusicsBetweenUsers:", MusicsBetweenUsers);
-        console.log("movieBetweenUsers:", movieBetweenUsers);
-        console.log("petsBetweenUsers:", petsBetweenUsers);
-        console.log("sleepBetweenUSers:", sleepBetweenUSers);
-        console.log("workoutBetweenUsers:", workoutBetweenUsers);
-        console.log("communicationBetweenUsers:", communicationBetweenUsers);
-        console.log("meetupBetweenUsers:", meetupBetweenUsers);
-
-        const modelResult = trainedNet([eloBetweenUsers, appPurposeBetweenUsers, interestsBetweenUsers, MusicsBetweenUsers, movieBetweenUsers, petsBetweenUsers, sleepBetweenUSers, workoutBetweenUsers, communicationBetweenUsers, meetupBetweenUsers])[0];
-        return modelResult;
-    })
-    .catch(error => {
-        // Handle error
-        console.error(error);
-        return 0;
+                const modelResult = trainedNet([eloBetweenUsers, appPurposeBetweenUsers, interestsBetweenUsers, musicBetweenUsers, petsBetweenUsers, sleepBetweenUsers, workoutBetweenUsers, communicationBetweenUsers, meetupBetweenUsers])[0];
+                resolve(modelResult);
+            })
+            .catch(error => {
+                // Handle error
+                console.error("Error fetching requester data:", error);
+                resolve(0);
+            });
     });
-
-
-    // const getUserData = 'SELECT app_purpose, interests, music_preference, pet_preference, sleep_schedule, workout from info_to_display WHERE id = ?';
-    // pool.query(getUserData, [idOfRequester], (queryErr, userDataQuery) => {
-    //     if (queryErr) {
-    //         console.error('Error executing query in neural network: ', queryErr);
-    //         requesterAppPurpose = 0;
-    //         requesterInterests = 0;
-    //         requesterMusic = 0;
-    //         requesterPet = 0;
-    //         requesterSleep = 0;
-    //         requesterWorkout = 0;
-    //         reject(queryErr)
-    //     }else if(userDataQuery.length == 1){
-    //         requesterAppPurpose = userDataQuery.app_purpose;
-    //         requesterInterests = userDataQuery.interests.split(',');
-    //         requesterMusic = userDataQuery.music_preference.split(',');
-    //         requesterPet = userDataQuery.pet_preference;
-    //         requesterSleep = userDataQuery.sleep_schedule;
-    //         requesterWorkout = userDataQuery.workout;
-    //         resolve({success: true});
-    //     }
-    // })
-
-    // const eloBetweenUsers = .9;
-    // const appPurposeBetweenUsers = appPurposeStats(otherAppPurpose, requesterAppPurpose);
-    // const interestsBetweenUsers = multiSelectionSimilarity(otherInterests, requesterInterests);
-    // const MusicsBetweenUsers = multiSelectionSimilarity(otherMusic, requesterMusic);
-    // const movieBetweenUsers = 1;
-    // const petsBetweenUsers = petStats(otherPet, requesterPet);
-    // const sleepBetweenUSers = sleepSchedule(otherSleep, requesterSleep);
-    // const workoutBetweenUsers = workoutStats(otherWorkout, requesterWorkout);
-    // const communicationBetweenUsers = 1;
-    // const meetupBetweenUsers = 1;
-    // const modelResult = trainedNet([eloBetweenUsers, appPurposeBetweenUsers, interestsBetweenUsers, MusicsBetweenUsers, movieBetweenUsers, petsBetweenUsers, sleepBetweenUSers, workoutBetweenUsers, communicationBetweenUsers, meetupBetweenUsers])[0];
-    // return modelResult;
 }
+
+
+
+// function calculateCompatibility(row, idOfRequester){
+//     // row will contain everything of the OTHER user
+//     const otherAppPurpose = row.app_purpose;
+//     const otherInterests = row.interests.split(',');
+//     const otherMusic = row.music_preference.split(',');
+//     const otherPet = row.pet_preference;
+//     const otherSleep = row.sleep_schedule;
+//     const otherWorkout = row.workout;
+
+
+//     // query based on requester ID
+//     let requesterAppPurpose;
+//     let requesterInterests;
+//     let requesterMusic;
+//     let requesterPet;
+//     let requesterSleep;
+//     let requesterWorkout;
+
+//     getRequesterData(idOfRequester)
+//     .then(requesterData => {
+//         // Use requesterData here
+//         requesterAppPurpose = requesterData.app_purpose;
+//         requesterInterests = requesterData.interests;
+//         requesterMusic = requesterData.music_preference;
+//         requesterPet = requesterData.pet_preference;
+//         requesterSleep = requesterData.sleep_schedule;
+//         requesterWorkout = requesterData.workout;
+
+//         console.log(otherInterests);
+//         console.log(otherMusic);
+//         console.log(requesterInterests);
+//         console.log(requesterMusic);
+
+//         const eloBetweenUsers = .9;
+//         const appPurposeBetweenUsers = appPurposeStats(otherAppPurpose, requesterAppPurpose);
+//         const interestsBetweenUsers = multiSelectionSimilarity(otherInterests, requesterInterests);
+//         const MusicsBetweenUsers = multiSelectionSimilarity(otherMusic, requesterMusic);
+//         const movieBetweenUsers = 1;
+//         const petsBetweenUsers = petStats(otherPet, requesterPet);
+//         const sleepBetweenUSers = sleepSchedule(otherSleep, requesterSleep);
+//         const workoutBetweenUsers = workoutStats(otherWorkout, requesterWorkout);
+//         const communicationBetweenUsers = 1;
+//         const meetupBetweenUsers = 1;
+
+//         console.log("eloBetweenUsers:", eloBetweenUsers);
+//         console.log("appPurposeBetweenUsers:", appPurposeBetweenUsers);
+//         console.log("interestsBetweenUsers:", interestsBetweenUsers);
+//         console.log("MusicsBetweenUsers:", MusicsBetweenUsers);
+//         console.log("movieBetweenUsers:", movieBetweenUsers);
+//         console.log("petsBetweenUsers:", petsBetweenUsers);
+//         console.log("sleepBetweenUSers:", sleepBetweenUSers);
+//         console.log("workoutBetweenUsers:", workoutBetweenUsers);
+//         console.log("communicationBetweenUsers:", communicationBetweenUsers);
+//         console.log("meetupBetweenUsers:", meetupBetweenUsers);
+
+//         const modelResult = trainedNet([eloBetweenUsers, appPurposeBetweenUsers, interestsBetweenUsers, MusicsBetweenUsers, movieBetweenUsers, petsBetweenUsers, sleepBetweenUSers, workoutBetweenUsers, communicationBetweenUsers, meetupBetweenUsers])[0];
+//         return modelResult;
+//     })
+//     .catch(error => {
+//         // Handle error
+//         console.error(error);
+//         return 0;
+//     });
+
+
+//     // const getUserData = 'SELECT app_purpose, interests, music_preference, pet_preference, sleep_schedule, workout from info_to_display WHERE id = ?';
+//     // pool.query(getUserData, [idOfRequester], (queryErr, userDataQuery) => {
+//     //     if (queryErr) {
+//     //         console.error('Error executing query in neural network: ', queryErr);
+//     //         requesterAppPurpose = 0;
+//     //         requesterInterests = 0;
+//     //         requesterMusic = 0;
+//     //         requesterPet = 0;
+//     //         requesterSleep = 0;
+//     //         requesterWorkout = 0;
+//     //         reject(queryErr)
+//     //     }else if(userDataQuery.length == 1){
+//     //         requesterAppPurpose = userDataQuery.app_purpose;
+//     //         requesterInterests = userDataQuery.interests.split(',');
+//     //         requesterMusic = userDataQuery.music_preference.split(',');
+//     //         requesterPet = userDataQuery.pet_preference;
+//     //         requesterSleep = userDataQuery.sleep_schedule;
+//     //         requesterWorkout = userDataQuery.workout;
+//     //         resolve({success: true});
+//     //     }
+//     // })
+
+//     // const eloBetweenUsers = .9;
+//     // const appPurposeBetweenUsers = appPurposeStats(otherAppPurpose, requesterAppPurpose);
+//     // const interestsBetweenUsers = multiSelectionSimilarity(otherInterests, requesterInterests);
+//     // const MusicsBetweenUsers = multiSelectionSimilarity(otherMusic, requesterMusic);
+//     // const movieBetweenUsers = 1;
+//     // const petsBetweenUsers = petStats(otherPet, requesterPet);
+//     // const sleepBetweenUSers = sleepSchedule(otherSleep, requesterSleep);
+//     // const workoutBetweenUsers = workoutStats(otherWorkout, requesterWorkout);
+//     // const communicationBetweenUsers = 1;
+//     // const meetupBetweenUsers = 1;
+//     // const modelResult = trainedNet([eloBetweenUsers, appPurposeBetweenUsers, interestsBetweenUsers, MusicsBetweenUsers, movieBetweenUsers, petsBetweenUsers, sleepBetweenUSers, workoutBetweenUsers, communicationBetweenUsers, meetupBetweenUsers])[0];
+//     // return modelResult;
+// }
 
 export const showItemsInFeed = (token) => {
     return new Promise((resolve, reject) => {
