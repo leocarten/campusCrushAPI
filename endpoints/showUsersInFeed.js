@@ -14,35 +14,37 @@ function getRequesterData(idOfRequester) {
             if (queryErr) {
                 console.error('Error executing query in neural network: ', queryErr);
                 reject(queryErr);
-            } else if (userDataQuery.length == 1) {
-                console.log("Query:",userDataQuery);
-                if(userDataQuery.interests.length >= 1 && userDataQuery.music_preference.length >= 1){
+            }
+            else if (userDataQuery.length === 1) {
+                const userData = userDataQuery[0]; // Get the first element of the array
+                console.log("Query:", userData);
+                if (userData.interests && userData.music_preference) {
                     const requesterData = {
-                        appPurpose: userDataQuery.app_purpose,
-                        interests: userDataQuery.interests.split(','),
-                        music: userDataQuery.music_preference.split(','),
-                        pet: userDataQuery.pet_preference,
-                        sleep: userDataQuery.sleep_schedule,
-                        workout: userDataQuery.workout
+                        appPurpose: userData.app_purpose,
+                        interests: userData.interests.split(','),
+                        music: userData.music_preference.split(','),
+                        pet: userData.pet_preference,
+                        sleep: userData.sleep_schedule,
+                        workout: userData.workout
                     };
                     resolve(requesterData);
-                }else{
+                } 
+                else {
                     const requesterData = {
-                        appPurpose: userDataQuery.app_purpose,
+                        appPurpose: userData.app_purpose,
                         interests: 0.5,
                         music: 0.5,
-                        pet: userDataQuery.pet_preference,
-                        sleep: userDataQuery.sleep_schedule,
-                        workout: userDataQuery.workout
+                        pet: userData.pet_preference,
+                        sleep: userData.sleep_schedule,
+                        workout: userData.workout
                     };
                     resolve(requesterData);
-                }
-            } else {
-                reject(new Error('No data found for the requester'));
+                }            
             }
         });
     });
 }
+
 
 
 function calculateCompatibility(row, idOfRequester){
