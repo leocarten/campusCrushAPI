@@ -75,6 +75,11 @@ function calculateCompatibility(row, idOfRequester){
         requesterSleep = requesterData.sleep_schedule;
         requesterWorkout = requesterData.workout;
 
+        console.log(otherInterests);
+        console.log(otherMusic);
+        console.log(requesterInterests);
+        console.log(requesterMusic);
+
         const eloBetweenUsers = .9;
         const appPurposeBetweenUsers = appPurposeStats(otherAppPurpose, requesterAppPurpose);
         const interestsBetweenUsers = multiSelectionSimilarity(otherInterests, requesterInterests);
@@ -87,7 +92,6 @@ function calculateCompatibility(row, idOfRequester){
         const meetupBetweenUsers = 1;
         const modelResult = trainedNet([eloBetweenUsers, appPurposeBetweenUsers, interestsBetweenUsers, MusicsBetweenUsers, movieBetweenUsers, petsBetweenUsers, sleepBetweenUSers, workoutBetweenUsers, communicationBetweenUsers, meetupBetweenUsers])[0];
         return modelResult;
-
     })
     .catch(error => {
         // Handle error
