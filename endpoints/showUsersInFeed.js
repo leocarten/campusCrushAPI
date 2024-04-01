@@ -212,18 +212,17 @@ export const showItemsInFeed = (token) => {
                     // Loop through each row in the result array
                     result.forEach(row => {
                         calculateCompatibility(row, id)
-                        .then(compatibility => {
-                            // Once the compatibility is calculated, assign it to the row
-                            row.compatibility = compatibility;
-                            console.log("Compatibility calculated for row:", row.compatibility);
-                        })
-                        .catch(error => {
-                            // Handle any errors that occur during compatibility calculation
-                            row.compatibility = 0;
-                            console.error("Error calculating compatibility for row:", error);
-                        });
+                            .then(compatibility => {
+                                // Once the compatibility is calculated, assign it to the row
+                                row.compatibility = compatibility;
+                                console.log("Compatibility calculated for row:", row.compatibility);
+                            })
+                            .catch(error => {
+                                // Handle any errors that occur during compatibility calculation
+                                console.error("Error calculating compatibility for row:", error);
+                            });
                     });
-
+                    
                     // Resolve the result array after all compatibility calculations are done
                     resolve(result);
                 }
@@ -275,19 +274,19 @@ export const showItemsInFeed = (token) => {
                     // resolve(result);
                     // Assuming you're already inside a function or a block of code
 
-                    calculateCompatibility(row, id)
-                    .then(compatibility => {
-                        // Once the compatibility is calculated, assign it to the row
-                        row.compatibility = compatibility;
-                        console.log("Compatibility calculated for row:", row.compatibility);
-                    })
-                    .catch(error => {
-                        // Handle any errors that occur during compatibility calculation
-                        row.compatibility = 0;
-                        console.error("Error calculating compatibility for row:", error);
+                    result.forEach(row => {
+                        calculateCompatibility(row, id)
+                            .then(compatibility => {
+                                // Once the compatibility is calculated, assign it to the row
+                                row.compatibility = compatibility;
+                                console.log("Compatibility calculated for row:", row.compatibility);
+                            })
+                            .catch(error => {
+                                // Handle any errors that occur during compatibility calculation
+                                console.error("Error calculating compatibility for row:", error);
+                            });
                     });
 
-                    // Resolve the result array after all compatibility calculations are done
                     resolve(result);
 
                 }
