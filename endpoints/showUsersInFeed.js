@@ -15,6 +15,7 @@ function getRequesterData(idOfRequester) {
                 console.error('Error executing query in neural network: ', queryErr);
                 reject(queryErr);
             } else if (userDataQuery.length == 1) {
+                console.log("Query:",userDataQuery);
                 if(userDataQuery.interests.length >= 1 && userDataQuery.music_preference.length >= 1){
                     const requesterData = {
                         appPurpose: userDataQuery.app_purpose,
