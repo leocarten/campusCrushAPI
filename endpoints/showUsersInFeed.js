@@ -99,108 +99,6 @@ function calculateCompatibility(row, idOfRequester) {
 }
 
 
-
-// function calculateCompatibility(row, idOfRequester){
-//     // row will contain everything of the OTHER user
-//     const otherAppPurpose = row.app_purpose;
-//     const otherInterests = row.interests.split(',');
-//     const otherMusic = row.music_preference.split(',');
-//     const otherPet = row.pet_preference;
-//     const otherSleep = row.sleep_schedule;
-//     const otherWorkout = row.workout;
-
-
-//     // query based on requester ID
-//     let requesterAppPurpose;
-//     let requesterInterests;
-//     let requesterMusic;
-//     let requesterPet;
-//     let requesterSleep;
-//     let requesterWorkout;
-
-//     getRequesterData(idOfRequester)
-//     .then(requesterData => {
-//         // Use requesterData here
-//         requesterAppPurpose = requesterData.app_purpose;
-//         requesterInterests = requesterData.interests;
-//         requesterMusic = requesterData.music_preference;
-//         requesterPet = requesterData.pet_preference;
-//         requesterSleep = requesterData.sleep_schedule;
-//         requesterWorkout = requesterData.workout;
-
-//         console.log(otherInterests);
-//         console.log(otherMusic);
-//         console.log(requesterInterests);
-//         console.log(requesterMusic);
-
-//         const eloBetweenUsers = .9;
-//         const appPurposeBetweenUsers = appPurposeStats(otherAppPurpose, requesterAppPurpose);
-//         const interestsBetweenUsers = multiSelectionSimilarity(otherInterests, requesterInterests);
-//         const MusicsBetweenUsers = multiSelectionSimilarity(otherMusic, requesterMusic);
-//         const movieBetweenUsers = 1;
-//         const petsBetweenUsers = petStats(otherPet, requesterPet);
-//         const sleepBetweenUSers = sleepSchedule(otherSleep, requesterSleep);
-//         const workoutBetweenUsers = workoutStats(otherWorkout, requesterWorkout);
-//         const communicationBetweenUsers = 1;
-//         const meetupBetweenUsers = 1;
-
-//         console.log("eloBetweenUsers:", eloBetweenUsers);
-//         console.log("appPurposeBetweenUsers:", appPurposeBetweenUsers);
-//         console.log("interestsBetweenUsers:", interestsBetweenUsers);
-//         console.log("MusicsBetweenUsers:", MusicsBetweenUsers);
-//         console.log("movieBetweenUsers:", movieBetweenUsers);
-//         console.log("petsBetweenUsers:", petsBetweenUsers);
-//         console.log("sleepBetweenUSers:", sleepBetweenUSers);
-//         console.log("workoutBetweenUsers:", workoutBetweenUsers);
-//         console.log("communicationBetweenUsers:", communicationBetweenUsers);
-//         console.log("meetupBetweenUsers:", meetupBetweenUsers);
-
-//         const modelResult = trainedNet([eloBetweenUsers, appPurposeBetweenUsers, interestsBetweenUsers, MusicsBetweenUsers, movieBetweenUsers, petsBetweenUsers, sleepBetweenUSers, workoutBetweenUsers, communicationBetweenUsers, meetupBetweenUsers])[0];
-//         return modelResult;
-//     })
-//     .catch(error => {
-//         // Handle error
-//         console.error(error);
-//         return 0;
-//     });
-
-
-//     // const getUserData = 'SELECT app_purpose, interests, music_preference, pet_preference, sleep_schedule, workout from info_to_display WHERE id = ?';
-//     // pool.query(getUserData, [idOfRequester], (queryErr, userDataQuery) => {
-//     //     if (queryErr) {
-//     //         console.error('Error executing query in neural network: ', queryErr);
-//     //         requesterAppPurpose = 0;
-//     //         requesterInterests = 0;
-//     //         requesterMusic = 0;
-//     //         requesterPet = 0;
-//     //         requesterSleep = 0;
-//     //         requesterWorkout = 0;
-//     //         reject(queryErr)
-//     //     }else if(userDataQuery.length == 1){
-//     //         requesterAppPurpose = userDataQuery.app_purpose;
-//     //         requesterInterests = userDataQuery.interests.split(',');
-//     //         requesterMusic = userDataQuery.music_preference.split(',');
-//     //         requesterPet = userDataQuery.pet_preference;
-//     //         requesterSleep = userDataQuery.sleep_schedule;
-//     //         requesterWorkout = userDataQuery.workout;
-//     //         resolve({success: true});
-//     //     }
-//     // })
-
-//     // const eloBetweenUsers = .9;
-//     // const appPurposeBetweenUsers = appPurposeStats(otherAppPurpose, requesterAppPurpose);
-//     // const interestsBetweenUsers = multiSelectionSimilarity(otherInterests, requesterInterests);
-//     // const MusicsBetweenUsers = multiSelectionSimilarity(otherMusic, requesterMusic);
-//     // const movieBetweenUsers = 1;
-//     // const petsBetweenUsers = petStats(otherPet, requesterPet);
-//     // const sleepBetweenUSers = sleepSchedule(otherSleep, requesterSleep);
-//     // const workoutBetweenUsers = workoutStats(otherWorkout, requesterWorkout);
-//     // const communicationBetweenUsers = 1;
-//     // const meetupBetweenUsers = 1;
-//     // const modelResult = trainedNet([eloBetweenUsers, appPurposeBetweenUsers, interestsBetweenUsers, MusicsBetweenUsers, movieBetweenUsers, petsBetweenUsers, sleepBetweenUSers, workoutBetweenUsers, communicationBetweenUsers, meetupBetweenUsers])[0];
-//     // return modelResult;
-// }
-
 export const showItemsInFeed = (token) => {
     return new Promise((resolve, reject) => {
         // eventually I need to add parameters here for picking certain genders, app purposes, etc.
@@ -252,33 +150,6 @@ export const showItemsInFeed = (token) => {
                 if (err) {
                     reject(err);
                 } else {
-                    // // console.log("Result before adding compatibility:", result);
-                    // result.forEach(row => {
-                    //     // Calculate compatibility here based on the fields in the 'row'
-                    //     row.compatibility = calculateCompatibility(row);
-                    //     console.log("Compatibility calculated for row:", row.compatibility, id);
-                    // });
-                    // // console.log("Result after adding compatibility:", result);
-                    // resolve(result);
-
-
-                    // // Loop through each row in the result array
-                    // result.forEach(row => {
-                    //     calculateCompatibility(row, id)
-                    //         .then(compatibility => {
-                    //             // Once the compatibility is calculated, assign it to the row
-                    //             row.compatibility = compatibility;
-                    //             console.log("Compatibility calculated for row:", row.compatibility);
-                    //         })
-                    //         .catch(error => {
-                    //             // Handle any errors that occur during compatibility calculation
-                    //             row.compatibility = 0;
-                    //             console.error("Error calculating compatibility for row:", error);
-                    //         });
-                    // });
-                    
-                    // // Resolve the result array after all compatibility calculations are done
-                    // resolve(result);
 
                     const compatibilityPromises = [];
 
@@ -302,13 +173,10 @@ export const showItemsInFeed = (token) => {
                     // Wait for all compatibility calculations to complete
                     Promise.all(compatibilityPromises)
                         .then(() => {
-                            // Once all calculations are done, resolve result
                             resolve(result);
                         })
                         .catch(error => {
-                            // Handle any errors that occur during compatibility calculations
                             console.error("Error calculating compatibility for one or more rows:", error);
-                            // Still resolve result if an error occurs, or you may choose to reject
                             resolve(result);
                         });
                 }
@@ -350,37 +218,9 @@ export const showItemsInFeed = (token) => {
                 if (err) {
                     reject(err);
                 } else {
-                    // // console.log("Result before adding compatibility:", result);
-                    // result.forEach(row => {
-                    //     // Calculate compatibility here based on the fields in the 'row'
-                    //     row.compatibility = calculateCompatibility(row);
-                    //     console.log("Compatibility calculated for row:", row.compatibility, id);
-                    // });
-                    // // console.log("Result after adding compatibility:", result);
-                    // resolve(result);
-                    // Assuming you're already inside a function or a block of code
-
-                    // result.forEach(row => {
-                    //     calculateCompatibility(row, id)
-                    //         .then(compatibility => {
-                    //             // Once the compatibility is calculated, assign it to the row
-                    //             row.compatibility = compatibility;
-                    //             console.log("Compatibility calculated for row:", row.compatibility);
-                    //         })
-                    //         .catch(error => {
-                    //             // Handle any errors that occur during compatibility calculation
-                    //             row.compatibility = 0;
-                    //             console.error("Error calculating compatibility for row:", error);
-                    //         });
-                    // });
-
-                    // resolve(result);
-
-                    // Array to hold promises for compatibility calculations
                     const compatibilityPromises = [];
 
                     result.forEach(row => {
-                        // Push each compatibility calculation promise into the array
                         compatibilityPromises.push(
                             calculateCompatibility(row, id)
                                 .then(compatibility => {
@@ -399,17 +239,12 @@ export const showItemsInFeed = (token) => {
                     // Wait for all compatibility calculations to complete
                     Promise.all(compatibilityPromises)
                         .then(() => {
-                            // Once all calculations are done, resolve result
                             resolve(result);
                         })
                         .catch(error => {
-                            // Handle any errors that occur during compatibility calculations
                             console.error("Error calculating compatibility for one or more rows:", error);
-                            // Still resolve result if an error occurs, or you may choose to reject
                             resolve(result);
                         });
-
-
                 }
             });
         }
