@@ -23,7 +23,7 @@ export const showItemsInFeed = (token) => {
         console.log("proximity:",proximity);
         console.log(proximity*2);
 
-        if(genderUserWantsToSee == 1 || genderUserWantsToSee){
+        if(genderUserWantsToSee == 1 || genderUserWantsToSee == 2){
             pool.query(`
             SELECT 
                 info_to_display.id,first_name, dob, bio, bucket_list, interests, pet_preference, app_purpose, bitmoji_type, pictures, is_verified, job, music_preference, has_tattoos, sleep_schedule, win_my_heart, workout, communication_style, ideal_first_meetup, distance
