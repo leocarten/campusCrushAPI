@@ -7,7 +7,7 @@ import { sleepSchedule } from './statistics/sleepStats.js';
 import { movieStats } from './statistics/movieGenre.js';
 import { workoutStats } from './statistics/workout.js';
 import { communicationStats } from './statistics/communicationStyle.js';
-import { idealFirstMeetupStats } from './statistics/ideaFirstMeetup.js';
+import { idealFirstMeetupStats } from './statistics/idealFirstMeetup.js';
 
 // // PERSON 1
 // const elo1 = .88;
