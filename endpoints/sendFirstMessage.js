@@ -110,8 +110,9 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                                                     const updateMessagesStreak = `
                                                                     UPDATE users
                                                                     SET messaging_streak = CASE 
-                                                                            WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN messaging_streak + 1
-                                                                            ELSE messaging_streak + 50
+                                                                            WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN messaging_streak + 1 
+                                                                            
+                                                                            ELSE 1
                                                                         END,
                                                                         tracker_message_timestamp_column = CASE
                                                                             WHEN NOW() BETWEEN DATE_ADD(tracker_message_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
