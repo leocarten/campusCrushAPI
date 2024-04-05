@@ -111,7 +111,7 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                                                     UPDATE users
                                                                     SET messaging_streak = CASE 
                                                                             WHEN messaging_timestamp_column BETWEEN DATE_ADD(NOW(), INTERVAL 24 HOUR) AND DATE_ADD(NOW(), INTERVAL 48 HOUR) THEN messaging_streak + 1
-                                                                            ELSE 1
+                                                                            ELSE 100
                                                                         END,
                                                                         tracker_message_timestamp_column = CASE
                                                                             WHEN messaging_timestamp_column BETWEEN DATE_ADD(NOW(), INTERVAL 24 HOUR) AND DATE_ADD(NOW(), INTERVAL 48 HOUR) THEN NOW()
@@ -130,6 +130,8 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                                                             resolve({success: true});
                                                                         }
                                                                     });
+                                                                }else{
+                                                                    console.log("Wasnt 24 hours after.")
                                                                 }
                                                                 resolve({success: true});
                                                             }
