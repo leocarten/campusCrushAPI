@@ -80,14 +80,61 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                             // const proximity = 50;
                                             // const accessToken = generateAccessAndRefreshToken(user_id, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, wants_to_be_shown, 'filter...', lat, long_, proximity);
                                             // const refreshToken = generateAccessAndRefreshToken(user_id, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, wants_to_be_shown, 'filter...', lat, long_, proximity);
-                                                            // update points
+                                            // update points
                                             const firstMessagePointUpdate = 'UPDATE users set points = points + 25 where id = ?';
                                             pool.query(firstMessagePointUpdate, [senderID], (pointsQueryError, pointsSuccess) => {
                                                 if(pointsQueryError){
                                                     reject(pointsQueryError);
                                                 }
                                                 else{
-                                                    resolve({success: true});
+                                                    // need to update streak
+                                                        // get time stamp of last message sent, assign it to x
+                                                        // if x is between 24 and 48 hours after the new message is sent, update x to now, increase counter
+                                                        // else: update x to now, make counter = 1
+                                                    
+                                                        const getTracker = 'SELECT tracker_message_timestamp_column from users where id = ?';
+                                                        const currentTime = new Date();
+                                                        pool.query(getTracker, [senderID], (error, results) => {
+                                                            if (error) {
+                                                                console.error('Error fetching tracker timestamp:', error);
+                                                                reject(error)
+                                                            }
+                                                        
+                                                            else{
+                                                                const trackerTimestamp = new Date(results[0].tracker_message_timestamp_column);
+                                                                const timeDifference = currentTime.getTime() - trackerTimestamp.getTime();
+                                                                const hoursDifference = timeDifference / (1000 * 60 * 60);
+                                                        
+                                                                if (hoursDifference >= 24) {
+                                                                    console.log("Current time is at least 24 hours after the timestamp from the query.");
+                                                                    const updateMessagesStreak = `
+                                                                    UPDATE users
+                                                                    SET messaging_streak = CASE 
+                                                                            WHEN messaging_timestamp_column BETWEEN DATE_ADD(NOW(), INTERVAL 24 HOUR) AND DATE_ADD(NOW(), INTERVAL 48 HOUR) THEN messaging_streak + 1
+                                                                            ELSE 1
+                                                                        END,
+                                                                        tracker_message_timestamp_column = CASE
+                                                                            WHEN messaging_timestamp_column BETWEEN DATE_ADD(NOW(), INTERVAL 24 HOUR) AND DATE_ADD(NOW(), INTERVAL 48 HOUR) THEN NOW()
+                                                                            ELSE tracker_message_timestamp_column
+                                                                        END,
+                                                                        messaging_timestamp_column = CASE
+                                                                            WHEN messaging_timestamp_column BETWEEN DATE_ADD(NOW(), INTERVAL 24 HOUR) AND DATE_ADD(NOW(), INTERVAL 48 HOUR) THEN NOW()
+                                                                            ELSE messaging_timestamp_column
+                                                                        END
+                                                                    WHERE id = ?;
+                                                                    `;
+                                                                    pool.query(updateMessagesStreak, [senderID], (updateError, result) => {
+                                                                        if(updateError){
+                                                                            reject(updateError);
+                                                                        }else{
+                                                                            resolve({success: true});
+                                                                        }
+                                                                    });
+                                                                }
+                                                                resolve({success: true});
+                                                            }
+                                                        });
+
                                                 }
                                             });
                                             
