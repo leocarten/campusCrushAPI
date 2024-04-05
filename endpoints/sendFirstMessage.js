@@ -114,11 +114,13 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                                                             ELSE 100
                                                                         END,
                                                                         tracker_message_timestamp_column = CASE
-                                                                            WHEN messaging_timestamp_column BETWEEN DATE_ADD(NOW(), INTERVAL 24 HOUR) AND DATE_ADD(NOW(), INTERVAL 48 HOUR) THEN NOW()
+                                                                            WHEN tracker_message_timestamp_column BETWEEN DATE_ADD(NOW(), INTERVAL 24 HOUR) AND DATE_ADD(NOW(), INTERVAL 48 HOUR) THEN NOW()
+                                                                            WHEN NOW() > DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
                                                                             ELSE tracker_message_timestamp_column
                                                                         END,
                                                                         messaging_timestamp_column = CASE
                                                                             WHEN messaging_timestamp_column BETWEEN DATE_ADD(NOW(), INTERVAL 24 HOUR) AND DATE_ADD(NOW(), INTERVAL 48 HOUR) THEN NOW()
+                                                                            WHEN NOW() > DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
                                                                             ELSE messaging_timestamp_column
                                                                         END
                                                                     WHERE id = ?;
