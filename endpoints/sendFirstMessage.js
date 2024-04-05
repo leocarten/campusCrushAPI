@@ -45,9 +45,10 @@ export const sendFirstMessage = async (token, message, recieverID) => {
               return;
             }
             else if(queryCheckResults.length === 0){ // it doesn't exist!!
+
                 const sql = 'INSERT INTO all_messages_interface (originalSenderID,mostRecentMessage,IdOfPersonWhoSentLastMessage,hasOpenedMessage,originalRecieverID) VALUES (?, ?, ?, ?, ?)';
-                const values = [senderID,message,IdOfPersonWhoSentLastMessage,hasOpenedMessage,recieverID];
-        
+                const values = [senderID,message,IdOfPersonWhoSentLastMessage,hasOpenedMessage,recieverID];                
+
                 pool.query(sql, values, (queryErr, result) => {
                     if (queryErr) {
                         console.error('Error executing query:', queryErr);
@@ -79,7 +80,17 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                             // const proximity = 50;
                                             // const accessToken = generateAccessAndRefreshToken(user_id, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, wants_to_be_shown, 'filter...', lat, long_, proximity);
                                             // const refreshToken = generateAccessAndRefreshToken(user_id, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, wants_to_be_shown, 'filter...', lat, long_, proximity);
-                                            resolve({success: true});
+                                                            // update points
+                                            const firstMessagePointUpdate = 'UPDATE users set points = points + 25 where id = ?';
+                                            pool.query(firstMessagePointUpdate, [senderID], (pointsQueryError, pointsSuccess) => {
+                                                if(pointsQueryError){
+                                                    reject(pointsQueryError);
+                                                }
+                                                else{
+                                                    resolve({success: true});
+                                                }
+                                            });
+                                            
                                             // resolve({ success: true, message: "User created successfully." });
                                         }
                                     });
