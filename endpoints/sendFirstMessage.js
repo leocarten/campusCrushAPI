@@ -1,9 +1,10 @@
 import pool from '../db/connectionPool.js';
 import { authenticateUsersJWT } from '../jwt/verifyJwt.js';
 import { jwtDecode } from "jwt-decode";
+import { sendAdditionalMessages } from './sendAdditionalMessages.js';
 
-export const sendFirstMessage = (token, message, recieverID) => {
-    return new Promise((resolve, reject) => {
+export const sendFirstMessage = async (token, message, recieverID) => {
+    return new Promise(async (resolve, reject) => {
         // get the sender ID from token
 
         // get the client ID from the body
@@ -38,7 +39,7 @@ export const sendFirstMessage = (token, message, recieverID) => {
 
         // query to make sure it doesn't exist:
         const queryCheck = 'SELECT convoID FROM all_messages_interface WHERE originalSenderID = ? AND originalRecieverID = ?';
-        pool.query(queryCheck, [senderID, recieverID], (queryErr, queryCheckResults) => {
+        pool.query(queryCheck, [senderID, recieverID], async (queryErr, queryCheckResults) => {
             if (queryErr) {
               console.error('Error executing query: ', queryErr);
               return;
@@ -93,15 +94,15 @@ export const sendFirstMessage = (token, message, recieverID) => {
                 });
             }
             else{
-                resolve({success: false, message: "Conversation already started."});
+                try{
+                    const feed = await sendAdditionalMessages(token, message, senderID, recieverID);
+                    res.json({results: feed})
+                }catch(error){
+                    resolve({success: false, message: "Error in sending new message"});
+                }
+
             }
           });
           
-
-
-
-        
-
-
     });
 };
