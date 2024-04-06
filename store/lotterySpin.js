@@ -9,6 +9,7 @@ export const lotterySpin = (token) => {
       console.log('id:',id);
       const verificationQuery = 'SELECT points from users WHERE id = ?';
       pool.query(verificationQuery, [id], (err, result, fields) => {
+        console.log('points: ',result);
         if (err) {
           reject(err);
         } else if(result >= 50) {
