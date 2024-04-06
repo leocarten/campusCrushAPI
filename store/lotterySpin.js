@@ -12,8 +12,8 @@ export const lotterySpin = (token) => {
         if (err) {
           reject(err);
         } else if(result[0]['points'] >= 50) {
-            const mean = 25;
-            const min = 15;
+            const mean = 28;
+            const min = 19;
             const max = 200;
             const random = Math.random();
             const randomNumber = Math.round(random * (max - min) + min + (mean - (max + min) / 2));
