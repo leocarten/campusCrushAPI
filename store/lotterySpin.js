@@ -12,19 +12,20 @@ export const lotterySpin = (token) => {
         if (err) {
           reject(err);
         } else if(result[0]['points'] >= 50) {
-            const mean = 34;
+            const mean = 30;
             const min = 20;
             const max = 300;
             const random = Math.random();
             const randomNumber = Math.round(random * (max - min) + min + (mean - (max + min) / 2));
-            const userNewBalance = (result[0]['points'] + randomNumber) - 50;
+            const lotteryPoints = Math.abs(randomNumber);
+            const userNewBalance = (result[0]['points'] + lotteryPoints) - 50;
 
             const updateQuery = 'UPDATE users set points = points + ? where id = ?';
             pool.query(updateQuery, [userNewBalance, id], (updateError, result) => {
                 if(updateError){
                     reject(updateError);
                 }else{
-                    resolve({success: true, newBalance: userNewBalance, lotteryTokens: randomNumber});
+                    resolve({success: true, newBalance: userNewBalance, lotteryTokens: lotteryPoints});
                 }
             })
         }else{
