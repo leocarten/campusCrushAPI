@@ -51,8 +51,9 @@ export const sendAdditionalMessages = (token, message, id1, id2) => {
                         server_error = true;
                         reject(queryErr);
                     } else {
-                        const updateLastSentMessage = 'UPDATE all_messages_interface SET mostRecentMessage = ?, IdOfPersonWhoSentLastMessage = ?, hasOpenedMessage = ? WHERE convoID = ?';
-                        pool.query(updateLastSentMessage, [message, senderID, hasOpenedMessage, convoID], (queryError, result) => {
+                        const currentTime = new Date();
+                        const updateLastSentMessage = 'UPDATE all_messages_interface SET mostRecentMessage = ?, IdOfPersonWhoSentLastMessage = ?, hasOpenedMessage = ?, timestamp = ? WHERE convoID = ?';
+                        pool.query(updateLastSentMessage, [message, senderID, hasOpenedMessage, currentTime, convoID], (queryError, result) => {
                             if (queryError) {
                                 console.error('Error executing third query:', queryError);
                                 server_error = true;
@@ -82,8 +83,9 @@ export const sendAdditionalMessages = (token, message, id1, id2) => {
                                 server_error = true;
                                 reject(queryErr);
                             } else {
-                                const updateLastSentMessage = 'UPDATE all_messages_interface SET mostRecentMessage = ?, IdOfPersonWhoSentLastMessage = ?, hasOpenedMessage = ? WHERE convoID = ?';
-                                pool.query(updateLastSentMessage, [message, senderID, hasOpenedMessage, convoID], (queryError, result) => {
+                                const currentTime = new Date();
+                                const updateLastSentMessage = 'UPDATE all_messages_interface SET mostRecentMessage = ?, IdOfPersonWhoSentLastMessage = ?, hasOpenedMessage = ?, timestamp = ? WHERE convoID = ?';
+                                pool.query(updateLastSentMessage, [message, senderID, hasOpenedMessage, currentTime, convoID], (queryError, result) => {
                                     if (queryError) {
                                         console.error('Error executing third query:', queryError);
                                         server_error = true;
