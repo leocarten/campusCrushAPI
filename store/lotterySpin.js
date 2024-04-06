@@ -19,6 +19,9 @@ export const lotterySpin = (token) => {
             const randomNumber = Math.round(random * (max - min) + min + (mean - (max + min) / 2));
             const lotteryPoints = Math.abs(randomNumber);
             const userNewBalance = (result[0]['points'] + lotteryPoints) - 50;
+            console.log("User current balance: ",result[0]['points']);
+            console.log("User just won: ", lotteryPoints);
+            console.log("New balance: ", (result[0]['points'] + lotteryPoints) - 50);
 
             const updateQuery = 'UPDATE users set points = points + ? where id = ?';
             pool.query(updateQuery, [userNewBalance, id], (updateError, result) => {
