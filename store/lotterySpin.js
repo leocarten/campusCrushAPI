@@ -9,17 +9,15 @@ export const lotterySpin = (token) => {
       console.log('id:',id);
       const verificationQuery = 'SELECT points from users WHERE id = ?';
       pool.query(verificationQuery, [id], (err, result, fields) => {
-        console.log('points: ',result);
         if (err) {
           reject(err);
-        } else if(result >= 50) {
-
+        } else if(result[0]['points'] >= 50) {
             const mean = 34;
             const min = 20;
             const max = 300;
             const random = Math.random();
             const randomNumber = Math.round(random * (max - min) + min + (mean - (max + min) / 2));
-            const userNewBalance = (result + randomNumber) - 50;
+            const userNewBalance = (result[0]['points'] + randomNumber) - 50;
 
             const updateQuery = 'UPDATE users set points = points + ? where id = ?';
             pool.query(updateQuery, [userNewBalance, id], (updateError, result) => {
