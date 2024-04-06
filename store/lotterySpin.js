@@ -1,4 +1,4 @@
-import pool from "../db/connectionPool";
+import pool from "../db/connectionPool.js";
 import { jwtDecode } from "jwt-decode";
 
 export const lotterySpin = (token) => {
