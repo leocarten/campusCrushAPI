@@ -23,7 +23,7 @@ export const lotterySpin = (token) => {
             console.log("User just won: ", lotteryPoints);
             console.log("New balance: ", (result[0]['points'] + lotteryPoints) - 50);
 
-            const updateQuery = 'UPDATE users set points = points + ? where id = ?';
+            const updateQuery = 'UPDATE users set points = ? where id = ?';
             pool.query(updateQuery, [userNewBalance, id], (updateError, result) => {
                 if(updateError){
                     reject(updateError);
