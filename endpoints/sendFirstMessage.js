@@ -5,27 +5,6 @@ import { sendAdditionalMessages } from './sendAdditionalMessages.js';
 
 export const sendFirstMessage = async (token, message, recieverID) => {
     return new Promise(async (resolve, reject) => {
-        // get the sender ID from token
-
-        // get the client ID from the body
-
-        // Check that there is NO pre-existing row such that the original sender is senderID, and original reciever is recieverID
-
-        // If there is no row:
-            // Insert into conversation table: 
-                // create new convoID (database will do this)
-                // originalSenderID = ID from JWT
-                // originalRecieverID = ID from body
-                // mostRecentMessage = first message sent
-                // IdOfPersonWhoLastSentMessage = id from jwt
-                // has been opened = 0
-                // INSERT into the messaging table:
-                    // convoID from previous query
-                    // message content
-                    // sender of the message ID
-                    // update the message ID 
-
-
         const decodedToken = jwtDecode(token);
         console.log('the decoded token:',decodedToken);
         const senderID = decodedToken['id'];
@@ -38,8 +17,8 @@ export const sendFirstMessage = async (token, message, recieverID) => {
 
 
         // query to make sure it doesn't exist:
-        const queryCheck = 'SELECT convoID FROM all_messages_interface WHERE originalSenderID = ? AND originalRecieverID = ?';
-        pool.query(queryCheck, [senderID, recieverID], async (queryErr, queryCheckResults) => {
+        const queryCheck = 'SELECT convoID FROM all_messages_interface WHERE originalSenderID = ? AND originalRecieverID = ? or originalSenderID = ? AND originalRecieverID = ?';
+        pool.query(queryCheck, [senderID, recieverID, recieverID, senderID], async (queryErr, queryCheckResults) => {
             if (queryErr) {
               console.error('Error executing query: ', queryErr);
               return;
