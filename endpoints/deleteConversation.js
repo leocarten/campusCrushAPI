@@ -7,8 +7,8 @@ export const deleteConversation = (token, convoID, id1, id2, id3) => {
       console.log('the decoded token:',decodedToken);
       const id = decodedToken['id'];
       console.log('id:',id);
-      const firstQuery = 'Select convoID from all_messages_interface where originalSenderID = ? and originalRecieverID = ?';
-      pool.query(firstQuery, [id, id1], (firstQueryError, result) => {
+      const firstQuery = 'Select convoID from all_messages_interface where originalSenderID = ? and originalRecieverID = ? or originalSenderID = ? and originalRecieverID = ?';
+      pool.query(firstQuery, [id, id1, id1, id], (firstQueryError, result) => {
         if(firstQueryError){
             reject(firstQueryError);
         }
@@ -24,8 +24,8 @@ export const deleteConversation = (token, convoID, id1, id2, id3) => {
             }
         }else{
             // try id2
-            const secondQuery = 'Select convoID from all_messages_interface where originalSenderID = ? and originalRecieverID = ?';
-            pool.query(secondQuery, [id, id2], (secondQueryError, result1) => {
+            const secondQuery = 'Select convoID from all_messages_interface where originalSenderID = ? and originalRecieverID = ? or originalSenderID = ? and originalRecieverID = ?';
+            pool.query(secondQuery, [id, id2, id2, id], (secondQueryError, result1) => {
                 if(secondQueryError){
                     reject(secondQueryError);
                 }else if(result1.length == 1){
@@ -39,8 +39,8 @@ export const deleteConversation = (token, convoID, id1, id2, id3) => {
                     }
                 }else{
                     // try id 3
-                    const thirdQuery = 'Select convoID from all_messages_interface where originalSenderID = ? and originalRecieverID = ?';
-                    pool.query(thirdQuery, [id, id3], (thirdQueryError, result2) => {
+                    const thirdQuery = 'Select convoID from all_messages_interface where originalSenderID = ? and originalRecieverID = ? or originalSenderID = ? and originalRecieverID = ?';
+                    pool.query(thirdQuery, [id, id3, id3, id], (thirdQueryError, result2) => {
                         if(thirdQueryError){
                             reject(thirdQueryError);
                         }else if(result2.length == 1){
