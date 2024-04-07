@@ -16,8 +16,22 @@ export const deleteConversation = (token, convoID, id1, id2, id3) => {
             // delete if convo id = this id we queried
             const convoID_from_db = result[0].convoID;
             if(convoID_from_db == convoID){
-                console.log("We should delete this.")
-                resolve({success: true});
+                console.log("We should delete this.");
+                const deleteQuery = 'Delete from all_messages_interface where convoID=?';
+                const otherDeleteQuery = 'Delete from messages where convoID=?';
+                pool.query(deleteQuery, [convoID_from_db], (deleteQueryError, deleteResult) => {
+                    if(deleteQueryError){
+                        reject(deleteQueryError)
+                    }else{
+                        pool.query(otherDeleteQuery, [convoID_from_db], (otherDeleteQueryError, deleteResult) => {
+                            if(otherDeleteQueryError){
+                                reject(otherDeleteQueryError)
+                            }else{
+                                resolve({success: true});
+                            }
+                        })
+                    }
+                })
             }
             else{
                 resolve({success: false, message: "Could not verify conversation correctly"});
@@ -32,7 +46,21 @@ export const deleteConversation = (token, convoID, id1, id2, id3) => {
                     const convoID_from_db = result1[0].convoID;
                     if(convoID_from_db == convoID){
                         console.log("We should delete this.")
-                        resolve({success: true});
+                        const deleteQuery = 'Delete from all_messages_interface where convoID=?';
+                        const otherDeleteQuery = 'Delete from messages where convoID=?';
+                        pool.query(deleteQuery, [convoID_from_db], (deleteQueryError, deleteResult) => {
+                            if(deleteQueryError){
+                                reject(deleteQueryError)
+                            }else{
+                                pool.query(otherDeleteQuery, [convoID_from_db], (otherDeleteQueryError, deleteResult) => {
+                                    if(otherDeleteQueryError){
+                                        reject(otherDeleteQueryError)
+                                    }else{
+                                        resolve({success: true});
+                                    }
+                                })
+                            }
+                        })
                     }
                     else{
                         resolve({success: false, message: "Could not verify conversation correctly"});
@@ -46,8 +74,21 @@ export const deleteConversation = (token, convoID, id1, id2, id3) => {
                         }else if(result2.length == 1){
                             const convoID_from_db = result2[0].convoID;
                             if(convoID_from_db == convoID){
-                                console.log("We should delete this.")
-                                resolve({success: true});
+                                const deleteQuery = 'Delete from all_messages_interface where convoID=?';
+                                const otherDeleteQuery = 'Delete from messages where convoID=?';
+                                pool.query(deleteQuery, [convoID_from_db], (deleteQueryError, deleteResult) => {
+                                    if(deleteQueryError){
+                                        reject(deleteQueryError)
+                                    }else{
+                                        pool.query(otherDeleteQuery, [convoID_from_db], (otherDeleteQueryError, deleteResult) => {
+                                            if(otherDeleteQueryError){
+                                                reject(otherDeleteQueryError)
+                                            }else{
+                                                resolve({success: true});
+                                            }
+                                        })
+                                    }
+                                })
                             }
                             else{
                                 resolve({success: false, message: "Could not verify conversation correctly"});
