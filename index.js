@@ -17,6 +17,7 @@ import cors from 'cors';
 import { authenticateUserInSocket } from './sockets/authenticateUserInSocket.js';
 import { viewPoints } from './endpoints/viewPoints.js';
 import { lotterySpin } from './store/lotterySpin.js';
+import { deleteConversation } from './endpoints/deleteConversation.js';
 
 // ports
 const WS_PORT = 5002; // WebSocket server port
@@ -401,6 +402,38 @@ app.post('/lotterySpin', async (req, res) => {
       console.log('token to use from view',tokenToUse);
       const thisUserProfile = await lotterySpin(tokenToUse);
       res.json({success: true, results: thisUserProfile})
+    }else{
+      res.json({message: "We were unable to proceed in viewPoints route."})
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Internal Server Error viewPoints route.');
+  }
+});
+
+
+app.post('/deleteConversation', async (req, res) => {
+  try {
+    const typeOfVerification = req.body['type'];
+    console.log(typeOfVerification);
+    let verifyUser;
+    console.log("You just sent me:",typeOfVerification);
+    if(typeOfVerification === 'access'){
+      console.log("Reached access");
+      verifyUser = await authenticateUser(req,true);
+    }else{
+      console.log("Else access")
+      verifyUser = await authenticateUser(req,false);
+    }
+    if(verifyUser['success'] === true){
+      const tokenToUse = req.body['tokenFromUser'];
+      const convoID = req.body['convoID'];
+      const id1 = req.body['id1'];
+      const id2 = req.body['id2'];
+      const id3 = req.body['id3'];
+      console.log('token to use from view',tokenToUse);
+      const thisUserProfile = await deleteConversation(tokenToUse, convoID, id1, id2, id3);
+      res.json({success: true, results: thisUserProfile});
     }else{
       res.json({message: "We were unable to proceed in viewPoints route."})
     }
