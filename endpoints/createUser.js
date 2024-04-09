@@ -48,7 +48,7 @@ export const createUser = (req) => {
             new_music_preference = null;
         }
 
-        const messages_sent = 0;
+        const messages_sent = 3;
         const points = 100;
         var hash = crypto.createHash('sha256');
         var data = hash.update(password, 'utf-8');
