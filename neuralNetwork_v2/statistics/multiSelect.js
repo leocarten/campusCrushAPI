@@ -30,13 +30,18 @@ function odds(array1, array2) {
 }
 
 export const multiSelectionSimilarity = (array1, array2) => {
-    const currentOdds = odds(array1, array2);
-    if(currentOdds != 1){
-        const half = currentOdds * 0.25;
-        if(currentOdds + half < 1){
-            return (currentOdds + half).toFixed(4);
-        }
-        return (currentOdds).toFixed(4);
+    if(array1 == null || array1.length == 0 || array2 == null || array2.length == 0){
+        return 0.25;
     }
-    return currentOdds.toFixed(4);
+    else{
+        const currentOdds = odds(array1, array2);
+        if(currentOdds != 1){
+            const half = currentOdds * 0.25;
+            if(currentOdds + half < 1){
+                return (currentOdds + half).toFixed(4);
+            }
+            return (currentOdds).toFixed(4);
+        }
+        return currentOdds.toFixed(4);
+    }
 }
