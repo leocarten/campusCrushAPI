@@ -75,13 +75,13 @@ function calculateCompatibility(row, idOfRequester) {
                 var requesterInterests = requesterData.interests;
                 var requesterMusic = requesterData.music_preference;
 
-                if(requesterInterests != null && requesterInterests != "" && requesterInterests.length != 0){
+                if(typeof requesterInterests === 'string' && requesterInterests.trim() !== ''){
                     requesterInterests = requesterInterests.split(',');
                 }else{
                     requesterInterests = [];
                 }
         
-                if(requesterMusic != null && requesterMusic != "" && requesterMusic.length != 0){
+                if(typeof requesterMusic === 'string' && requesterMusic.trim() !== ''){
                     requesterMusic = requesterMusic.split(',');
                 }else{
                     requesterMusic = [];
