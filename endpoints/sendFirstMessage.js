@@ -25,115 +25,269 @@ export const sendFirstMessage = async (token, message, recieverID) => {
             }
             else if(queryCheckResults.length === 0){ // it doesn't exist!!
 
-                const sql = 'INSERT INTO all_messages_interface (originalSenderID,mostRecentMessage,IdOfPersonWhoSentLastMessage,hasOpenedMessage,originalRecieverID) VALUES (?, ?, ?, ?, ?)';
-                const values = [senderID,message,IdOfPersonWhoSentLastMessage,hasOpenedMessage,recieverID];                
+                // check to make sure that the user has enough messages available!!
+                const available_messages_query = "Select start_time, end_time, messages_sent from users where id = ?";
+                pool.query(available_messages_query, [senderID], (availableMessageError, times_and_messages) => {
+                    if(availableMessageError){
+                        reject(availableMessageError)
+                    }
+                    else{
+                        // check to see if we can send the message
+                        // we should check:
+                            // if ((now() is between start and end) && (messages >= 0)) || (now() >= end time)
+                                // figure out which condition, and send message!!
 
-                pool.query(sql, values, (queryErr, result) => {
-                    if (queryErr) {
-                        console.error('Error executing query:', queryErr);
-                        server_error = true;
-                        reject(queryErr);
-                    } else {
-                        pool.query('SELECT MAX(convoID) as max_id FROM all_messages_interface;', (error, results, fields) => {
-                            if (error) {
-                                console.error('Error executing second query:', error);
-                                server_error = true;
-                                reject(error);
-                            } else {
-                                console.log("results:",results);
-                                if (results && results.length > 0 && results[0].max_id !== null) {
-                                    const convoID = results[0].max_id;
-                                    const new_query = 'INSERT INTO messages (convoID,messageContent,senderID) VALUES (?,?,?)';
-                                    const new_values = [convoID,message,senderID];
-                                    pool.query(new_query, new_values, (queryErr, result) => {
-                                        if (queryErr) {
-                                            console.error('Error executing third query:', queryErr);
-                                            server_error = true;
-                                            reject(queryErr);
-                                        } else {
-                                            // Create a JWT from the user and assign it to them!
-                                            // const accessAge = getRandomNumber(50,80);
-                                            // const accessAgeToMinutes = accessAge * 60;
-                                            // const refreshAge = getRandomNumber(7,11);
-                                            // const refreshAgeToDays = refreshAge * 24 * 60 * 60;
-                                            // const proximity = 50;
-                                            // const accessToken = generateAccessAndRefreshToken(user_id, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, wants_to_be_shown, 'filter...', lat, long_, proximity);
-                                            // const refreshToken = generateAccessAndRefreshToken(user_id, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, wants_to_be_shown, 'filter...', lat, long_, proximity);
-                                            // update points
-                                            const firstMessagePointUpdate = 'UPDATE users set points = points + 25 where id = ?';
-                                            pool.query(firstMessagePointUpdate, [senderID], (pointsQueryError, pointsSuccess) => {
-                                                if(pointsQueryError){
-                                                    reject(pointsQueryError);
-                                                }
-                                                else{
-                                                    // need to update streak
-                                                        // get time stamp of last message sent, assign it to x
-                                                        // if x is between 24 and 48 hours after the new message is sent, update x to now, increase counter
-                                                        // else: update x to now, make counter = 1
-                                                    
-                                                        const getTracker = 'SELECT tracker_message_timestamp_column from users where id = ?';
-                                                        const currentTime = new Date();
-                                                        pool.query(getTracker, [senderID], (error, results) => {
-                                                            if (error) {
-                                                                console.error('Error fetching tracker timestamp:', error);
-                                                                reject(error)
-                                                            }
-                                                        
-                                                            else{
-                                                                const trackerTimestamp = new Date(results[0].tracker_message_timestamp_column);
-                                                                const timeDifference = currentTime.getTime() - trackerTimestamp.getTime();
-                                                                const hoursDifference = timeDifference / (1000 * 60 * 60);
-                                                        
-                                                                if (hoursDifference >= 24) {
-                                                                    console.log("Current time is at least 24 hours after the timestamp from the query.");
-                                                                    const updateMessagesStreak = `
-                                                                    UPDATE users
-                                                                    SET messaging_streak = CASE 
-                                                                            WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN messaging_streak + 1 
+                        const start_time = times_and_messages[0].start_time;
+                        const end_time = times_and_messages[0].end_time;
+                        const messages_sent = times_and_messages[0].messages_sent;
+                        const current_time = new Date();
+
+                        if( (current_time >= new Date(start_time) && current_time <= new Date(end_time) && messages_sent >= 0 ) || (current_time >= new Date(end_time))){
+                            if(current_time >= new Date(end_time)){
+                                // set start to now()
+                                // end = now + 24hrs
+                                // messages = 2 (should be 3, but we update to 3 and then subtract one for the message they are currently sending)
+
+                                const date = new Date();
+                                const nextDay = new Date(date);
+                                nextDay.setHours(date.getHours() + 24);
+                                const end_time = nextDay.toISOString().slice(0, 19).replace('T', ' ');
+                                const new_amount_messages = 2;
+                                const update_query = "Update users set start_time = ?, end_time = ?, messages_sent = ? where id = ?";
+                                pool.query(update_query, [date, end_time, messages_sent, senderID], (updateError, result1_) => {
+                                    if(updateError){
+                                        reject(updateError)
+                                    }
+                                    else{
+                                        // send message logic
+                                        const sql = 'INSERT INTO all_messages_interface (originalSenderID,mostRecentMessage,IdOfPersonWhoSentLastMessage,hasOpenedMessage,originalRecieverID) VALUES (?, ?, ?, ?, ?)';
+                                        const values = [senderID,message,IdOfPersonWhoSentLastMessage,hasOpenedMessage,recieverID];                
+
+                                        pool.query(sql, values, (queryErr, result) => {
+                                            if (queryErr) {
+                                                console.error('Error executing query:', queryErr);
+                                                server_error = true;
+                                                reject(queryErr);
+                                            } else {
+                                                pool.query('SELECT MAX(convoID) as max_id FROM all_messages_interface;', (error, results, fields) => {
+                                                    if (error) {
+                                                        console.error('Error executing second query:', error);
+                                                        server_error = true;
+                                                        reject(error);
+                                                    } else {
+                                                        console.log("results:",results);
+                                                        if (results && results.length > 0 && results[0].max_id !== null) {
+                                                            const convoID = results[0].max_id;
+                                                            const new_query = 'INSERT INTO messages (convoID,messageContent,senderID) VALUES (?,?,?)';
+                                                            const new_values = [convoID,message,senderID];
+                                                            pool.query(new_query, new_values, (queryErr, result) => {
+                                                                if (queryErr) {
+                                                                    console.error('Error executing third query:', queryErr);
+                                                                    server_error = true;
+                                                                    reject(queryErr);
+                                                                } else {
+
+                                                                    // update points
+                                                                    const firstMessagePointUpdate = 'UPDATE users set points = points + 25 where id = ?';
+                                                                    pool.query(firstMessagePointUpdate, [senderID], (pointsQueryError, pointsSuccess) => {
+                                                                        if(pointsQueryError){
+                                                                            reject(pointsQueryError);
+                                                                        }
+                                                                        else{
+                                                                            // need to update streak
+                                                                                // get time stamp of last message sent, assign it to x
+                                                                                // if x is between 24 and 48 hours after the new message is sent, update x to now, increase counter
+                                                                                // else: update x to now, make counter = 1
                                                                             
-                                                                            ELSE 1
-                                                                        END,
-                                                                        tracker_message_timestamp_column = CASE
-                                                                            WHEN NOW() BETWEEN DATE_ADD(tracker_message_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
-                                                                            WHEN NOW() > DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
-                                                                            ELSE tracker_message_timestamp_column
-                                                                        END,
-                                                                        messaging_timestamp_column = CASE
-                                                                            WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
-                                                                            WHEN NOW() > DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
-                                                                            ELSE messaging_timestamp_column
-                                                                        END
-                                                                    WHERE id = ?;
-                                                                    `;
-                                                                    pool.query(updateMessagesStreak, [senderID], (updateError, result) => {
-                                                                        if(updateError){
-                                                                            reject(updateError);
-                                                                        }else{
-                                                                            resolve({success: true});
+                                                                                const getTracker = 'SELECT tracker_message_timestamp_column from users where id = ?';
+                                                                                const currentTime = new Date();
+                                                                                pool.query(getTracker, [senderID], (error, results) => {
+                                                                                    if (error) {
+                                                                                        console.error('Error fetching tracker timestamp:', error);
+                                                                                        reject(error)
+                                                                                    }
+                                                                                
+                                                                                    else{
+                                                                                        const trackerTimestamp = new Date(results[0].tracker_message_timestamp_column);
+                                                                                        const timeDifference = currentTime.getTime() - trackerTimestamp.getTime();
+                                                                                        const hoursDifference = timeDifference / (1000 * 60 * 60);
+                                                                                
+                                                                                        if (hoursDifference >= 24) {
+                                                                                            console.log("Current time is at least 24 hours after the timestamp from the query.");
+                                                                                            const updateMessagesStreak = `
+                                                                                            UPDATE users
+                                                                                            SET messaging_streak = CASE 
+                                                                                                    WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN messaging_streak + 1 
+                                                                                                    
+                                                                                                    ELSE 1
+                                                                                                END,
+                                                                                                tracker_message_timestamp_column = CASE
+                                                                                                    WHEN NOW() BETWEEN DATE_ADD(tracker_message_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                    WHEN NOW() > DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                    ELSE tracker_message_timestamp_column
+                                                                                                END,
+                                                                                                messaging_timestamp_column = CASE
+                                                                                                    WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                    WHEN NOW() > DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                    ELSE messaging_timestamp_column
+                                                                                                END
+                                                                                            WHERE id = ?;
+                                                                                            `;
+                                                                                            pool.query(updateMessagesStreak, [senderID], (updateError, result) => {
+                                                                                                if(updateError){
+                                                                                                    reject(updateError);
+                                                                                                }else{
+                                                                                                    resolve({success: true});
+                                                                                                }
+                                                                                            });
+                                                                                        }else{
+                                                                                            console.log("Wasnt 24 hours after.")
+                                                                                        }
+                                                                                        resolve({success: true});
+                                                                                    }
+                                                                                });
+
                                                                         }
                                                                     });
-                                                                }else{
-                                                                    console.log("Wasnt 24 hours after.")
+                                                                    
+                                                                    // resolve({ success: true, message: "User created successfully." });
                                                                 }
-                                                                resolve({success: true});
-                                                            }
-                                                        });
+                                                            });
+                                                        } else {
+                                                            console.log("No results found or max_id is null.");
+                                                            server_error = true;
+                                                            reject(new Error("No results found or max_id is null."));
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                })
 
-                                                }
-                                            });
-                                            
-                                            // resolve({ success: true, message: "User created successfully." });
-                                        }
-                                    });
-                                } else {
-                                    console.log("No results found or max_id is null.");
-                                    server_error = true;
-                                    reject(new Error("No results found or max_id is null."));
-                                }
                             }
-                        });
+                            else{ // need to decrease messages by 1 and then send message
+                                const update_messages_query = "Update users set messages_sent = messages_sent - 1 where id = ?";
+                                pool.query(update_messages_query, [senderID], (update_message_query, result2_) => {
+                                    if(update_message_query){
+                                        reject(update_message_query)
+                                    }
+                                    else{ 
+                                        // send message!!
+                                        const sql = 'INSERT INTO all_messages_interface (originalSenderID,mostRecentMessage,IdOfPersonWhoSentLastMessage,hasOpenedMessage,originalRecieverID) VALUES (?, ?, ?, ?, ?)';
+                                        const values = [senderID,message,IdOfPersonWhoSentLastMessage,hasOpenedMessage,recieverID];                
+
+                                        pool.query(sql, values, (queryErr, result) => {
+                                            if (queryErr) {
+                                                console.error('Error executing query:', queryErr);
+                                                server_error = true;
+                                                reject(queryErr);
+                                            } else {
+                                                pool.query('SELECT MAX(convoID) as max_id FROM all_messages_interface;', (error, results, fields) => {
+                                                    if (error) {
+                                                        console.error('Error executing second query:', error);
+                                                        server_error = true;
+                                                        reject(error);
+                                                    } else {
+                                                        console.log("results:",results);
+                                                        if (results && results.length > 0 && results[0].max_id !== null) {
+                                                            const convoID = results[0].max_id;
+                                                            const new_query = 'INSERT INTO messages (convoID,messageContent,senderID) VALUES (?,?,?)';
+                                                            const new_values = [convoID,message,senderID];
+                                                            pool.query(new_query, new_values, (queryErr, result) => {
+                                                                if (queryErr) {
+                                                                    console.error('Error executing third query:', queryErr);
+                                                                    server_error = true;
+                                                                    reject(queryErr);
+                                                                } else {
+
+                                                                    // update points
+                                                                    const firstMessagePointUpdate = 'UPDATE users set points = points + 25 where id = ?';
+                                                                    pool.query(firstMessagePointUpdate, [senderID], (pointsQueryError, pointsSuccess) => {
+                                                                        if(pointsQueryError){
+                                                                            reject(pointsQueryError);
+                                                                        }
+                                                                        else{
+                                                                            // need to update streak
+                                                                                // get time stamp of last message sent, assign it to x
+                                                                                // if x is between 24 and 48 hours after the new message is sent, update x to now, increase counter
+                                                                                // else: update x to now, make counter = 1
+                                                                            
+                                                                                const getTracker = 'SELECT tracker_message_timestamp_column from users where id = ?';
+                                                                                const currentTime = new Date();
+                                                                                pool.query(getTracker, [senderID], (error, results) => {
+                                                                                    if (error) {
+                                                                                        console.error('Error fetching tracker timestamp:', error);
+                                                                                        reject(error)
+                                                                                    }
+                                                                                
+                                                                                    else{
+                                                                                        const trackerTimestamp = new Date(results[0].tracker_message_timestamp_column);
+                                                                                        const timeDifference = currentTime.getTime() - trackerTimestamp.getTime();
+                                                                                        const hoursDifference = timeDifference / (1000 * 60 * 60);
+                                                                                
+                                                                                        if (hoursDifference >= 24) {
+                                                                                            console.log("Current time is at least 24 hours after the timestamp from the query.");
+                                                                                            const updateMessagesStreak = `
+                                                                                            UPDATE users
+                                                                                            SET messaging_streak = CASE 
+                                                                                                    WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN messaging_streak + 1 
+                                                                                                    
+                                                                                                    ELSE 1
+                                                                                                END,
+                                                                                                tracker_message_timestamp_column = CASE
+                                                                                                    WHEN NOW() BETWEEN DATE_ADD(tracker_message_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                    WHEN NOW() > DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                    ELSE tracker_message_timestamp_column
+                                                                                                END,
+                                                                                                messaging_timestamp_column = CASE
+                                                                                                    WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                    WHEN NOW() > DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                    ELSE messaging_timestamp_column
+                                                                                                END
+                                                                                            WHERE id = ?;
+                                                                                            `;
+                                                                                            pool.query(updateMessagesStreak, [senderID], (updateError, result) => {
+                                                                                                if(updateError){
+                                                                                                    reject(updateError);
+                                                                                                }else{
+                                                                                                    resolve({success: true});
+                                                                                                }
+                                                                                            });
+                                                                                        }else{
+                                                                                            console.log("Wasnt 24 hours after.")
+                                                                                        }
+                                                                                        resolve({success: true});
+                                                                                    }
+                                                                                });
+
+                                                                        }
+                                                                    });
+                                                                    
+                                                                    // resolve({ success: true, message: "User created successfully." });
+                                                                }
+                                                            });
+                                                        } else {
+                                                            console.log("No results found or max_id is null.");
+                                                            server_error = true;
+                                                            reject(new Error("No results found or max_id is null."));
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                })
+                            }
+
+                        }
+                        else{
+                            resolve({success: false, message: "User has exceeded maximum of 3 messages per day."});
+                        }
+
                     }
-                });
+                })
+
             }
             else{
                 try{
