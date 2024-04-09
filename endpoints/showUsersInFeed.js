@@ -71,8 +71,22 @@ function calculateCompatibility(row, idOfRequester) {
             .then(requesterData => {
                 // Use requesterData here
                 const requesterAppPurpose = requesterData.app_purpose;
-                const requesterInterests = requesterData.interests;
-                const requesterMusic = requesterData.music_preference;
+
+                var requesterInterests = requesterData.interests;
+                var requesterMusic = requesterData.music_preference;
+
+                if(requesterInterests != null && requesterInterests != ""){
+                    requesterInterests = requesterInterests.split(',');
+                }else{
+                    requesterInterests = [];
+                }
+        
+                if(requesterMusic != null && requesterMusic != ""){
+                    requesterMusic = requesterMusic.split(',');
+                }else{
+                    requesterMusic = [];
+                }
+
                 const requesterPet = requesterData.pet_preference;
                 const requesterSleep = requesterData.sleep_schedule;
                 const requesterWorkout = requesterData.workout;
