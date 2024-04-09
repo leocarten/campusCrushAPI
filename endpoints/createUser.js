@@ -10,7 +10,6 @@ function getRandomNumber(min, max) {
 
 export const createUser = (req) => {
     return new Promise((resolve, reject) => {
-        console.log('hello');
 
         const {
             username, password, firstname, birthday, bio, gender, bucket_list, interests_hobbies,
@@ -92,16 +91,51 @@ export const createUser = (req) => {
                                     server_error = true;
                                     reject(queryErr);
                                 } else {
-                                    // Create a JWT from the user and assign it to them!
-                                    const accessAge = getRandomNumber(50,80);
-                                    const accessAgeToMinutes = accessAge * 60;
-                                    const refreshAge = getRandomNumber(7,11);
-                                    const refreshAgeToDays = refreshAge * 24 * 60 * 60;
-                                    const proximity = 50;
-                                    const accessToken = generateAccessAndRefreshToken(user_id, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, wants_to_be_shown, 'filter...', lat, long_, proximity);
-                                    const refreshToken = generateAccessAndRefreshToken(user_id, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, wants_to_be_shown, 'filter...', lat, long_, proximity);
-                                    resolve({id: user_id, success: true, access:accessToken, refresh: refreshToken });
-                                    // resolve({ success: true, message: "User created successfully." });
+
+                                    // 
+                                    const all_messages_interface = 'INSERT INTO all_messages_interface (originalSenderID,mostRecentMessage,IdOfPersonWhoSentLastMessage,hasOpenedMessage,originalRecieverID) VALUES (?, ?, ?, ?, ?)';
+                                    const senderID = 31;
+                                    const message = "Hey there, and welcome to CampusCrush!\n\nGet ready to dive into the heart of our buzzing community!\n\nExplore in-app features such as: customizing your feed, redeeming cool in-app currencies, and unleash your social prowess! But wait, there's a twist: You're limited to starting just 3 conversations per day! Choose wisely!\n\nWe're thrilled you've joined us on CampusCrush! Let the connections begin!"
+                                    const IdOfPersonWhoSentLastMessage = 31;
+                                    const hasOpenedMessage = 0;
+                                    const recieverID = user_id;
+                                    const values = [senderID,message,IdOfPersonWhoSentLastMessage,hasOpenedMessage,recieverID];  
+
+                                    pool.query(all_messages_interface, values, (querryError, results_) => {
+                                        if(querryError){
+                                            reject(querryError)
+                                        }else{
+                                            pool.query('SELECT MAX(convoID) as max_id FROM all_messages_interface;', (error, results, fields) => {
+                                                if (error) {
+                                                    console.error('Error executing second query:', error);
+                                                    reject(error);
+                                                } else {
+                                                    console.log("results:",results);
+                                                    if (results && results.length > 0 && results[0].max_id !== null) {
+                                                        const convoID = results[0].max_id;
+                                                        const new_query = 'INSERT INTO messages (convoID,messageContent,senderID) VALUES (?,?,?)';
+                                                        const new_values = [convoID,message,senderID];
+                                                        pool.query(new_query, new_values, (queryErr, result) => {
+                                                            if (queryErr) {
+                                                                console.error('Error executing third query:', queryErr);
+                                                                reject(queryErr);
+                                                            }else{
+                                                                const accessAge = getRandomNumber(50,80);
+                                                                const accessAgeToMinutes = accessAge * 60;
+                                                                const refreshAge = getRandomNumber(7,11);
+                                                                const refreshAgeToDays = refreshAge * 24 * 60 * 60;
+                                                                const proximity = 50;
+                                                                const accessToken = generateAccessAndRefreshToken(user_id, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, wants_to_be_shown, 'filter...', lat, long_, proximity);
+                                                                const refreshToken = generateAccessAndRefreshToken(user_id, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, wants_to_be_shown, 'filter...', lat, long_, proximity);
+                                                                resolve({id: user_id, success: true, access:accessToken, refresh: refreshToken });
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    })
+                                    
                                 }
                             });
                         } else {
