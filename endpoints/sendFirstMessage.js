@@ -42,7 +42,7 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                         const messages_sent = times_and_messages[0].messages_sent;
                         const current_time = new Date();
 
-                        if( (current_time >= new Date(start_time) && current_time <= new Date(end_time) && messages_sent >= 0 ) || (current_time >= new Date(end_time))){
+                        if( (current_time >= new Date(start_time) && current_time <= new Date(end_time) && messages_sent > 0 ) || (current_time >= new Date(end_time))){
                             if(current_time >= new Date(end_time)){
                                 // set start to now()
                                 // end = now + 24hrs
@@ -54,7 +54,7 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                 const end_time = nextDay.toISOString().slice(0, 19).replace('T', ' ');
                                 const new_amount_messages = 2;
                                 const update_query = "Update users set start_time = ?, end_time = ?, messages_sent = ? where id = ?";
-                                pool.query(update_query, [date, end_time, messages_sent, senderID], (updateError, result1_) => {
+                                pool.query(update_query, [date, end_time, new_amount_messages, senderID], (updateError, result1_) => {
                                     if(updateError){
                                         reject(updateError)
                                     }
