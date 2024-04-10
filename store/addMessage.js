@@ -17,15 +17,19 @@ export const buyAdditionalMessage = (token) => {
             console.log("New balance: ", (result[0]['points']) - 100);
             const increase_message = 1;
 
-            const updateQuery = `
-            UPDATE users SET messages_sent = messages_sent + ? WHERE id = ?;
-            UPDATE users SET points = ? WHERE id = ?;
-            `;            
-            pool.query(updateQuery, [increase_message, id, userNewBalance, id], (updateError, result) => {
+            const updateQuery = 'UPDATE users set messages_sent = messages_sent + ? where id = ?';
+            const secondUpdateQuery = 'UPDATE users set points = ? where id = ?'
+            pool.query(updateQuery, [increase_message, id], (updateError, result) => {
                 if(updateError){
                     reject(updateError);
                 }else{
-                    resolve({success: true, newBalance: userNewBalance});
+                    pool.query(secondUpdateQuery, [userNewBalance, id], (secondQueryError, result_) => {
+                        if(secondQueryError){
+                            reject(secondQueryError)
+                        }else{
+                            resolve({success: true, newBalance: userNewBalance});
+                        }
+                    })
                 }
             })
         }else{
