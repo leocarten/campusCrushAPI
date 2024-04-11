@@ -10,7 +10,7 @@ export const changePassword = (token, new_password) => {
       console.log('id:',id);
       const updatePasswordQuery = 'UPDATE users set password = ? WHERE id = ?';
       var hash = crypto.createHash('sha256');
-      var data = hash.update(password, 'utf-8');
+      var data = hash.update(new_password, 'utf-8');
       const hashedPassword = data.digest('hex');
       pool.query(updatePasswordQuery, [hashedPassword,id], (err, result) => {
         if(err){
