@@ -18,6 +18,7 @@ export const deleteAcc = (token) => {
         if(getConvoIDError){
             reject(getConvoIDError)
         }else{
+            console.log(convoIDs_);
             resolve(convoIDs_);
         }
       })
