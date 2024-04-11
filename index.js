@@ -20,6 +20,7 @@ import { lotterySpin } from './store/lotterySpin.js';
 import { deleteConversation } from './endpoints/deleteConversation.js';
 import { buyAdditionalMessage } from './store/addMessage.js';
 import { deleteAcc } from './endpoints/deleteAccount.js';
+import { userInfo } from './endpoints/userInfoForSettingsPage.js';
 
 // ports
 const WS_PORT = 5002; // WebSocket server port
@@ -462,6 +463,34 @@ app.post('/deleteAccount', async (req, res) => {
       res.json({success: true, results: thisUserProfile})
     }else{
       res.json({message: "We were unable to proceed in buyMessage route."})
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Internal Server Error viewPoints route.');
+  }
+});
+
+
+app.post('/getUserInfoForSettingsPage', async (req, res) => {
+  try {
+    const typeOfVerification = req.body['type'];
+    console.log(typeOfVerification);
+    let verifyUser;
+    console.log("You just sent me:",typeOfVerification);
+    if(typeOfVerification === 'access'){
+      console.log("Reached access");
+      verifyUser = await authenticateUser(req,true);
+    }else{
+      console.log("Else access")
+      verifyUser = await authenticateUser(req,false);
+    }
+    if(verifyUser['success'] === true){
+      const tokenToUse = req.body['tokenFromUser'];
+      console.log('token to use from view',tokenToUse);
+      const thisUserProfile = await userInfo(tokenToUse);
+      res.json({success: true, results: thisUserProfile})
+    }else{
+      res.json({message: "We were unable to proceed in userInfo route."})
     }
   } catch (err) {
     console.error(err.message);
