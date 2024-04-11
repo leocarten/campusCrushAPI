@@ -15,7 +15,7 @@ export const userInfo = (token) => {
         if(querryError){
             reject(querryError)
         }else{
-            resolve({success: true, user_info: results});
+            resolve(results);
         }
       })
 
