@@ -13,12 +13,15 @@ export const deleteAcc = (token) => {
       const getConvoIDs = 'select convoID from all_messages_interface where originalSenderID = ? or originalRecieverID = ?';
       const deleteFromMessagesInterface = 'delete from all_messages_interface where originalSenderID = ? or originalRecieverID = ?';
       // going to need a loop to delete all the messages for the user:
-    //   for(var i = 0; i < getConvoIDs[0].convoID.length; )  
+
       pool.query(getConvoIDs, [id, id], (getConvoIDError, convoIDs_) => {
         if(getConvoIDError){
             reject(getConvoIDError)
         }else{
-            console.log(convoIDs_[0]);
+            console.log(convoIDs_);
+            for(var i = 0; i < convoIDs_.length; i++){
+                console.log(convoIDs_[i].convoID);
+              }  
             resolve(convoIDs_);
         }
       })
