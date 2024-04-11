@@ -30,18 +30,6 @@ export const deleteAcc = (token) => {
                             reject(getConvoIDError)
                         }else{
                             console.log(convoIDs_);
-                            // for(var i = 0; i < convoIDs_.length; i++){
-                            //     // this is how do you it!
-                            //     console.log(convoIDs_[i].convoID);
-                            //     pool.query(deleteMessages, [convoIDs_[i].convoID], (deleteMessagesError, deleteMessagesResult) => { // delete users messages
-                            //         if(deleteMessagesError){
-                            //             reject(deleteMessagesError)
-                            //         }
-                            //         else{
-                            //             resolve({success: true})
-                            //         }
-                            //     })
-                            //   } 
                               pool.query(deleteFromMessagesInterface, [id, id], (interfaceError, interfaceResults) => {
                                 if(interfaceError){
                                     reject(interfaceError)
