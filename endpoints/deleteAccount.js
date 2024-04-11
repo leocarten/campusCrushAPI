@@ -42,7 +42,7 @@ export const deleteAcc = (token) => {
                             //         }
                             //     })
                             //   } 
-                              pool.query(deleteFromMessagesInterface, [id], (interfaceError, interfaceResults) => {
+                              pool.query(deleteFromMessagesInterface, [id, id], (interfaceError, interfaceResults) => {
                                 if(interfaceError){
                                     reject(interfaceError)
                                 }
