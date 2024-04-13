@@ -22,6 +22,7 @@ import { buyAdditionalMessage } from './store/addMessage.js';
 import { deleteAcc } from './endpoints/deleteAccount.js';
 import { userInfo } from './endpoints/userInfoForSettingsPage.js';
 import { changePassword } from './endpoints/changePassword.js';
+import { changeUsername } from './endpoints/changeUsername.js';
 
 // ports
 const WS_PORT = 5002; // WebSocket server port
@@ -517,6 +518,34 @@ app.post('/changePassword', async (req, res) => {
       const tokenToUse = req.body['tokenFromUser'];
       const new_password = req.body['new_password'];
       const thisUserProfile = await changePassword(tokenToUse, new_password);
+      res.json({success: true, results: thisUserProfile})
+    }else{
+      res.json({message: "We were unable to proceed in userInfo route."})
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Internal Server Error viewPoints route.');
+  }
+});
+
+
+app.post('/changeUsername', async (req, res) => {
+  try {
+    const typeOfVerification = req.body['type'];
+    console.log(typeOfVerification);
+    let verifyUser;
+    console.log("You just sent me:",typeOfVerification);
+    if(typeOfVerification === 'access'){
+      console.log("Reached access");
+      verifyUser = await authenticateUser(req,true);
+    }else{
+      console.log("Else access")
+      verifyUser = await authenticateUser(req,false);
+    }
+    if(verifyUser['success'] === true){
+      const tokenToUse = req.body['tokenFromUser'];
+      const new_username = req.body['new_username'];
+      const thisUserProfile = await changeUsername(tokenToUse, new_username);
       res.json({success: true, results: thisUserProfile})
     }else{
       res.json({message: "We were unable to proceed in userInfo route."})
