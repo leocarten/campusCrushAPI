@@ -6,10 +6,12 @@ import { multiSelectionSimilarity } from '../neuralNetwork_v2/statistics/multiSe
 import { petStats } from '../neuralNetwork_v2/statistics/petPreference.js';
 import { sleepSchedule } from '../neuralNetwork_v2/statistics/sleepStats.js';
 import { workoutStats } from '../neuralNetwork_v2/statistics/workout.js';
+import { elo_statistics } from '../neuralNetwork_v2/statistics/elo.js';
+
 
 function getRequesterData(idOfRequester) {
     return new Promise((resolve, reject) => {
-        const getUserData = 'SELECT app_purpose, interests, music_preference, pet_preference, sleep_schedule, workout from info_to_display WHERE id = ?';
+        const getUserData = 'SELECT app_purpose, interests, music_preference, pet_preference, sleep_schedule, workout, elo_score from info_to_display WHERE id = ?';
         pool.query(getUserData, [idOfRequester], (queryErr, userDataQuery) => {
             if (queryErr) {
                 console.error('Error executing query in neural network: ', queryErr);
@@ -25,7 +27,8 @@ function getRequesterData(idOfRequester) {
                         music_preference: userData.music_preference.split(','),
                         pet_preference: userData.pet_preference,
                         sleep_schedule: userData.sleep_schedule,
-                        workout: userData.workout
+                        workout: userData.workout,
+                        elo_score: userData.elo_score
                     };
                     resolve(requesterData);
                 } 
@@ -36,7 +39,8 @@ function getRequesterData(idOfRequester) {
                         music_preference: 0.5,
                         pet_preference: userData.pet_preference,
                         sleep_schedule: userData.sleep_schedule,
-                        workout: userData.workout
+                        workout: userData.workout,
+                        elo_score: userData.elo_score
                     };
                     resolve(requesterData);
                 }            
@@ -66,6 +70,7 @@ function calculateCompatibility(row, idOfRequester) {
         const otherPet = row.pet_preference;
         const otherSleep = row.sleep_schedule;
         const otherWorkout = row.workout;
+        const otherEloScore = row.elo_score;
 
         getRequesterData(idOfRequester)
             .then(requesterData => {
@@ -90,8 +95,9 @@ function calculateCompatibility(row, idOfRequester) {
                 const requesterPet = requesterData.pet_preference;
                 const requesterSleep = requesterData.sleep_schedule;
                 const requesterWorkout = requesterData.workout;
+                const requester_elo_score = requesterData.elo_score;
 
-                const eloBetweenUsers = 0.9;
+                const eloBetweenUsers = elo_statistics(otherEloScore, requester_elo_score);
                 const appPurposeBetweenUsers = appPurposeStats(otherAppPurpose, requesterAppPurpose);
                 const interestsBetweenUsers = multiSelectionSimilarity(otherInterests, requesterInterests);
                 const musicBetweenUsers = multiSelectionSimilarity(otherMusic, requesterMusic);
@@ -222,7 +228,7 @@ export const showItemsInFeed = (token) => {
                             FROM 
                                 info_to_display
                             WHERE
-                                id != ? and gender = 1 or gender = 2 and lat != 0.0 and long_ != 0.0
+                                id != ? and gender = 1 or gender = 2 or gender = 3 and lat != 0.0 and long_ != 0.0
                         ) AS p
                 ) AS distance_table
             JOIN 
