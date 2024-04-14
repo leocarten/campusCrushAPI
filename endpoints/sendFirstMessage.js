@@ -113,23 +113,23 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                             var new_sender_elo = 0;
                             var new_rec_elo = 0;
                             if(other_elo_score >= sender_elo_score){
-                                if(other_elo_score - (difference / elo_divider) >= 0){
+                                if(other_elo_score - (difference / elo_divider) <= 0){
                                     new_rec_elo = other_elo_score - (difference / elo_divider);
                                 }else{
                                     new_rec_elo = other_elo_score;
                                 }
-                                if(sender_elo_score + (difference / elo_divider) <= 1){
+                                if(sender_elo_score + (difference / elo_divider) >= 1){
                                     new_sender_elo = sender_elo_score + (difference / elo_divider);
                                 }else{
                                     new_sender_elo = sender_elo_score
                                 }
                             }else{
-                                if(sender_elo_score - (difference / elo_divider) >= 0){
+                                if(sender_elo_score - (difference / elo_divider) <= 0){
                                     new_sender_elo -= (difference / elo_divider);
                                 }else{
                                     new_sender_elo = sender_elo_score;
                                 }
-                                if(other_elo_score + (difference / elo_divider) <= 1){
+                                if(other_elo_score + (difference / elo_divider) >= 1){
                                     new_rec_elo = other_elo_score + (difference / elo_divider);
                                 }else{
                                     new_rec_elo = other_elo_score;
@@ -306,23 +306,23 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                                                                             var new_sender_elo = 0;
                                                                                             var new_rec_elo = 0;
                                                                                             if(other_elo_score >= sender_elo_score){
-                                                                                                if(other_elo_score - (difference / elo_divider) >= 0){
+                                                                                                if(other_elo_score - (difference / elo_divider) <= 0){
                                                                                                     new_rec_elo = other_elo_score - (difference / elo_divider);
                                                                                                 }else{
                                                                                                     new_rec_elo = other_elo_score;
                                                                                                 }
-                                                                                                if(sender_elo_score + (difference / elo_divider) <= 1){
+                                                                                                if(sender_elo_score + (difference / elo_divider) >= 1){
                                                                                                     new_sender_elo = sender_elo_score + (difference / elo_divider);
                                                                                                 }else{
                                                                                                     new_sender_elo = sender_elo_score
                                                                                                 }
                                                                                             }else{
-                                                                                                if(sender_elo_score - (difference / elo_divider) >= 0){
+                                                                                                if(sender_elo_score - (difference / elo_divider) <= 0){
                                                                                                     new_sender_elo -= (difference / elo_divider);
                                                                                                 }else{
                                                                                                     new_sender_elo = sender_elo_score;
                                                                                                 }
-                                                                                                if(other_elo_score + (difference / elo_divider) <= 1){
+                                                                                                if(other_elo_score + (difference / elo_divider) >= 1){
                                                                                                     new_rec_elo = other_elo_score + (difference / elo_divider);
                                                                                                 }else{
                                                                                                     new_rec_elo = other_elo_score;
