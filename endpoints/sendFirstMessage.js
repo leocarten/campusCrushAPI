@@ -102,7 +102,10 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                                                                     reject(sender_elo_error)
                                                                                 }else{
                                                                                     const sender_elo_score = elo_score_sender[0].elo_score;
-                                                                                    var difference = Math.abs(other_elo_score - sender_elo_score);
+                                                                                    console.log(`sender elo score: ${sender_elo_score}`);
+                                                                                    console.log(`rec elo score: ${other_elo_score}`);
+
+                                                                                    const difference = Math.abs(other_elo_score - sender_elo_score);
                                                                                     const elo_score_counter_sender_query = 'SELECT elo_score_counter from info_to_display where id = ?';
                                                                                     pool.query(elo_score_counter_sender_query, [senderID], (elo_counter_error, elo_counter) => {
                                                                                         if(elo_counter_error){
@@ -297,7 +300,10 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                                                                     reject(sender_elo_error)
                                                                                 }else{
                                                                                     const sender_elo_score = elo_score_sender[0].elo_score;
-                                                                                    var difference = Math.abs(other_elo_score - sender_elo_score);
+                                                                                    console.log(`sender elo score: ${sender_elo_score}`);
+                                                                                    console.log(`rec elo score: ${other_elo_score}`);
+
+                                                                                    const difference = Math.abs(other_elo_score - sender_elo_score);
                                                                                     const elo_score_counter_sender_query = 'SELECT elo_score_counter from info_to_display where id = ?';
                                                                                     pool.query(elo_score_counter_sender_query, [senderID], (elo_counter_error, elo_counter) => {
                                                                                         if(elo_counter_error){
