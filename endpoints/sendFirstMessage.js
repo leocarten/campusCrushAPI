@@ -144,7 +144,6 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                                                                                         if(updateSenderError_){
                                                                                                             reject(updateSenderError_)
                                                                                                         }else{
-                                                                                                            // rest of code
                                                                                                                                                                                                                                                                             // update points
                                                                                                             const firstMessagePointUpdate = 'UPDATE users set points = points + 10 where id = ?';
                                                                                                             pool.query(firstMessagePointUpdate, [senderID], (pointsQueryError, pointsSuccess) => {
@@ -152,58 +151,69 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                                                                                                     reject(pointsQueryError);
                                                                                                                 }
                                                                                                                 else{
+
+                                                                                                                    // update the total_first_message_sent elo score
+                                                                                                                    const update_elo_score_counter_query = 'Update info_to_display set elo_score_counter = elo_score_counter + 1 where id = ?';
+
+                                                                                                                    pool.query(update_elo_score_counter_query, [senderID], (update_counter_error, update_result) => {
+                                                                                                                        if(update_counter_error){
+                                                                                                                            reject(update_counter_error)
+                                                                                                                        }else{
+                                                                                                                            const getTracker = 'SELECT tracker_message_timestamp_column from users where id = ?';
+                                                                                                                            const currentTime = new Date();
+                                                                                                                            pool.query(getTracker, [senderID], (error, results) => {
+                                                                                                                                if (error) {
+                                                                                                                                    console.error('Error fetching tracker timestamp:', error);
+                                                                                                                                    reject(error)
+                                                                                                                                }
+                                                                                                                            
+                                                                                                                                else{
+                                                                                                                                    const trackerTimestamp = new Date(results[0].tracker_message_timestamp_column);
+                                                                                                                                    const timeDifference = currentTime.getTime() - trackerTimestamp.getTime();
+                                                                                                                                    const hoursDifference = timeDifference / (1000 * 60 * 60);
+                                                                                                                            
+                                                                                                                                    if (hoursDifference >= 24) {
+                                                                                                                                        console.log("Current time is at least 24 hours after the timestamp from the query.");
+                                                                                                                                        const updateMessagesStreak = `
+                                                                                                                                        UPDATE users
+                                                                                                                                        SET messaging_streak = CASE 
+                                                                                                                                                WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN messaging_streak + 1 
+                                                                                                                                                
+                                                                                                                                                ELSE 1
+                                                                                                                                            END,
+                                                                                                                                            tracker_message_timestamp_column = CASE
+                                                                                                                                                WHEN NOW() BETWEEN DATE_ADD(tracker_message_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                                                                WHEN NOW() > DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                                                                ELSE tracker_message_timestamp_column
+                                                                                                                                            END,
+                                                                                                                                            messaging_timestamp_column = CASE
+                                                                                                                                                WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                                                                WHEN NOW() > DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                                                                ELSE messaging_timestamp_column
+                                                                                                                                            END
+                                                                                                                                        WHERE id = ?;
+                                                                                                                                        `;
+                                                                                                                                        pool.query(updateMessagesStreak, [senderID], (updateError, result) => {
+                                                                                                                                            if(updateError){
+                                                                                                                                                reject(updateError);
+                                                                                                                                            }else{
+                                                                                                                                                resolve({success: true});
+                                                                                                                                            }
+                                                                                                                                        });
+                                                                                                                                    }else{
+                                                                                                                                        console.log("Wasnt 24 hours after.")
+                                                                                                                                    }
+                                                                                                                                    resolve({success: true});
+                                                                                                                                }
+                                                                                                                            });
+                                                                                                                        }
+                                                                                                                    })
+
                                                                                                                     // need to update streak
                                                                                                                         // get time stamp of last message sent, assign it to x
                                                                                                                         // if x is between 24 and 48 hours after the new message is sent, update x to now, increase counter
                                                                                                                         // else: update x to now, make counter = 1
-                                                                                                                    
-                                                                                                                        const getTracker = 'SELECT tracker_message_timestamp_column from users where id = ?';
-                                                                                                                        const currentTime = new Date();
-                                                                                                                        pool.query(getTracker, [senderID], (error, results) => {
-                                                                                                                            if (error) {
-                                                                                                                                console.error('Error fetching tracker timestamp:', error);
-                                                                                                                                reject(error)
-                                                                                                                            }
-                                                                                                                        
-                                                                                                                            else{
-                                                                                                                                const trackerTimestamp = new Date(results[0].tracker_message_timestamp_column);
-                                                                                                                                const timeDifference = currentTime.getTime() - trackerTimestamp.getTime();
-                                                                                                                                const hoursDifference = timeDifference / (1000 * 60 * 60);
-                                                                                                                        
-                                                                                                                                if (hoursDifference >= 24) {
-                                                                                                                                    console.log("Current time is at least 24 hours after the timestamp from the query.");
-                                                                                                                                    const updateMessagesStreak = `
-                                                                                                                                    UPDATE users
-                                                                                                                                    SET messaging_streak = CASE 
-                                                                                                                                            WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN messaging_streak + 1 
-                                                                                                                                            
-                                                                                                                                            ELSE 1
-                                                                                                                                        END,
-                                                                                                                                        tracker_message_timestamp_column = CASE
-                                                                                                                                            WHEN NOW() BETWEEN DATE_ADD(tracker_message_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
-                                                                                                                                            WHEN NOW() > DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
-                                                                                                                                            ELSE tracker_message_timestamp_column
-                                                                                                                                        END,
-                                                                                                                                        messaging_timestamp_column = CASE
-                                                                                                                                            WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
-                                                                                                                                            WHEN NOW() > DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
-                                                                                                                                            ELSE messaging_timestamp_column
-                                                                                                                                        END
-                                                                                                                                    WHERE id = ?;
-                                                                                                                                    `;
-                                                                                                                                    pool.query(updateMessagesStreak, [senderID], (updateError, result) => {
-                                                                                                                                        if(updateError){
-                                                                                                                                            reject(updateError);
-                                                                                                                                        }else{
-                                                                                                                                            resolve({success: true});
-                                                                                                                                        }
-                                                                                                                                    });
-                                                                                                                                }else{
-                                                                                                                                    console.log("Wasnt 24 hours after.")
-                                                                                                                                }
-                                                                                                                                resolve({success: true});
-                                                                                                                            }
-                                                                                                                        });
+                                                                                                                
 
                                                                                                                 }
                                                                                                             });
@@ -339,54 +349,63 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                                                                                                         // get time stamp of last message sent, assign it to x
                                                                                                                         // if x is between 24 and 48 hours after the new message is sent, update x to now, increase counter
                                                                                                                         // else: update x to now, make counter = 1
-                                                                                                                    
-                                                                                                                        const getTracker = 'SELECT tracker_message_timestamp_column from users where id = ?';
-                                                                                                                        const currentTime = new Date();
-                                                                                                                        pool.query(getTracker, [senderID], (error, results) => {
-                                                                                                                            if (error) {
-                                                                                                                                console.error('Error fetching tracker timestamp:', error);
-                                                                                                                                reject(error)
-                                                                                                                            }
-                                                                                                                        
-                                                                                                                            else{
-                                                                                                                                const trackerTimestamp = new Date(results[0].tracker_message_timestamp_column);
-                                                                                                                                const timeDifference = currentTime.getTime() - trackerTimestamp.getTime();
-                                                                                                                                const hoursDifference = timeDifference / (1000 * 60 * 60);
-                                                                                                                        
-                                                                                                                                if (hoursDifference >= 24) {
-                                                                                                                                    console.log("Current time is at least 24 hours after the timestamp from the query.");
-                                                                                                                                    const updateMessagesStreak = `
-                                                                                                                                    UPDATE users
-                                                                                                                                    SET messaging_streak = CASE 
-                                                                                                                                            WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN messaging_streak + 1 
-                                                                                                                                            
-                                                                                                                                            ELSE 1
-                                                                                                                                        END,
-                                                                                                                                        tracker_message_timestamp_column = CASE
-                                                                                                                                            WHEN NOW() BETWEEN DATE_ADD(tracker_message_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
-                                                                                                                                            WHEN NOW() > DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
-                                                                                                                                            ELSE tracker_message_timestamp_column
-                                                                                                                                        END,
-                                                                                                                                        messaging_timestamp_column = CASE
-                                                                                                                                            WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
-                                                                                                                                            WHEN NOW() > DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
-                                                                                                                                            ELSE messaging_timestamp_column
-                                                                                                                                        END
-                                                                                                                                    WHERE id = ?;
-                                                                                                                                    `;
-                                                                                                                                    pool.query(updateMessagesStreak, [senderID], (updateError, result) => {
-                                                                                                                                        if(updateError){
-                                                                                                                                            reject(updateError);
+
+                                                                                                                        const update_elo_score_counter_query = 'Update info_to_display set elo_score_counter = elo_score_counter + 1 where id = ?';
+
+                                                                                                                        pool.query(update_elo_score_counter_query, [senderID], (update_counter_error, update_result) => {
+                                                                                                                            if(update_counter_error){
+                                                                                                                                reject(update_counter_error)
+                                                                                                                            }else{
+                                                                                                                                const getTracker = 'SELECT tracker_message_timestamp_column from users where id = ?';
+                                                                                                                                const currentTime = new Date();
+                                                                                                                                pool.query(getTracker, [senderID], (error, results) => {
+                                                                                                                                    if (error) {
+                                                                                                                                        console.error('Error fetching tracker timestamp:', error);
+                                                                                                                                        reject(error)
+                                                                                                                                    }
+                                                                                                                                
+                                                                                                                                    else{
+                                                                                                                                        const trackerTimestamp = new Date(results[0].tracker_message_timestamp_column);
+                                                                                                                                        const timeDifference = currentTime.getTime() - trackerTimestamp.getTime();
+                                                                                                                                        const hoursDifference = timeDifference / (1000 * 60 * 60);
+                                                                                                                                
+                                                                                                                                        if (hoursDifference >= 24) {
+                                                                                                                                            console.log("Current time is at least 24 hours after the timestamp from the query.");
+                                                                                                                                            const updateMessagesStreak = `
+                                                                                                                                            UPDATE users
+                                                                                                                                            SET messaging_streak = CASE 
+                                                                                                                                                    WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN messaging_streak + 1 
+                                                                                                                                                    
+                                                                                                                                                    ELSE 1
+                                                                                                                                                END,
+                                                                                                                                                tracker_message_timestamp_column = CASE
+                                                                                                                                                    WHEN NOW() BETWEEN DATE_ADD(tracker_message_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                                                                    WHEN NOW() > DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                                                                    ELSE tracker_message_timestamp_column
+                                                                                                                                                END,
+                                                                                                                                                messaging_timestamp_column = CASE
+                                                                                                                                                    WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                                                                    WHEN NOW() > DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                                                                    ELSE messaging_timestamp_column
+                                                                                                                                                END
+                                                                                                                                            WHERE id = ?;
+                                                                                                                                            `;
+                                                                                                                                            pool.query(updateMessagesStreak, [senderID], (updateError, result) => {
+                                                                                                                                                if(updateError){
+                                                                                                                                                    reject(updateError);
+                                                                                                                                                }else{
+                                                                                                                                                    resolve({success: true});
+                                                                                                                                                }
+                                                                                                                                            });
                                                                                                                                         }else{
-                                                                                                                                            resolve({success: true});
+                                                                                                                                            console.log("Wasnt 24 hours after.")
                                                                                                                                         }
-                                                                                                                                    });
-                                                                                                                                }else{
-                                                                                                                                    console.log("Wasnt 24 hours after.")
-                                                                                                                                }
-                                                                                                                                resolve({success: true});
+                                                                                                                                        resolve({success: true});
+                                                                                                                                    }
+                                                                                                                                });
                                                                                                                             }
-                                                                                                                        });
+                                                                                                                        })
+                                                                                                                    
 
                                                                                                                 }
                                                                                                             });
