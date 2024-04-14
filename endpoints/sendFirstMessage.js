@@ -352,6 +352,9 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                                                                                                         // if x is between 24 and 48 hours after the new message is sent, update x to now, increase counter
                                                                                                                         // else: update x to now, make counter = 1
 
+                                                                                                                        console.log(`${senderID}: ${new_sender_elo}`);
+                                                                                                                        console.log(`${recieverID}: ${new_rec_elo}`);
+
                                                                                                                         const update_elo_score_counter_query = 'Update info_to_display set elo_score_counter = elo_score_counter + 1 where id = ?';
 
                                                                                                                         pool.query(update_elo_score_counter_query, [senderID], (update_counter_error, update_result) => {
