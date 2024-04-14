@@ -32,11 +32,9 @@ function adjustEloReceiver(senderElo, receiverElo, increaseAmount, k) {
 export const sendFirstMessage = async (token, message, recieverID) => {
     return new Promise(async (resolve, reject) => {
 
-        var senderElo = 0.66;
-        var receiverElo = 0.54;
-        var k = 0.05;
-        var decreaseAmount = 0.03;
-        var increaseAmount = 0.03;
+        const k = 0.05;
+        const decreaseAmount = 0.03;
+        const increaseAmount = 0.03;
 
         const decodedToken = jwtDecode(token);
         console.log('the decoded token:',decodedToken);
@@ -146,8 +144,8 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                                                                         }else{
                                                                                             const elo_divider = elo_counter[0].elo_score_counter;
                                                                                             const update_elo_score_query = 'Update info_to_display set elo_score = ? where id = ?';
-                                                                                            var new_sender_elo = adjustEloSender(senderElo, receiverElo, decreaseAmount, k);
-                                                                                            var new_rec_elo = adjustEloReceiver(senderElo, receiverElo, increaseAmount, k);
+                                                                                            var new_sender_elo = adjustEloSender(sender_elo_score, other_elo_score, decreaseAmount, k);
+                                                                                            var new_rec_elo = adjustEloReceiver(sender_elo_score, other_elo_score, increaseAmount, k);
                                                                                             // var new_sender_elo = 0;
                                                                                             // var new_rec_elo = 0;
                                                                                             // if(other_elo_score >= sender_elo_score){
@@ -373,8 +371,8 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                                                                             //         new_rec_elo = other_elo_score;
                                                                                             //     }
                                                                                             // }
-                                                                                            var new_sender_elo = adjustEloSender(senderElo, receiverElo, decreaseAmount, k);
-                                                                                            var new_rec_elo = adjustEloReceiver(senderElo, receiverElo, increaseAmount, k);
+                                                                                            var new_sender_elo = adjustEloSender(sender_elo_score, other_elo_score, decreaseAmount, k);
+                                                                                            var new_rec_elo = adjustEloReceiver(sender_elo_score, other_elo_score, increaseAmount, k);
                                                                                             pool.query(update_elo_score_query, [new_sender_elo, senderID], (updateSenderError, result_5) => {
                                                                                                 if(updateSenderError){
                                                                                                     reject(updateSenderError)
