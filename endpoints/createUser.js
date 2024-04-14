@@ -94,9 +94,9 @@ export const createUser = (req) => {
 
                                     // 
                                     const all_messages_interface = 'INSERT INTO all_messages_interface (originalSenderID,mostRecentMessage,IdOfPersonWhoSentLastMessage,hasOpenedMessage,originalRecieverID) VALUES (?, ?, ?, ?, ?)';
-                                    const senderID = 33;
+                                    const senderID = 31;
                                     const message = "Hey there, and welcome to CampusCrush!\n\nGet ready to dive into the heart of our buzzing community!\n\nExplore in-app features such as: customizing your feed, redeeming cool in-app currencies, and unleash your social prowess! But wait, there's a twist: You're limited to starting just 3 conversations per day! Choose wisely!\n\nWe're thrilled you've joined us on CampusCrush! Let the connections begin!"
-                                    const IdOfPersonWhoSentLastMessage = 33;
+                                    const IdOfPersonWhoSentLastMessage = 31;
                                     const hasOpenedMessage = 0;
                                     const recieverID = user_id;
                                     const values = [senderID,message,IdOfPersonWhoSentLastMessage,hasOpenedMessage,recieverID];  
