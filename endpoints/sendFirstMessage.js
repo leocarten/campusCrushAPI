@@ -128,7 +128,7 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                                                                                 }
                                                                                             }else{
                                                                                                 if(sender_elo_score - (difference / elo_divider) >= 0){
-                                                                                                    new_sender_elo -= (difference / elo_divider);
+                                                                                                    new_sender_elo = (difference / elo_divider);
                                                                                                 }else{
                                                                                                     new_sender_elo = sender_elo_score;
                                                                                                 }
@@ -327,7 +327,7 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                                                                                 }
                                                                                             }else{
                                                                                                 if(sender_elo_score - (difference / elo_divider) >= 0){
-                                                                                                    new_sender_elo -= (difference / elo_divider);
+                                                                                                    new_sender_elo = (difference / elo_divider);
                                                                                                 }else{
                                                                                                     new_sender_elo = sender_elo_score;
                                                                                                 }
