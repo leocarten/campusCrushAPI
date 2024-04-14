@@ -87,68 +87,139 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                                                     reject(queryErr);
                                                                 } else {
 
-                                                                    // update points
-                                                                    const firstMessagePointUpdate = 'UPDATE users set points = points + 25 where id = ?';
-                                                                    pool.query(firstMessagePointUpdate, [senderID], (pointsQueryError, pointsSuccess) => {
-                                                                        if(pointsQueryError){
-                                                                            reject(pointsQueryError);
-                                                                        }
-                                                                        else{
-                                                                            // need to update streak
-                                                                                // get time stamp of last message sent, assign it to x
-                                                                                // if x is between 24 and 48 hours after the new message is sent, update x to now, increase counter
-                                                                                // else: update x to now, make counter = 1
-                                                                            
-                                                                                const getTracker = 'SELECT tracker_message_timestamp_column from users where id = ?';
-                                                                                const currentTime = new Date();
-                                                                                pool.query(getTracker, [senderID], (error, results) => {
-                                                                                    if (error) {
-                                                                                        console.error('Error fetching tracker timestamp:', error);
-                                                                                        reject(error)
-                                                                                    }
-                                                                                
-                                                                                    else{
-                                                                                        const trackerTimestamp = new Date(results[0].tracker_message_timestamp_column);
-                                                                                        const timeDifference = currentTime.getTime() - trackerTimestamp.getTime();
-                                                                                        const hoursDifference = timeDifference / (1000 * 60 * 60);
-                                                                                
-                                                                                        if (hoursDifference >= 24) {
-                                                                                            console.log("Current time is at least 24 hours after the timestamp from the query.");
-                                                                                            const updateMessagesStreak = `
-                                                                                            UPDATE users
-                                                                                            SET messaging_streak = CASE 
-                                                                                                    WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN messaging_streak + 1 
-                                                                                                    
-                                                                                                    ELSE 1
-                                                                                                END,
-                                                                                                tracker_message_timestamp_column = CASE
-                                                                                                    WHEN NOW() BETWEEN DATE_ADD(tracker_message_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
-                                                                                                    WHEN NOW() > DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
-                                                                                                    ELSE tracker_message_timestamp_column
-                                                                                                END,
-                                                                                                messaging_timestamp_column = CASE
-                                                                                                    WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
-                                                                                                    WHEN NOW() > DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
-                                                                                                    ELSE messaging_timestamp_column
-                                                                                                END
-                                                                                            WHERE id = ?;
-                                                                                            `;
-                                                                                            pool.query(updateMessagesStreak, [senderID], (updateError, result) => {
-                                                                                                if(updateError){
-                                                                                                    reject(updateError);
-                                                                                                }else{
-                                                                                                    resolve({success: true});
-                                                                                                }
-                                                                                            });
-                                                                                        }else{
-                                                                                            console.log("Wasnt 24 hours after.")
-                                                                                        }
-                                                                                        resolve({success: true});
-                                                                                    }
-                                                                                });
+                                                                    // update ELO score
 
+                                                                    // get ELO score of other person
+                                                                    const elo_score_other_query = 'SELECT elo_score from info_to_display where id = ?';
+                                                                    pool.query(elo_score_other_query, [recieverID], (elo_other_error, elo_score_other) => {
+                                                                        if(elo_other_error){
+                                                                            reject(elo_other_error)
+                                                                        }else{
+                                                                            const other_elo_score = elo_score_other[0].elo_score;
+                                                                            const elo_score_sender_query = 'SELECT elo_score from info_to_display where id = ?';
+                                                                            pool.query(elo_score_sender_query, [senderID], (sender_elo_error, elo_score_sender) => {
+                                                                                if(sender_elo_error){
+                                                                                    reject(sender_elo_error)
+                                                                                }else{
+                                                                                    const sender_elo_score = elo_score_sender[0].elo_score;
+                                                                                    var difference = Math.abs(other_elo_score - sender_elo_score);
+                                                                                    const elo_score_counter_sender_query = 'SELECT elo_score_counter from info_to_display where id = ?';
+                                                                                    pool.query(elo_score_counter_sender_query, [senderID], (elo_counter_error, elo_counter) => {
+                                                                                        if(elo_counter_error){
+                                                                                            reject(elo_counter_error)
+                                                                                        }else{
+                                                                                            const elo_divider = elo_counter[0].elo_score_counter;
+                                                                                            var id_to_update = 0;
+                                                                                            const update_elo_score_query = 'Update info_to_display set elo_score = where id = ?';
+                                                                                            var new_sender_elo = 0;
+                                                                                            var new_rec_elo = 0;
+                                                                                            if(other_elo_score >= sender_elo_score){
+                                                                                                if(other_elo_score - (difference / elo_divider) >= 0){
+                                                                                                    new_rec_elo = other_elo_score - (difference / elo_divider);
+                                                                                                }else{
+                                                                                                    new_rec_elo = other_elo_score;
+                                                                                                }
+                                                                                                if(sender_elo_score + (difference / elo_divider) <= 1){
+                                                                                                    new_sender_elo = sender_elo_score + (difference / elo_divider);
+                                                                                                }else{
+                                                                                                    new_sender_elo = sender_elo_score
+                                                                                                }
+                                                                                            }else{
+                                                                                                if(sender_elo_score - (difference / elo_divider) >= 0){
+                                                                                                    new_sender_elo -= (difference / elo_divider);
+                                                                                                }else{
+                                                                                                    new_sender_elo = sender_elo_score;
+                                                                                                }
+                                                                                                if(other_elo_score + (difference / elo_divider) <= 1){
+                                                                                                    new_rec_elo = other_elo_score + (difference / elo_divider);
+                                                                                                }else{
+                                                                                                    new_rec_elo = other_elo_score;
+                                                                                                }
+                                                                                            }
+                                                                                            pool.query(update_elo_score_query, [new_sender_elo, senderID], (updateSenderError, result_5) => {
+                                                                                                if(updateSenderError){
+                                                                                                    reject(updateSenderError)
+                                                                                                }else{
+                                                                                                    pool.query(update_elo_score_query, [new_rec_elo, recieverID], (updateSenderError_, result_6) => {
+                                                                                                        if(updateSenderError_){
+                                                                                                            reject(updateSenderError_)
+                                                                                                        }else{
+                                                                                                            // rest of code
+                                                                                                                                                                                                                                                                            // update points
+                                                                                                            const firstMessagePointUpdate = 'UPDATE users set points = points + 10 where id = ?';
+                                                                                                            pool.query(firstMessagePointUpdate, [senderID], (pointsQueryError, pointsSuccess) => {
+                                                                                                                if(pointsQueryError){
+                                                                                                                    reject(pointsQueryError);
+                                                                                                                }
+                                                                                                                else{
+                                                                                                                    // need to update streak
+                                                                                                                        // get time stamp of last message sent, assign it to x
+                                                                                                                        // if x is between 24 and 48 hours after the new message is sent, update x to now, increase counter
+                                                                                                                        // else: update x to now, make counter = 1
+                                                                                                                    
+                                                                                                                        const getTracker = 'SELECT tracker_message_timestamp_column from users where id = ?';
+                                                                                                                        const currentTime = new Date();
+                                                                                                                        pool.query(getTracker, [senderID], (error, results) => {
+                                                                                                                            if (error) {
+                                                                                                                                console.error('Error fetching tracker timestamp:', error);
+                                                                                                                                reject(error)
+                                                                                                                            }
+                                                                                                                        
+                                                                                                                            else{
+                                                                                                                                const trackerTimestamp = new Date(results[0].tracker_message_timestamp_column);
+                                                                                                                                const timeDifference = currentTime.getTime() - trackerTimestamp.getTime();
+                                                                                                                                const hoursDifference = timeDifference / (1000 * 60 * 60);
+                                                                                                                        
+                                                                                                                                if (hoursDifference >= 24) {
+                                                                                                                                    console.log("Current time is at least 24 hours after the timestamp from the query.");
+                                                                                                                                    const updateMessagesStreak = `
+                                                                                                                                    UPDATE users
+                                                                                                                                    SET messaging_streak = CASE 
+                                                                                                                                            WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN messaging_streak + 1 
+                                                                                                                                            
+                                                                                                                                            ELSE 1
+                                                                                                                                        END,
+                                                                                                                                        tracker_message_timestamp_column = CASE
+                                                                                                                                            WHEN NOW() BETWEEN DATE_ADD(tracker_message_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                                                            WHEN NOW() > DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                                                            ELSE tracker_message_timestamp_column
+                                                                                                                                        END,
+                                                                                                                                        messaging_timestamp_column = CASE
+                                                                                                                                            WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                                                            WHEN NOW() > DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                                                            ELSE messaging_timestamp_column
+                                                                                                                                        END
+                                                                                                                                    WHERE id = ?;
+                                                                                                                                    `;
+                                                                                                                                    pool.query(updateMessagesStreak, [senderID], (updateError, result) => {
+                                                                                                                                        if(updateError){
+                                                                                                                                            reject(updateError);
+                                                                                                                                        }else{
+                                                                                                                                            resolve({success: true});
+                                                                                                                                        }
+                                                                                                                                    });
+                                                                                                                                }else{
+                                                                                                                                    console.log("Wasnt 24 hours after.")
+                                                                                                                                }
+                                                                                                                                resolve({success: true});
+                                                                                                                            }
+                                                                                                                        });
+
+                                                                                                                }
+                                                                                                            });
+                                                                                                        }
+                                                                                                    })
+                                                                                                }
+                                                                                            })
+                                                                                        }
+                                                                                    });
+                                                                                }
+                                                                            })
                                                                         }
-                                                                    });
+                                                                    })
+
+
+                                                                
                                                                     
                                                                     // resolve({ success: true, message: "User created successfully." });
                                                                 }
@@ -201,68 +272,136 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                                                     reject(queryErr);
                                                                 } else {
 
-                                                                    // update points
-                                                                    const firstMessagePointUpdate = 'UPDATE users set points = points + 25 where id = ?';
-                                                                    pool.query(firstMessagePointUpdate, [senderID], (pointsQueryError, pointsSuccess) => {
-                                                                        if(pointsQueryError){
-                                                                            reject(pointsQueryError);
-                                                                        }
-                                                                        else{
-                                                                            // need to update streak
-                                                                                // get time stamp of last message sent, assign it to x
-                                                                                // if x is between 24 and 48 hours after the new message is sent, update x to now, increase counter
-                                                                                // else: update x to now, make counter = 1
-                                                                            
-                                                                                const getTracker = 'SELECT tracker_message_timestamp_column from users where id = ?';
-                                                                                const currentTime = new Date();
-                                                                                pool.query(getTracker, [senderID], (error, results) => {
-                                                                                    if (error) {
-                                                                                        console.error('Error fetching tracker timestamp:', error);
-                                                                                        reject(error)
-                                                                                    }
-                                                                                
-                                                                                    else{
-                                                                                        const trackerTimestamp = new Date(results[0].tracker_message_timestamp_column);
-                                                                                        const timeDifference = currentTime.getTime() - trackerTimestamp.getTime();
-                                                                                        const hoursDifference = timeDifference / (1000 * 60 * 60);
-                                                                                
-                                                                                        if (hoursDifference >= 24) {
-                                                                                            console.log("Current time is at least 24 hours after the timestamp from the query.");
-                                                                                            const updateMessagesStreak = `
-                                                                                            UPDATE users
-                                                                                            SET messaging_streak = CASE 
-                                                                                                    WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN messaging_streak + 1 
-                                                                                                    
-                                                                                                    ELSE 1
-                                                                                                END,
-                                                                                                tracker_message_timestamp_column = CASE
-                                                                                                    WHEN NOW() BETWEEN DATE_ADD(tracker_message_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
-                                                                                                    WHEN NOW() > DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
-                                                                                                    ELSE tracker_message_timestamp_column
-                                                                                                END,
-                                                                                                messaging_timestamp_column = CASE
-                                                                                                    WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
-                                                                                                    WHEN NOW() > DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
-                                                                                                    ELSE messaging_timestamp_column
-                                                                                                END
-                                                                                            WHERE id = ?;
-                                                                                            `;
-                                                                                            pool.query(updateMessagesStreak, [senderID], (updateError, result) => {
-                                                                                                if(updateError){
-                                                                                                    reject(updateError);
-                                                                                                }else{
-                                                                                                    resolve({success: true});
-                                                                                                }
-                                                                                            });
+                                                                    // update ELO score
+                                                                    const elo_score_other_query = 'SELECT elo_score from info_to_display where id = ?';
+                                                                    pool.query(elo_score_other_query, [recieverID], (elo_other_error, elo_score_other) => {
+                                                                        if(elo_other_error){
+                                                                            reject(elo_other_error)
+                                                                        }else{
+                                                                            const other_elo_score = elo_score_other[0].elo_score;
+                                                                            const elo_score_sender_query = 'SELECT elo_score from info_to_display where id = ?';
+                                                                            pool.query(elo_score_sender_query, [senderID], (sender_elo_error, elo_score_sender) => {
+                                                                                if(sender_elo_error){
+                                                                                    reject(sender_elo_error)
+                                                                                }else{
+                                                                                    const sender_elo_score = elo_score_sender[0].elo_score;
+                                                                                    var difference = Math.abs(other_elo_score - sender_elo_score);
+                                                                                    const elo_score_counter_sender_query = 'SELECT elo_score_counter from info_to_display where id = ?';
+                                                                                    pool.query(elo_score_counter_sender_query, [senderID], (elo_counter_error, elo_counter) => {
+                                                                                        if(elo_counter_error){
+                                                                                            reject(elo_counter_error)
                                                                                         }else{
-                                                                                            console.log("Wasnt 24 hours after.")
-                                                                                        }
-                                                                                        resolve({success: true});
-                                                                                    }
-                                                                                });
+                                                                                            const elo_divider = elo_counter[0].elo_score_counter;
+                                                                                            var id_to_update = 0;
+                                                                                            const update_elo_score_query = 'Update info_to_display set elo_score = where id = ?';
+                                                                                            var new_sender_elo = 0;
+                                                                                            var new_rec_elo = 0;
+                                                                                            if(other_elo_score >= sender_elo_score){
+                                                                                                if(other_elo_score - (difference / elo_divider) >= 0){
+                                                                                                    new_rec_elo = other_elo_score - (difference / elo_divider);
+                                                                                                }else{
+                                                                                                    new_rec_elo = other_elo_score;
+                                                                                                }
+                                                                                                if(sender_elo_score + (difference / elo_divider) <= 1){
+                                                                                                    new_sender_elo = sender_elo_score + (difference / elo_divider);
+                                                                                                }else{
+                                                                                                    new_sender_elo = sender_elo_score
+                                                                                                }
+                                                                                            }else{
+                                                                                                if(sender_elo_score - (difference / elo_divider) >= 0){
+                                                                                                    new_sender_elo -= (difference / elo_divider);
+                                                                                                }else{
+                                                                                                    new_sender_elo = sender_elo_score;
+                                                                                                }
+                                                                                                if(other_elo_score + (difference / elo_divider) <= 1){
+                                                                                                    new_rec_elo = other_elo_score + (difference / elo_divider);
+                                                                                                }else{
+                                                                                                    new_rec_elo = other_elo_score;
+                                                                                                }
+                                                                                            }
+                                                                                            pool.query(update_elo_score_query, [new_sender_elo, senderID], (updateSenderError, result_5) => {
+                                                                                                if(updateSenderError){
+                                                                                                    reject(updateSenderError)
+                                                                                                }else{
+                                                                                                    pool.query(update_elo_score_query, [new_rec_elo, recieverID], (updateSenderError_, result_6) => {
+                                                                                                        if(updateSenderError_){
+                                                                                                            reject(updateSenderError_)
+                                                                                                        }else{
+                                                                                                            // rest of code
+                                                                                                                                                                                                                                                                            // update points
+                                                                                                            const firstMessagePointUpdate = 'UPDATE users set points = points + 10 where id = ?';
+                                                                                                            pool.query(firstMessagePointUpdate, [senderID], (pointsQueryError, pointsSuccess) => {
+                                                                                                                if(pointsQueryError){
+                                                                                                                    reject(pointsQueryError);
+                                                                                                                }
+                                                                                                                else{
+                                                                                                                    // need to update streak
+                                                                                                                        // get time stamp of last message sent, assign it to x
+                                                                                                                        // if x is between 24 and 48 hours after the new message is sent, update x to now, increase counter
+                                                                                                                        // else: update x to now, make counter = 1
+                                                                                                                    
+                                                                                                                        const getTracker = 'SELECT tracker_message_timestamp_column from users where id = ?';
+                                                                                                                        const currentTime = new Date();
+                                                                                                                        pool.query(getTracker, [senderID], (error, results) => {
+                                                                                                                            if (error) {
+                                                                                                                                console.error('Error fetching tracker timestamp:', error);
+                                                                                                                                reject(error)
+                                                                                                                            }
+                                                                                                                        
+                                                                                                                            else{
+                                                                                                                                const trackerTimestamp = new Date(results[0].tracker_message_timestamp_column);
+                                                                                                                                const timeDifference = currentTime.getTime() - trackerTimestamp.getTime();
+                                                                                                                                const hoursDifference = timeDifference / (1000 * 60 * 60);
+                                                                                                                        
+                                                                                                                                if (hoursDifference >= 24) {
+                                                                                                                                    console.log("Current time is at least 24 hours after the timestamp from the query.");
+                                                                                                                                    const updateMessagesStreak = `
+                                                                                                                                    UPDATE users
+                                                                                                                                    SET messaging_streak = CASE 
+                                                                                                                                            WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN messaging_streak + 1 
+                                                                                                                                            
+                                                                                                                                            ELSE 1
+                                                                                                                                        END,
+                                                                                                                                        tracker_message_timestamp_column = CASE
+                                                                                                                                            WHEN NOW() BETWEEN DATE_ADD(tracker_message_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                                                            WHEN NOW() > DATE_ADD(tracker_message_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                                                            ELSE tracker_message_timestamp_column
+                                                                                                                                        END,
+                                                                                                                                        messaging_timestamp_column = CASE
+                                                                                                                                            WHEN NOW() BETWEEN DATE_ADD(messaging_timestamp_column, INTERVAL 24 HOUR) AND DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                                                            WHEN NOW() > DATE_ADD(messaging_timestamp_column, INTERVAL 48 HOUR) THEN NOW()
+                                                                                                                                            ELSE messaging_timestamp_column
+                                                                                                                                        END
+                                                                                                                                    WHERE id = ?;
+                                                                                                                                    `;
+                                                                                                                                    pool.query(updateMessagesStreak, [senderID], (updateError, result) => {
+                                                                                                                                        if(updateError){
+                                                                                                                                            reject(updateError);
+                                                                                                                                        }else{
+                                                                                                                                            resolve({success: true});
+                                                                                                                                        }
+                                                                                                                                    });
+                                                                                                                                }else{
+                                                                                                                                    console.log("Wasnt 24 hours after.")
+                                                                                                                                }
+                                                                                                                                resolve({success: true});
+                                                                                                                            }
+                                                                                                                        });
 
+                                                                                                                }
+                                                                                                            });
+                                                                                                        }
+                                                                                                    })
+                                                                                                }
+                                                                                            })
+                                                                                        }
+                                                                                    });
+                                                                                }
+                                                                            })
                                                                         }
-                                                                    });
+                                                                    })
+                                                                    
+                                                                
                                                                     
                                                                     // resolve({ success: true, message: "User created successfully." });
                                                                 }
