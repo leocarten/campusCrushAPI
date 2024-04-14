@@ -3,8 +3,41 @@ import { authenticateUsersJWT } from '../jwt/verifyJwt.js';
 import { jwtDecode } from "jwt-decode";
 import { sendAdditionalMessages } from './sendAdditionalMessages.js';
 
+function calculateImpact(senderElo, receiverElo, k) {
+    return 1 / (1 + Math.exp(-k * (senderElo - receiverElo)));
+}
+
+function adjustEloSender(senderElo, receiverElo, decreaseAmount, k) {
+    var impact = calculateImpact(senderElo, receiverElo, k);
+    // Adjust the sender's ELO score
+    var senderNewElo = senderElo - (impact * decreaseAmount);
+    if (senderNewElo < 0) {
+        return 0;
+    } else {
+        return senderNewElo;
+    }
+}
+
+function adjustEloReceiver(senderElo, receiverElo, increaseAmount, k) {
+    var impact = calculateImpact(senderElo, receiverElo, k);
+    // Adjust the receiver's ELO score
+    var receiverNewElo = receiverElo + (impact * increaseAmount);
+    if (receiverNewElo > 1) {
+        return 1;
+    } else {
+        return receiverNewElo;
+    }
+}
+
 export const sendFirstMessage = async (token, message, recieverID) => {
     return new Promise(async (resolve, reject) => {
+
+        var senderElo = 0.66;
+        var receiverElo = 0.54;
+        var k = 0.05;
+        var decreaseAmount = 0.03;
+        var increaseAmount = 0.03;
+
         const decodedToken = jwtDecode(token);
         console.log('the decoded token:',decodedToken);
         const senderID = decodedToken['id'];
@@ -113,31 +146,34 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                                                                         }else{
                                                                                             const elo_divider = elo_counter[0].elo_score_counter;
                                                                                             const update_elo_score_query = 'Update info_to_display set elo_score = ? where id = ?';
-                                                                                            var new_sender_elo = 0;
-                                                                                            var new_rec_elo = 0;
-                                                                                            if(other_elo_score >= sender_elo_score){
-                                                                                                if(other_elo_score - (difference / elo_divider) >= 0){
-                                                                                                    new_rec_elo = other_elo_score - (difference / elo_divider);
-                                                                                                }else{
-                                                                                                    new_rec_elo = other_elo_score;
-                                                                                                }
-                                                                                                if(sender_elo_score + (difference / elo_divider) <= 1){
-                                                                                                    new_sender_elo = sender_elo_score + (difference / elo_divider);
-                                                                                                }else{
-                                                                                                    new_sender_elo = sender_elo_score
-                                                                                                }
-                                                                                            }else{
-                                                                                                if(sender_elo_score - (difference / elo_divider) >= 0){
-                                                                                                    new_sender_elo = (difference / elo_divider);
-                                                                                                }else{
-                                                                                                    new_sender_elo = sender_elo_score;
-                                                                                                }
-                                                                                                if(other_elo_score + (difference / elo_divider) <= 1){
-                                                                                                    new_rec_elo = other_elo_score + (difference / elo_divider);
-                                                                                                }else{
-                                                                                                    new_rec_elo = other_elo_score;
-                                                                                                }
-                                                                                            }
+                                                                                            var new_sender_elo = adjustEloSender(senderElo, receiverElo, decreaseAmount, k);
+                                                                                            var new_rec_elo = adjustEloReceiver(senderElo, receiverElo, increaseAmount, k);
+                                                                                            // var new_sender_elo = 0;
+                                                                                            // var new_rec_elo = 0;
+                                                                                            // if(other_elo_score >= sender_elo_score){
+                                                                                            //     if(other_elo_score - (difference / elo_divider) >= 0){
+                                                                                            //         new_rec_elo = other_elo_score - (difference / elo_divider);
+                                                                                            //     }else{
+                                                                                            //         new_rec_elo = other_elo_score;
+                                                                                            //     }
+                                                                                            //     if(sender_elo_score + (difference / elo_divider) <= 1){
+                                                                                            //         new_sender_elo = sender_elo_score + (difference / elo_divider);
+                                                                                            //     }else{
+                                                                                            //         new_sender_elo = sender_elo_score
+                                                                                            //     }
+                                                                                            // }else{
+                                                                                            //     if(sender_elo_score - (difference / elo_divider) >= 0){
+                                                                                            //         new_sender_elo = (difference / elo_divider);
+                                                                                            //     }else{
+                                                                                            //         new_sender_elo = sender_elo_score;
+                                                                                            //     }
+                                                                                            //     if(other_elo_score + (difference / elo_divider) <= 1){
+                                                                                            //         new_rec_elo = other_elo_score + (difference / elo_divider);
+                                                                                            //     }else{
+                                                                                            //         new_rec_elo = other_elo_score;
+                                                                                            //     }
+                                                                                            // }
+
                                                                                             pool.query(update_elo_score_query, [new_sender_elo, senderID], (updateSenderError, result_5) => {
                                                                                                 if(updateSenderError){
                                                                                                     reject(updateSenderError)
@@ -312,31 +348,33 @@ export const sendFirstMessage = async (token, message, recieverID) => {
                                                                                             const elo_divider = elo_counter[0].elo_score_counter;
                                                                                             var id_to_update = 0;
                                                                                             const update_elo_score_query = 'Update info_to_display set elo_score = ? where id = ?';
-                                                                                            var new_sender_elo = 0;
-                                                                                            var new_rec_elo = 0;
-                                                                                            if(other_elo_score >= sender_elo_score){
-                                                                                                if(other_elo_score - (difference / elo_divider) >= 0){
-                                                                                                    new_rec_elo = other_elo_score - (difference / elo_divider);
-                                                                                                }else{
-                                                                                                    new_rec_elo = other_elo_score;
-                                                                                                }
-                                                                                                if(sender_elo_score + (difference / elo_divider) <= 1){
-                                                                                                    new_sender_elo = sender_elo_score + (difference / elo_divider);
-                                                                                                }else{
-                                                                                                    new_sender_elo = sender_elo_score
-                                                                                                }
-                                                                                            }else{
-                                                                                                if(sender_elo_score - (difference / elo_divider) >= 0){
-                                                                                                    new_sender_elo = (difference / elo_divider);
-                                                                                                }else{
-                                                                                                    new_sender_elo = sender_elo_score;
-                                                                                                }
-                                                                                                if(other_elo_score + (difference / elo_divider) <= 1){
-                                                                                                    new_rec_elo = other_elo_score + (difference / elo_divider);
-                                                                                                }else{
-                                                                                                    new_rec_elo = other_elo_score;
-                                                                                                }
-                                                                                            }
+                                                                                            // var new_sender_elo = 0;
+                                                                                            // var new_rec_elo = 0;
+                                                                                            // if(other_elo_score >= sender_elo_score){
+                                                                                            //     if(other_elo_score - (difference / elo_divider) >= 0){
+                                                                                            //         new_rec_elo = other_elo_score - (difference / elo_divider);
+                                                                                            //     }else{
+                                                                                            //         new_rec_elo = other_elo_score;
+                                                                                            //     }
+                                                                                            //     if(sender_elo_score + (difference / elo_divider) <= 1){
+                                                                                            //         new_sender_elo = sender_elo_score + (difference / elo_divider);
+                                                                                            //     }else{
+                                                                                            //         new_sender_elo = sender_elo_score
+                                                                                            //     }
+                                                                                            // }else{
+                                                                                            //     if(sender_elo_score - (difference / elo_divider) >= 0){
+                                                                                            //         new_sender_elo = (difference / elo_divider);
+                                                                                            //     }else{
+                                                                                            //         new_sender_elo = sender_elo_score;
+                                                                                            //     }
+                                                                                            //     if(other_elo_score + (difference / elo_divider) <= 1){
+                                                                                            //         new_rec_elo = other_elo_score + (difference / elo_divider);
+                                                                                            //     }else{
+                                                                                            //         new_rec_elo = other_elo_score;
+                                                                                            //     }
+                                                                                            // }
+                                                                                            var new_sender_elo = adjustEloSender(senderElo, receiverElo, decreaseAmount, k);
+                                                                                            var new_rec_elo = adjustEloReceiver(senderElo, receiverElo, increaseAmount, k);
                                                                                             pool.query(update_elo_score_query, [new_sender_elo, senderID], (updateSenderError, result_5) => {
                                                                                                 if(updateSenderError){
                                                                                                     reject(updateSenderError)
