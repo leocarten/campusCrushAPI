@@ -20,12 +20,8 @@ export const createUser = (req) => {
         } = req.body;
 
 
-        // const binaryData = Buffer.from(base64, 'base64');
-        // // Compress the binary data using zlib
-        // const compressedData = zlib.deflateSync(binaryData);
-
-        // const compressedBase64 = compressedData.toString('base64');
-        // console.log(compressedBase64.length)
+        // const uri = uriString
+        console.log(base64);
         
 
         var server_error = false;
