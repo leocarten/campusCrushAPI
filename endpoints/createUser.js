@@ -3,6 +3,7 @@ import pool from '../db/connectionPool.js';
 import { generateAccessAndRefreshToken } from '../jwt/createAccessAndRefresh.js'
 import dotenv from 'dotenv';
 dotenv.config();
+import zlib from 'zlib';
 
 function getRandomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -15,9 +16,17 @@ export const createUser = (req) => {
             username, password, firstname, birthday, bio, gender, bucket_list, interests_hobbies,
             music_preference, pet_preference, app_purpose, wants_to_be_shown, has_tattoos,
             sleep_schedule, win_my_heart, job, workout, communication_style, ideal_first_meetup,
-            lat, long_
+            lat, long_, base64
         } = req.body;
-        // ADD COLUMN column_name data_type DEFAULT default_value;
+
+
+        const binaryData = Buffer.from(base64, 'base64');
+        // Compress the binary data using zlib
+        const compressedData = zlib.deflateSync(binaryData);
+
+        const compressedBase64 = compressedData.toString('base64');
+        console.log(compressedBase64.length)
+        
 
         var server_error = false;
         var new_interests = "";
