@@ -23,10 +23,10 @@ function getImageByID(id) {
             if (queryError) {
                 reject(queryError);
             } else {
-                if(imageResults[0].image_data != "" || imageResults[0].image_data != null){
+                if (imageResults[0] && (imageResults[0].image_data !== "" && imageResults[0].image_data !== null)) {
                     resolve(imageResults[0].image_data.toString());
-                }else{
-                    resolve(null);
+                } else {
+                    resolve(imageResults[0].image_data);
                 }
             }
         });
