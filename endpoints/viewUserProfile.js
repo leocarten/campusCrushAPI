@@ -14,31 +14,10 @@ export const viewUserProfile = (token) => {
           reject(err);
         } else {
           
-          const largePromise = [];
-
-          result.forEach(row => {
-              const promise = new Promise((resolve, reject) => {
-                  if (row.image_data != null && row.image_data !== '') {
-                      row.image_data = row.image_data.toString();
-                  }
-              }).catch(error => {
-                  row.image_data = null;
-                  console.error("Error calculating compatibility for row:", error);
-              });
-          
-              largePromise.push(promise);
-          });
-          
-          Promise.all(largePromise)
-              .then(() => {
-                  resolve(result);
-              })
-              .catch(error => {
-                  console.error("Error calculating compatibility for one or more rows:", error);
-                  resolve(result);
-              });
-          
-
+          if(result[0].image_data != "" || result[0].image_data != null){
+            result[0].image_data = result[0].image_data.toString();
+          }
+          resolve(result)
         }
       });
   });
