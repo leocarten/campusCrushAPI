@@ -13,9 +13,33 @@ export const viewUserProfile = (token) => {
         if (err) {
           reject(err);
         } else {
-          resolve(result);
+          
+          const largePromise = [];
+
+          result.forEach(row => {
+              const promise = new Promise((resolve, reject) => {
+                  if (row.image_data != null && row.image_data !== '') {
+                      row.image_data = row.image_data.toString();
+                  }
+              }).catch(error => {
+                  row.image_data = null;
+                  console.error("Error calculating compatibility for row:", error);
+              });
+          
+              largePromise.push(promise);
+          });
+          
+          Promise.all(largePromise)
+              .then(() => {
+                  resolve(result);
+              })
+              .catch(error => {
+                  console.error("Error calculating compatibility for one or more rows:", error);
+                  resolve(result);
+              });
+          
+
         }
       });
-    // }
   });
 };
