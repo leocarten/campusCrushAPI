@@ -20,7 +20,8 @@ export const updateUserProfile = (token, thingsToUpdate) => {
     "job":"job",
     "workout":"workout",
     "communication_style":"communication_style",
-    "ideal_first_meetup":"ideal_first_meetup"
+    "ideal_first_meetup":"ideal_first_meetup",
+    "image_data":"image_data"
   }
   let interestsFormatted = "";
   let musicFormatted = "";
