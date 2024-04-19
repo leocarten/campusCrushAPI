@@ -23,9 +23,13 @@ function getImageByID(id) {
             if (queryError) {
                 reject(queryError);
             } else {
-                console.log(imageResults);
-                if (imageResults && imageResults.length > 0 && imageResults[0].image_data !== null) {
-                    resolve(imageResults[0].image_data.toString());
+                if (imageResults && imageResults.length > 0 && imageResults[0].image_data !== null && imageResults[0].image_data !== "") {
+                    try{
+                        resolve(imageResults[0].image_data.toString());
+                    }
+                    catch(e){
+                        resolve(null);
+                    }
                 } else {
                     resolve(null);
                 }
