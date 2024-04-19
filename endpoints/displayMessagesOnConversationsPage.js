@@ -66,13 +66,13 @@ export const displayConversations = async (token) => {
         const conversationsWithNames = await Promise.all(resultsForConversation.map(async conversation => {
             if (conversation.originalSenderID === requestID) {
                 conversation.receiver_name = await getNameByID(conversation.originalRecieverID);
-                conversation.image_data = await getImageByID(requestID);
+                conversation.image_data = await getImageByID(conversation.originalRecieverID);
                 conversation.convoID = await getConvoIdFromIds(requestID, conversation.originalRecieverID);
                 conversation.requesterID = requestID;
             }
             if (conversation.originalRecieverID === requestID) {
                 conversation.receiver_name = await getNameByID(conversation.originalSenderID);
-                conversation.image_data = await getImageByID(requestID);
+                conversation.image_data = await getImageByID(conversation.originalSenderID);
                 conversation.convoID = await getConvoIdFromIds(conversation.originalSenderID, requestID);
                 conversation.requesterID = requestID;
             }
