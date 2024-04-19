@@ -23,11 +23,11 @@ function getImageByID(id) {
             if (queryError) {
                 reject(queryError);
             } else {
-                if (imageResults && imageResults.length > 0 && imageResults[0].image_data !== null && imageResults[0].image_data !== "") {
-                    try{
-                        resolve(imageResults[0].image_data.toString());
-                    }
-                    catch(e){
+                if (imageResults && imageResults.length > 0 && imageResults[0].image_data !== null) {
+                    try {
+                        const imageData = imageResults[0].image_data;
+                        resolve(imageData !== null ? imageData.toString() : null);
+                    } catch (e) {
                         resolve(null);
                     }
                 } else {
@@ -37,6 +37,7 @@ function getImageByID(id) {
         });
     });
 }
+
 
 
 function getConvoIdFromIds(senderId, recId) {
