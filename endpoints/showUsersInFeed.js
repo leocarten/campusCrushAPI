@@ -248,7 +248,8 @@ export const showItemsInFeed = (token) => {
                                     row.compatibility = compatibility;
                                     console.log("Compatibility calculated for row:", row.compatibility);
                                     if (row.image_data != null && row.image_data !== '') {
-                                        // row.image_data = row.image_data.toString('base64');
+
+                                        // row.image_data = row.image_data.toString('base64'); // this is SO wrong!! I am dumb!!
                                         row.image_data = row.image_data.toString();
                                     }                                    
                                 })
