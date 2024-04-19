@@ -16,6 +16,23 @@ function getNameByID(id) {
     });
 }
 
+function getImageByID(id) {
+    return new Promise((resolve, reject) => {
+        const query = 'SELECT image_data FROM info_to_display WHERE id = ?';
+        pool.query(query, [id], (queryError, imageResults) => {
+            if (queryError) {
+                reject(queryError);
+            } else {
+                if(imageResults[0].image_data != "" || imageResults[0].image_data != null){
+                    resolve(imageResults[0].image_data.toString());
+                }else{
+                    resolve(null);
+                }
+            }
+        });
+    });
+}
+
 function getConvoIdFromIds(senderId, recId) {
     return new Promise((resolve, reject) => {
         const query = 'SELECT convoID FROM all_messages_interface WHERE originalSenderID = ? AND originalRecieverID = ?';
@@ -49,11 +66,13 @@ export const displayConversations = async (token) => {
         const conversationsWithNames = await Promise.all(resultsForConversation.map(async conversation => {
             if (conversation.originalSenderID === requestID) {
                 conversation.receiver_name = await getNameByID(conversation.originalRecieverID);
+                conversation.image_data = await getImageByID(requestID);
                 conversation.convoID = await getConvoIdFromIds(requestID, conversation.originalRecieverID);
                 conversation.requesterID = requestID;
             }
             if (conversation.originalRecieverID === requestID) {
                 conversation.receiver_name = await getNameByID(conversation.originalSenderID);
+                conversation.image_data = await getImageByID(requestID);
                 conversation.convoID = await getConvoIdFromIds(conversation.originalSenderID, requestID);
                 conversation.requesterID = requestID;
             }
