@@ -249,7 +249,7 @@ export const showItemsInFeed = (token) => {
                                     console.log("Compatibility calculated for row:", row.compatibility);
                                     if (row.image_data != null && row.image_data !== '') {
                                         // row.image_data = row.image_data.toString('base64');
-                                        row.image_data = row.image_data;
+                                        row.image_data = row.image_data.toString();
                                     }                                    
                                 })
                                 .catch(error => {
