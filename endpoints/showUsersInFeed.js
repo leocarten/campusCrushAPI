@@ -247,9 +247,10 @@ export const showItemsInFeed = (token) => {
                                     // Once the compatibility is calculated, assign it to the row
                                     row.compatibility = compatibility;
                                     console.log("Compatibility calculated for row:", row.compatibility);
-                                    if (row.image_data !== null) {
-                                        row.image_data = row.image_data.toString('base64');
-                                    }
+                                    if (row.image_data != null && row.image_data !== '') {
+                                        // row.image_data = row.image_data.toString('base64');
+                                        row.image_data = row.image_data;
+                                    }                                    
                                 })
                                 .catch(error => {
                                     // Handle any errors that occur during compatibility calculation
