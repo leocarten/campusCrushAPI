@@ -171,7 +171,7 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 info_to_display ON info_to_display.id = distance_table.id
             WHERE 
             distance < ?
-            LIMIT 0, 7`, [lat, long_, id, genderUserWantsToSee, proximity],(err, result, fields) => {
+            LIMIT ?, 7`, [lat, long_, id, genderUserWantsToSee, proximity, offset],(err, result, fields) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -240,7 +240,7 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 info_to_display ON info_to_display.id = distance_table.id
             WHERE 
             distance < ?
-            LIMIT 0, 7`, [lat, long_, id, genderUserWantsToSee, proximity],(err, result, fields) => {
+            LIMIT ?, 7`, [lat, long_, id, genderUserWantsToSee, proximity, offset],(err, result, fields) => {
                 if (err) {
                     reject(err);
                 } else {
