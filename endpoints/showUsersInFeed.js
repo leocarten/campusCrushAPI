@@ -134,13 +134,9 @@ export const showItemsInFeed = (token, amountToRequest) => {
         console.log("proximity:",proximity);
         console.log(proximity*2);
 
-        const offset = amountToRequest;
-        const limit = 7;
-        console.log("offset: ",amountToRequest)
-
 
         if(genderUserWantsToSee == 1 || genderUserWantsToSee == 2){
-            let dynamicOffset = 0; 
+            let dynamicOffset = amountToRequest; 
 
             let queryString = `
             SELECT 
@@ -174,8 +170,8 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 info_to_display ON info_to_display.id = distance_table.id
             WHERE 
             distance < ?
-            LIMIT 0, 7
-                LIMIT ${dynamicOffset}, 7`;
+            LIMIT ${dynamicOffset}, 15`;
+
             pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity],(err, result, fields) => {
                 if (err) {
                     reject(err);
@@ -212,8 +208,11 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 }
             });
         }
+
+
         else{
-            let dynamicOffset = 0; 
+            let dynamicOffset = amountToRequest; 
+
             let queryString = 
             `
             SELECT 
@@ -247,7 +246,9 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 info_to_display ON info_to_display.id = distance_table.id
             WHERE 
             distance < ?
-            LIMIT ${dynamicOffset}, 7`
+            LIMIT ${dynamicOffset}, 15`
+
+
             pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity],(err, result, fields) => {
                 if (err) {
                     reject(err);
