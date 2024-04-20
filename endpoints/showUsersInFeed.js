@@ -136,6 +136,7 @@ export const showItemsInFeed = (token, amountToRequest) => {
 
         const offset = amountToRequest;
         const limit = 7;
+        console.log("offset: ",amountToRequest)
 
         if(genderUserWantsToSee == 1 || genderUserWantsToSee == 2){
             pool.query(`
@@ -169,7 +170,7 @@ export const showItemsInFeed = (token, amountToRequest) => {
             JOIN 
                 info_to_display ON info_to_display.id = distance_table.id
             WHERE 
-            distance < ? LIMIT ?, ?`, [lat, long_, id, genderUserWantsToSee, proximity, offset, limit],(err, result, fields) => {
+            distance < ?`, [lat, long_, id, genderUserWantsToSee, proximity],(err, result, fields) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -237,7 +238,7 @@ export const showItemsInFeed = (token, amountToRequest) => {
             JOIN 
                 info_to_display ON info_to_display.id = distance_table.id
             WHERE 
-            distance < ? LIMIT ?, ?`, [lat, long_, id, genderUserWantsToSee, proximity, offset, limit],(err, result, fields) => {
+            distance < ?`, [lat, long_, id, genderUserWantsToSee, proximity],(err, result, fields) => {
                 if (err) {
                     reject(err);
                 } else {
