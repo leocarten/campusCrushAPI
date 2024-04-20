@@ -136,11 +136,13 @@ export const showItemsInFeed = (token, amountToRequest) => {
 
         let dynamicOffset; 
 
-        if(amountToRequest == null || amountToRequest == undefined){
+        if(amountToRequest == null || amountToRequest == undefined || amountToRequest == 0){
             dynamicOffset = 0;
         }else{
             dynamicOffset = amountToRequest * 7;
         }
+
+        console.log('dynamic offset: ',dynamicOffset)
 
 
         if(genderUserWantsToSee == 1 || genderUserWantsToSee == 2){
