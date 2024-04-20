@@ -220,7 +220,6 @@ export const showItemsInFeed = (token, amountToRequest) => {
 
 
         else{
-            let dynamicOffset = amountToRequest; 
 
             let queryString = 
             `
