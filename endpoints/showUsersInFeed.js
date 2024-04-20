@@ -138,10 +138,11 @@ export const showItemsInFeed = (token, amountToRequest) => {
         const limit = 7;
         console.log("offset: ",amountToRequest)
 
-        let test = 0;
 
         if(genderUserWantsToSee == 1 || genderUserWantsToSee == 2){
-            pool.query(`
+            let dynamicOffset = 0; 
+
+            let queryString = `
             SELECT 
                 info_to_display.id,first_name, dob, bio, bucket_list, interests, pet_preference, app_purpose, bitmoji_type, is_verified, job, music_preference, has_tattoos, sleep_schedule, win_my_heart, workout, communication_style, ideal_first_meetup, elo_score, distance, image_data
             FROM 
@@ -173,7 +174,9 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 info_to_display ON info_to_display.id = distance_table.id
             WHERE 
             distance < ?
-            LIMIT ?, 7`, [lat, long_, id, genderUserWantsToSee, proximity, test],(err, result, fields) => {
+            LIMIT 0, 7
+                LIMIT ${dynamicOffset}, 7`;
+            pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity],(err, result, fields) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -210,7 +213,9 @@ export const showItemsInFeed = (token, amountToRequest) => {
             });
         }
         else{
-            pool.query(`
+            let dynamicOffset = 0; 
+            let queryString = 
+            `
             SELECT 
                 info_to_display.id,first_name, dob, bio, bucket_list, interests, pet_preference, app_purpose, bitmoji_type, is_verified, job, music_preference, has_tattoos, sleep_schedule, win_my_heart, workout, communication_style, ideal_first_meetup, elo_score, distance, image_data
             FROM 
@@ -242,7 +247,8 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 info_to_display ON info_to_display.id = distance_table.id
             WHERE 
             distance < ?
-            LIMIT ?, 7`, [lat, long_, id, genderUserWantsToSee, proximity, test],(err, result, fields) => {
+            LIMIT ${dynamicOffset}, 7`
+            pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity],(err, result, fields) => {
                 if (err) {
                     reject(err);
                 } else {
