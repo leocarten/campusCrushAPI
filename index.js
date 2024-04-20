@@ -172,7 +172,9 @@ app.post('/showItemsInFeed', async (req, res) => {
     }
     if(verifyUser['success'] === true){
       const tokenToUse = req.body['tokenFromUser'];
-      const feed = await showItemsInFeed(tokenToUse);
+      // const clientRequestAmount = req.body['requestAmount'];
+      const clientRequestAmount = 0;
+      const feed = await showItemsInFeed(tokenToUse, clientRequestAmount);
       res.json({success: true, results: feed})
     }else{
       // this is where we can ask the client for their refresh token

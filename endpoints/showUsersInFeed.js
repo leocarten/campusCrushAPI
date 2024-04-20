@@ -119,7 +119,7 @@ function calculateCompatibility(row, idOfRequester) {
 }
 
 
-export const showItemsInFeed = (token) => {
+export const showItemsInFeed = (token, amountToRequest) => {
     return new Promise((resolve, reject) => {
         // eventually I need to add parameters here for picking certain genders, app purposes, etc.
 
@@ -133,6 +133,9 @@ export const showItemsInFeed = (token) => {
         console.log("token:",decodedToken);
         console.log("proximity:",proximity);
         console.log(proximity*2);
+
+        const offset = amountToRequest;
+        const limit = 7;
 
         if(genderUserWantsToSee == 1 || genderUserWantsToSee == 2){
             pool.query(`
@@ -166,7 +169,7 @@ export const showItemsInFeed = (token) => {
             JOIN 
                 info_to_display ON info_to_display.id = distance_table.id
             WHERE 
-            distance < ?`, [lat, long_, id, genderUserWantsToSee, proximity],(err, result, fields) => {
+            distance < ? LIMIT ?, ?`, [lat, long_, id, genderUserWantsToSee, proximity, offset, limit],(err, result, fields) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -234,7 +237,7 @@ export const showItemsInFeed = (token) => {
             JOIN 
                 info_to_display ON info_to_display.id = distance_table.id
             WHERE 
-            distance < ?`, [lat, long_, id, proximity],(err, result, fields) => {
+            distance < ? LIMIT ?, ?`, [lat, long_, id, genderUserWantsToSee, proximity, offset, limit],(err, result, fields) => {
                 if (err) {
                     reject(err);
                 } else {
