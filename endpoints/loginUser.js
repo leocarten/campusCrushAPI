@@ -24,10 +24,10 @@ export const loginUser = (req) => {
             const long_ = result[0].long_;
             const proximity = result[0].proximity;
             const genderUserWantsToBeShown = result[0].genderUserWantsToSee;
-            // const accessAge = getRandomNumber(50,80);
-            // const accessAgeToMinutes = accessAge * 60;
-            const accessAge = getRandomNumber(1,3);
-            const accessAgeToMinutes = accessAge;
+            const accessAge = getRandomNumber(50,80);
+            const accessAgeToMinutes = accessAge * 60;
+            // const accessAge = getRandomNumber(1,3);
+            // const accessAgeToMinutes = accessAge;
 
             const refreshAge = getRandomNumber(7,11);
             const refreshAgeToDays = refreshAge * 24 * 60 * 60;
