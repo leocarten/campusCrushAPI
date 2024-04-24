@@ -178,7 +178,13 @@ app.post('/showItemsInFeed', async (req, res) => {
       const clientRequestAmount = req.body['offset_amount'];
       // const clientRequestAmount = 0;
       const feed = await showItemsInFeed(tokenToUse, clientRequestAmount);
-      res.json({success: true, results: feed})
+      if(verifyUser['message']  == "We had to re-assign the access and refresh token"){
+        res.json({success: true, results: feed, newAccess: verifyUser['access'], newRefresh: verifyUser['refresh']})
+      }
+      else{
+        res.json({success: true, results: feed})
+      }
+      
     }
     else if(verifyUser['success'] === -1){
       res.json({message:-1});
@@ -211,7 +217,12 @@ app.post('/viewUserProfile', async (req, res) => {
       const tokenToUse = req.body['tokenFromUser'];
       console.log('token to use from view',tokenToUse);
       const thisUserProfile = await viewUserProfile(tokenToUse);
-      res.json({success: true, results: thisUserProfile})
+      if(verifyUser['message']  == "We had to re-assign the access and refresh token"){
+        res.json({success: true, results: thisUserProfile, newAccess: verifyUser['access'], newRefresh: verifyUser['refresh']})
+      }
+      else{
+        res.json({success: true, results: thisUserProfile})
+      }
     }
     else if(verifyUser['success'] === -1){
       res.json({message:-1});
@@ -243,7 +254,13 @@ app.post('/updateUserProfile', async (req, res) => {
       const tokenToUse = req.body['tokenFromUser'];
       console.log('token to use from view',tokenToUse);
       const thisUserProfile = await updateUserProfile(tokenToUse, req.body);
-      res.json({success: true, results: thisUserProfile})
+      // res.json({success: true, results: thisUserProfile})
+      if(verifyUser['message']  == "We had to re-assign the access and refresh token"){
+        res.json({success: true, results: thisUserProfile, newAccess: verifyUser['access'], newRefresh: verifyUser['refresh']})
+      }
+      else{
+        res.json({success: true, results: thisUserProfile})
+      }
     }
     else if(verifyUser['success'] === -1){
       res.json({message:-1});
@@ -275,7 +292,13 @@ app.post('/sendFirstMessage', async (req, res) => {
     if(verifyUser['success'] === true){
       const tokenToUse = req.body['tokenFromUser'];
       const feed = await sendFirstMessage(tokenToUse, message, recieverID);
-      res.json({results: feed})
+      // res.json({results: feed})
+      if(verifyUser['message']  == "We had to re-assign the access and refresh token"){
+        res.json({results: feed, newAccess: verifyUser['access'], newRefresh: verifyUser['refresh']})
+      }
+      else{
+        res.json({results: feed})
+      }
     }
     else if(verifyUser['success'] === -1){
       res.json({message:-1});
@@ -311,7 +334,13 @@ app.post('/sendAdditionalMessage', async (req, res) => {
     if(verifyUser['success'] === true){
       const tokenToUse = req.body['tokenFromUser'];
       const feed = await sendAdditionalMessages(tokenToUse, message, id1, id2);
-      res.json({results: feed})
+      // res.json({results: feed})
+      if(verifyUser['message']  == "We had to re-assign the access and refresh token"){
+        res.json({results: feed, newAccess: verifyUser['access'], newRefresh: verifyUser['refresh']})
+      }
+      else{
+        res.json({results: feed})
+      }
     }
     else if(verifyUser['success'] === -1){
       res.json({message:-1});
@@ -344,7 +373,13 @@ app.post('/getMessages', async (req, res) => {
     if(verifyUser['success'] === true){
       const tokenToUse = req.body['tokenFromUser'];
       const feed = await getMessages(tokenToUse, senderID, recieverID);
-      res.json({results: feed})
+      // res.json({results: feed})
+      if(verifyUser['message']  == "We had to re-assign the access and refresh token"){
+        res.json({results: feed, newAccess: verifyUser['access'], newRefresh: verifyUser['refresh']})
+      }
+      else{
+        res.json({results: feed})
+      }
     }
     else if(verifyUser['success'] === -1){
       res.json({message:-1});
@@ -377,7 +412,13 @@ app.post('/getConversations', async (req, res) => {
     if(verifyUser['success'] === true){
       const tokenToUse = req.body['tokenFromUser'];
       const feed = await displayConversations(tokenToUse);
-      res.json({results: feed})
+      // res.json({results: feed})
+      if(verifyUser['message']  == "We had to re-assign the access and refresh token"){
+        res.json({results: feed, newAccess: verifyUser['access'], newRefresh: verifyUser['refresh']})
+      }
+      else{
+        res.json({results: feed})
+      }
     }
     else if(verifyUser['success'] === -1){
       res.json({message:-1});
@@ -409,7 +450,13 @@ app.post('/viewPoints', async (req, res) => {
       const tokenToUse = req.body['tokenFromUser'];
       console.log('token to use from view',tokenToUse);
       const thisUserProfile = await viewPoints(tokenToUse);
-      res.json({success: true, results: thisUserProfile})
+      // res.json({success: true, results: thisUserProfile})
+      if(verifyUser['message']  == "We had to re-assign the access and refresh token"){
+        res.json({success: true, results: thisUserProfile, newAccess: verifyUser['access'], newRefresh: verifyUser['refresh']})
+      }
+      else{
+        res.json({success: true, results: thisUserProfile})
+      }
     }
     else if(verifyUser['success'] === -1){
       res.json({message:-1});
@@ -440,7 +487,13 @@ app.post('/lotterySpin', async (req, res) => {
       const tokenToUse = req.body['tokenFromUser'];
       console.log('token to use from view',tokenToUse);
       const thisUserProfile = await lotterySpin(tokenToUse);
-      res.json({success: true, results: thisUserProfile})
+      // res.json({success: true, results: thisUserProfile})
+      if(verifyUser['message']  == "We had to re-assign the access and refresh token"){
+        res.json({success: true, results: thisUserProfile, newAccess: verifyUser['access'], newRefresh: verifyUser['refresh']})
+      }
+      else{
+        res.json({success: true, results: thisUserProfile})
+      }
     }
     else if(verifyUser['success'] === -1){
       res.json({message:-1});
@@ -508,7 +561,13 @@ app.post('/deleteAccount', async (req, res) => {
       const tokenToUse = req.body['tokenFromUser'];
       console.log('token to use from view',tokenToUse);
       const thisUserProfile = await deleteAcc(tokenToUse);
-      res.json({success: true, results: thisUserProfile})
+      // res.json({success: true, results: thisUserProfile})
+      if(verifyUser['message']  == "We had to re-assign the access and refresh token"){
+        res.json({success: true, results: thisUserProfile, newAccess: verifyUser['access'], newRefresh: verifyUser['refresh']})
+      }
+      else{
+        res.json({success: true, results: thisUserProfile})
+      }
     }
     else if(verifyUser['success'] === -1){
       res.json({message:-1});
@@ -539,7 +598,13 @@ app.post('/getUserInfoForSettingsPage', async (req, res) => {
       const tokenToUse = req.body['tokenFromUser'];
       console.log('token to use from view',tokenToUse);
       const thisUserProfile = await userInfo(tokenToUse);
-      res.json({success: true, results: thisUserProfile})
+      // res.json({success: true, results: thisUserProfile})
+      if(verifyUser['message']  == "We had to re-assign the access and refresh token"){
+        res.json({success: true, results: thisUserProfile, newAccess: verifyUser['access'], newRefresh: verifyUser['refresh']})
+      }
+      else{
+        res.json({success: true, results: thisUserProfile})
+      }
     }
     else if(verifyUser['success'] === -1){
       res.json({message:-1});
@@ -570,7 +635,13 @@ app.post('/changePassword', async (req, res) => {
       const tokenToUse = req.body['tokenFromUser'];
       const new_password = req.body['new_password'];
       const thisUserProfile = await changePassword(tokenToUse, new_password);
-      res.json({success: true, results: thisUserProfile})
+      // res.json({success: true, results: thisUserProfile})
+      if(verifyUser['message']  == "We had to re-assign the access and refresh token"){
+        res.json({success: true, results: thisUserProfile, newAccess: verifyUser['access'], newRefresh: verifyUser['refresh']})
+      }
+      else{
+        res.json({success: true, results: thisUserProfile})
+      }
     }
     else if(verifyUser['success'] === -1){
       res.json({message:-1});
@@ -601,7 +672,13 @@ app.post('/changeUsername', async (req, res) => {
       const tokenToUse = req.body['tokenFromUser'];
       const new_username = req.body['new_username'];
       const thisUserProfile = await changeUsername(tokenToUse, new_username);
-      res.json({success: true, results: thisUserProfile})
+      // res.json({success: true, results: thisUserProfile})
+      if(verifyUser['message']  == "We had to re-assign the access and refresh token"){
+        res.json({success: true, results: thisUserProfile, newAccess: verifyUser['access'], newRefresh: verifyUser['refresh']})
+      }
+      else{
+        res.json({success: true, results: thisUserProfile})
+      }
     }
     else if(verifyUser['success'] === -1){
       res.json({message:-1});
@@ -636,7 +713,13 @@ app.post('/deleteConversation', async (req, res) => {
       const id3 = req.body['id3'];
       console.log('token to use from view',tokenToUse);
       const thisUserProfile = await deleteConversation(tokenToUse, convoID, id1, id2, id3);
-      res.json({success: true, results: thisUserProfile});
+      // res.json({success: true, results: thisUserProfile});
+      if(verifyUser['message']  == "We had to re-assign the access and refresh token"){
+        res.json({success: true, results: thisUserProfile, newAccess: verifyUser['access'], newRefresh: verifyUser['refresh']})
+      }
+      else{
+        res.json({success: true, results: thisUserProfile})
+      }
     }
     else if(verifyUser['success'] === -1){
       res.json({message:-1});
