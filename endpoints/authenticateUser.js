@@ -38,8 +38,10 @@ export const authenticateUser = (req, isAccessToken) => {
                 const userID = authenticateUsersJWT(tokenToUse, process.env.REFRESH_SECRET_KEY)['id'];
                 const userFilters = authenticateUsersJWT(tokenToUse, process.env.REFRESH_SECRET_KEY)['filter'];
                 const genderUserWantsToBeShown = authenticateUsersJWT(tokenToUse, process.env.REFRESH_SECRET_KEY)['genderUserWantsToSee'];
-                const accessAge = getRandomNumber(50,80);
-                const accessAgeToMinutes = accessAge * 60;
+                // const accessAge = getRandomNumber(50,80);
+                // const accessAgeToMinutes = accessAge * 60;
+                const accessAge = getRandomNumber(20,30);
+                const accessAgeToMinutes = accessAge * 1;
                 const refreshAge = getRandomNumber(7,11);
                 const refreshAgeToDays = refreshAge * 24 * 60 * 60;
                 const accessToken = generateAccessAndRefreshToken(userID, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, genderUserWantsToBeShown, 'filter...');
