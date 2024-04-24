@@ -40,7 +40,7 @@ export const authenticateUser = (req, isAccessToken) => {
                 const genderUserWantsToBeShown = authenticateUsersJWT(tokenToUse, process.env.REFRESH_SECRET_KEY)['genderUserWantsToSee'];
                 // const accessAge = getRandomNumber(50,80);
                 // const accessAgeToMinutes = accessAge * 60;
-                const accessAge = getRandomNumber(20,30);
+                const accessAge = getRandomNumber(5,10);
                 const accessAgeToMinutes = accessAge * 1;
                 const refreshAge = getRandomNumber(7,11);
                 const refreshAgeToDays = refreshAge * 24 * 60 * 60;
