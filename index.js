@@ -149,7 +149,7 @@ app.post('/verifyUser', async (req, res) => {
       res.json({message:"We are now going to show the client what they want and don't need to re-assign anything."});
     }
     else if(verifyUser['success'] === -1){
-      res.json({message:"Please send refresh token."});
+      res.json({message:-1});
     }
     else{
       res.json({message:"Sorry, you are not authorized to the see information you want"});
@@ -181,7 +181,7 @@ app.post('/showItemsInFeed', async (req, res) => {
       res.json({success: true, results: feed})
     }
     else if(verifyUser['success'] === -1){
-      res.json({message:"Please send refresh token."});
+      res.json({message:-1});
     }
     else{
       // this is where we can ask the client for their refresh token
@@ -214,7 +214,7 @@ app.post('/viewUserProfile', async (req, res) => {
       res.json({success: true, results: thisUserProfile})
     }
     else if(verifyUser['success'] === -1){
-      res.json({message:"Please send refresh token."});
+      res.json({message:-1});
     }
     else{
       res.json({message: "We were unable to proceed in showItemsInFeed route."})
@@ -246,7 +246,7 @@ app.post('/updateUserProfile', async (req, res) => {
       res.json({success: true, results: thisUserProfile})
     }
     else if(verifyUser['success'] === -1){
-      res.json({message:"Please send refresh token."});
+      res.json({message:-1});
     }
     else{
       res.json({message: "We were unable to proceed in updateUserProfile route."})
@@ -278,7 +278,7 @@ app.post('/sendFirstMessage', async (req, res) => {
       res.json({results: feed})
     }
     else if(verifyUser['success'] === -1){
-      res.json({message:"Please send refresh token."});
+      res.json({message:-1});
     }
     else{
       // this is where we can ask the client for their refresh token
@@ -314,7 +314,7 @@ app.post('/sendAdditionalMessage', async (req, res) => {
       res.json({results: feed})
     }
     else if(verifyUser['success'] === -1){
-      res.json({message:"Please send refresh token."});
+      res.json({message:-1});
     }
     else{
       // this is where we can ask the client for their refresh token
@@ -347,7 +347,7 @@ app.post('/getMessages', async (req, res) => {
       res.json({results: feed})
     }
     else if(verifyUser['success'] === -1){
-      res.json({message:"Please send refresh token."});
+      res.json({message:-1});
     }else{
       // this is where we can ask the client for their refresh token
       res.json({message: "We were unable to proceed in getMessages route."})
@@ -380,7 +380,7 @@ app.post('/getConversations', async (req, res) => {
       res.json({results: feed})
     }
     else if(verifyUser['success'] === -1){
-      res.json({message:"Please send refresh token."});
+      res.json({message:-1});
     }else{
       // this is where we can ask the client for their refresh token
       res.json({message: "We were unable to proceed in getMessages route."})
@@ -412,7 +412,7 @@ app.post('/viewPoints', async (req, res) => {
       res.json({success: true, results: thisUserProfile})
     }
     else if(verifyUser['success'] === -1){
-      res.json({message:"Please send refresh token."});
+      res.json({message:-1});
     }else{
       res.json({message: "We were unable to proceed in viewPoints route."})
     }
@@ -443,7 +443,7 @@ app.post('/lotterySpin', async (req, res) => {
       res.json({success: true, results: thisUserProfile})
     }
     else if(verifyUser['success'] === -1){
-      res.json({message:"Please send refresh token."});
+      res.json({message:-1});
     }else{
       res.json({message: "We were unable to proceed in viewPoints route."})
     }
@@ -474,7 +474,7 @@ app.post('/buyAdditionalMessage', async (req, res) => {
       res.json({success: true, results: thisUserProfile})
     }
     else if(verifyUser['success'] === -1){
-      res.json({message:"Please send refresh token."});
+      res.json({message:-1});
     }else{
       res.json({message: "We were unable to proceed in buyMessage route."})
     }
@@ -505,7 +505,7 @@ app.post('/deleteAccount', async (req, res) => {
       res.json({success: true, results: thisUserProfile})
     }
     else if(verifyUser['success'] === -1){
-      res.json({message:"Please send refresh token."});
+      res.json({message:-1});
     }else{
       res.json({message: "We were unable to proceed in buyMessage route."})
     }
@@ -536,7 +536,7 @@ app.post('/getUserInfoForSettingsPage', async (req, res) => {
       res.json({success: true, results: thisUserProfile})
     }
     else if(verifyUser['success'] === -1){
-      res.json({message:"Please send refresh token."});
+      res.json({message:-1});
     }else{
       res.json({message: "We were unable to proceed in userInfo route."})
     }
@@ -567,7 +567,7 @@ app.post('/changePassword', async (req, res) => {
       res.json({success: true, results: thisUserProfile})
     }
     else if(verifyUser['success'] === -1){
-      res.json({message:"Please send refresh token."});
+      res.json({message:-1});
     }else{
       res.json({message: "We were unable to proceed in userInfo route."})
     }
@@ -598,7 +598,7 @@ app.post('/changeUsername', async (req, res) => {
       res.json({success: true, results: thisUserProfile})
     }
     else if(verifyUser['success'] === -1){
-      res.json({message:"Please send refresh token."});
+      res.json({message:-1});
     }else{
       res.json({message: "We were unable to proceed in userInfo route."})
     }
@@ -633,7 +633,7 @@ app.post('/deleteConversation', async (req, res) => {
       res.json({success: true, results: thisUserProfile});
     }
     else if(verifyUser['success'] === -1){
-      res.json({message:"Please send refresh token."});
+      res.json({message:-1});
     }else{
       res.json({message: "We were unable to proceed in viewPoints route."})
     }
