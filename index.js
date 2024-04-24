@@ -466,13 +466,12 @@ app.post('/buyAdditionalMessage', async (req, res) => {
     }else{
       console.log("Else access")
       verifyUser = await authenticateUser(req,false);
-      res.json({new_tokens: verifyUser})
     }
     if(verifyUser['success'] === true){
       const tokenToUse = req.body['tokenFromUser'];
       console.log('token to use from view',tokenToUse);
       const thisUserProfile = await buyAdditionalMessage(tokenToUse);
-      res.json({success: true, results: thisUserProfile})
+      res.json({success: true, results: thisUserProfile, verify: verifyUser})
     }
     else if(verifyUser['success'] === -1){
       res.json({message:-1});
