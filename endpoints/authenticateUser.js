@@ -47,9 +47,11 @@ export const authenticateUser = (req, isAccessToken) => {
                         const lat = results_[0].lat;
                         const long_ = results_[0].long_;
                         const wants_to_be_shown = results_[0].genderUserWantsToSee;
-                        const accessAge = getRandomNumber(50,80);
-                        const accessAgeToMinutes = accessAge * 60;
+                        // const accessAge = getRandomNumber(50,80);
+                        // const accessAgeToMinutes = accessAge * 60;
                         const refreshAge = getRandomNumber(7,11);
+                        const accessAge = getRandomNumber(1,3);
+                        const accessAgeToMinutes = accessAge;
                         const refreshAgeToDays = refreshAge * 24 * 60 * 60;
                         const proximity = 50;
                         const accessToken = generateAccessAndRefreshToken(userID, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, wants_to_be_shown, 'filter...', lat, long_, proximity);
