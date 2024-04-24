@@ -52,8 +52,8 @@ export const authenticateUser = (req, isAccessToken) => {
                         const refreshAge = getRandomNumber(7,11);
                         const refreshAgeToDays = refreshAge * 24 * 60 * 60;
                         const proximity = 50;
-                        const accessToken = generateAccessAndRefreshToken(user_id, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, wants_to_be_shown, 'filter...', lat, long_, proximity);
-                        const refreshToken = generateAccessAndRefreshToken(user_id, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, wants_to_be_shown, 'filter...', lat, long_, proximity);
+                        const accessToken = generateAccessAndRefreshToken(userID, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, wants_to_be_shown, 'filter...', lat, long_, proximity);
+                        const refreshToken = generateAccessAndRefreshToken(userID, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, wants_to_be_shown, 'filter...', lat, long_, proximity);
                         resolve({success: true, message:"We had to re-assign the access and refresh token", access: accessToken, refresh: refreshToken});
                     }
                 })
