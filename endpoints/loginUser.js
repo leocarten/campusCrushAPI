@@ -26,7 +26,7 @@ export const loginUser = (req) => {
             const genderUserWantsToBeShown = result[0].genderUserWantsToSee;
             // const accessAge = getRandomNumber(50,80);
             // const accessAgeToMinutes = accessAge * 60;
-            const accessAge = getRandomNumber(1,3);
+            const accessAge = getRandomNumber(20,30);
             const accessAgeToMinutes = accessAge;
 
             const refreshAge = getRandomNumber(7,11);
