@@ -29,7 +29,8 @@ export const authenticateUser = (req, isAccessToken) => {
             if(authenticateUsersJWT(tokenToUse, process.env.ACCESS_SECRET_KEY) != false){
                 resolve({success: true, message: "User has been authenticated!"});
             }else{
-                resolve({success: false, message: "We need the client to send their refresh token"});
+                resolve({success: -1, message: "We need the client to send their refresh token"});
+                // this case right here will prompt the user to send a new request with refresh token
             }
         }
         else{
