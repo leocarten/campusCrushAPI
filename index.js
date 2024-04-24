@@ -466,6 +466,7 @@ app.post('/buyAdditionalMessage', async (req, res) => {
     }else{
       console.log("Else access")
       verifyUser = await authenticateUser(req,false);
+      res.json({new_tokens: verifyUser})
     }
     if(verifyUser['success'] === true){
       const tokenToUse = req.body['tokenFromUser'];
