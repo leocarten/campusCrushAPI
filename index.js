@@ -472,7 +472,7 @@ app.post('/buyAdditionalMessage', async (req, res) => {
       console.log('token to use from view',tokenToUse);
       const thisUserProfile = await buyAdditionalMessage(tokenToUse);
       console.log('verify user: ',verifyUser);
-      if(verifyUser['message' == "We had to re-assign the access and refresh token"]){
+      if(verifyUser['message']  == "We had to re-assign the access and refresh token"){
         res.json({success: true, results: thisUserProfile, newAccess: verifyUser['access'], newRefresh: verifyUser['refresh']})
       }
       else{
