@@ -471,7 +471,7 @@ app.post('/buyAdditionalMessage', async (req, res) => {
       const tokenToUse = req.body['tokenFromUser'];
       console.log('token to use from view',tokenToUse);
       const thisUserProfile = await buyAdditionalMessage(tokenToUse);
-      res.json({success: true, results: thisUserProfile, verify: verifyUser})
+      res.json({success: true, results: thisUserProfile})
     }
     else if(verifyUser['success'] === -1){
       res.json({message:-1});
