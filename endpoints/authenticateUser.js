@@ -2,6 +2,7 @@ import { authenticateUsersJWT } from "../jwt/verifyJwt.js"
 import dotenv from 'dotenv';
 dotenv.config();
 import { generateAccessAndRefreshToken } from '../jwt/createAccessAndRefresh.js'
+import pool from "../db/connectionPool.js";
 
 function getRandomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
