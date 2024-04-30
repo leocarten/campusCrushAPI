@@ -139,6 +139,9 @@ export const showItemsInFeed = (token, amountToRequest) => {
         const lowAgeInQuery = new Date(today.getFullYear() - lowAge, today.getMonth(), today.getDate());
         const highAgeInQuery = new Date(today.getFullYear() - highAge, today.getMonth(), today.getDate());
 
+        console.log(lowAgeInQuery);
+        console.log(highAgeInQuery);
+
 
         console.log("token:",decodedToken);
         console.log("proximity:",proximity);
@@ -294,14 +297,12 @@ export const showItemsInFeed = (token, amountToRequest) => {
                                         console.log("Compatibility calculated for row:", row.compatibility);
                                     })
                                     .catch(error => {
-                                        // Handle any errors that occur during compatibility calculation
                                         row.compatibility = 0;
                                         console.error("Error calculating compatibility for row:", error);
                                     })
                             );
                         });
     
-                        // Wait for all compatibility calculations to complete
                         Promise.all(compatibilityPromises)
                             .then(() => {
                                 resolve(result);
@@ -374,14 +375,12 @@ export const showItemsInFeed = (token, amountToRequest) => {
                                         console.log("Compatibility calculated for row:", row.compatibility);
                                     })
                                     .catch(error => {
-                                        // Handle any errors that occur during compatibility calculation
                                         row.compatibility = 0;
                                         console.error("Error calculating compatibility for row:", error);
                                     })
                             );
                         });
     
-                        // Wait for all compatibility calculations to complete
                         Promise.all(compatibilityPromises)
                             .then(() => {
                                 resolve(result);
@@ -453,14 +452,12 @@ export const showItemsInFeed = (token, amountToRequest) => {
                                         console.log("Compatibility calculated for row:", row.compatibility);
                                     })
                                     .catch(error => {
-                                        // Handle any errors that occur during compatibility calculation
                                         row.compatibility = 0;
                                         console.error("Error calculating compatibility for row:", error);
                                     })
                             );
                         });
     
-                        // Wait for all compatibility calculations to complete
                         Promise.all(compatibilityPromises)
                             .then(() => {
                                 resolve(result);
@@ -530,14 +527,12 @@ export const showItemsInFeed = (token, amountToRequest) => {
                                         console.log("Compatibility calculated for row:", row.compatibility);
                                     })
                                     .catch(error => {
-                                        // Handle any errors that occur during compatibility calculation
                                         row.compatibility = 0;
                                         console.error("Error calculating compatibility for row:", error);
                                     })
                             );
                         });
     
-                        // Wait for all compatibility calculations to complete
                         Promise.all(compatibilityPromises)
                             .then(() => {
                                 resolve(result);
@@ -558,7 +553,10 @@ export const showItemsInFeed = (token, amountToRequest) => {
         // QUERY TO SEE EVERYONE WITH NO FILTERS - STILL NEED AGE LOGIC HERE
         else{
 
+            console.log("ok, this is correct.")
+
             if(isVerified == -1 && has_a_bio == -1 && appPurposeToQueryFor == -1){
+                console.log("here?!?!")
                 let queryString = 
                 `
                 SELECT 
@@ -617,14 +615,12 @@ export const showItemsInFeed = (token, amountToRequest) => {
                                         }                                    
                                     })
                                     .catch(error => {
-                                        // Handle any errors that occur during compatibility calculation
                                         row.compatibility = 0;
                                         console.error("Error calculating compatibility for row:", error);
                                     })
                             );
                         });
     
-                        // Wait for all compatibility calculations to complete
                         Promise.all(compatibilityPromises)
                             .then(() => {
                                 resolve(result);
@@ -699,14 +695,12 @@ export const showItemsInFeed = (token, amountToRequest) => {
                                         }                                    
                                     })
                                     .catch(error => {
-                                        // Handle any errors that occur during compatibility calculation
                                         row.compatibility = 0;
                                         console.error("Error calculating compatibility for row:", error);
                                     })
                             );
                         });
     
-                        // Wait for all compatibility calculations to complete
                         Promise.all(compatibilityPromises)
                             .then(() => {
                                 resolve(result);
@@ -783,14 +777,12 @@ export const showItemsInFeed = (token, amountToRequest) => {
                                         }                                    
                                     })
                                     .catch(error => {
-                                        // Handle any errors that occur during compatibility calculation
                                         row.compatibility = 0;
                                         console.error("Error calculating compatibility for row:", error);
                                     })
                             );
                         });
     
-                        // Wait for all compatibility calculations to complete
                         Promise.all(compatibilityPromises)
                             .then(() => {
                                 resolve(result);
@@ -870,14 +862,12 @@ export const showItemsInFeed = (token, amountToRequest) => {
                                         }                                    
                                     })
                                     .catch(error => {
-                                        // Handle any errors that occur during compatibility calculation
                                         row.compatibility = 0;
                                         console.error("Error calculating compatibility for row:", error);
                                     })
                             );
                         });
     
-                        // Wait for all compatibility calculations to complete
                         Promise.all(compatibilityPromises)
                             .then(() => {
                                 resolve(result);
@@ -950,14 +940,12 @@ export const showItemsInFeed = (token, amountToRequest) => {
                                         }                                    
                                     })
                                     .catch(error => {
-                                        // Handle any errors that occur during compatibility calculation
                                         row.compatibility = 0;
                                         console.error("Error calculating compatibility for row:", error);
                                     })
                             );
                         });
     
-                        // Wait for all compatibility calculations to complete
                         Promise.all(compatibilityPromises)
                             .then(() => {
                                 resolve(result);
