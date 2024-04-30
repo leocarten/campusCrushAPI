@@ -121,15 +121,25 @@ function calculateCompatibility(row, idOfRequester) {
 
 export const showItemsInFeed = (token, amountToRequest) => {
     return new Promise((resolve, reject) => {
-        // eventually I need to add parameters here for picking certain genders, app purposes, etc.
 
-        // lets get the users id
         const decodedToken = jwtDecode(token);
         const id = decodedToken['id'];
         const genderUserWantsToSee = decodedToken['genderUserWantsToSee'];
         const lat = decodedToken['lat'];
         const long_ = decodedToken['long_'];
         const proximity = decodedToken['proximity'];
+
+        const isVerified = decodedToken['isVerified']
+        const has_a_bio = decodedToken['has_a_bio']
+        const lowAge = decodedToken['lowAge']
+        const highAge = decodedToken['highAge']
+        const appPurposeToQueryFor = decodedToken['appPurpose']
+
+        const today = new Date();
+        const lowAgeInQuery = new Date(today.getFullYear() - lowAge, today.getMonth(), today.getDate());
+        const highAgeInQuery = new Date(today.getFullYear() - highAge, today.getMonth(), today.getDate());
+
+
         console.log("token:",decodedToken);
         console.log("proximity:",proximity);
         console.log(proximity*2);
@@ -145,7 +155,8 @@ export const showItemsInFeed = (token, amountToRequest) => {
         console.log('dynamic offset: ',dynamicOffset)
 
 
-        if(genderUserWantsToSee == 1 || genderUserWantsToSee == 2){
+        // MOST BASIC QUERY WITH NO FILTERS - STILL NEED AGE LOGIC HERE
+        if(genderUserWantsToSee == 1 || genderUserWantsToSee == 2 && (isVerified == -1 && has_a_bio == -1 && appPurposeToQueryFor == -1) ){
 
             let queryString = `
             SELECT 
@@ -179,9 +190,11 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 info_to_display ON info_to_display.id = distance_table.id
             WHERE 
             distance < ?
+            AND
+            dob between ? AND ?
             LIMIT ${dynamicOffset}, 7`;
 
-            pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity],(err, result, fields) => {
+            pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -218,83 +231,743 @@ export const showItemsInFeed = (token, amountToRequest) => {
             });
         }
 
+        // OTHER QUERIES WHERE THEY WANT TO SEE MALES OR FEMALES ONLY
+        else if(genderUserWantsToSee == 1 || genderUserWantsToSee == 2){
+        
 
+            // query for verified users
+            if(isVerified == 1 && (has_a_bio == -1 && appPurposeToQueryFor == -1)){
+                
+                // query for verified users
+                let queryString = `
+                SELECT 
+                    info_to_display.id,first_name, dob, bio, bucket_list, interests, pet_preference, app_purpose, bitmoji_type, is_verified, job, music_preference, has_tattoos, sleep_schedule, win_my_heart, workout, communication_style, ideal_first_meetup, elo_score, distance, image_data
+                FROM 
+                    (
+                        SELECT 
+                            id,
+                            3958.8 * 2 * ASIN(
+                                SQRT(
+                                    POWER(
+                                        SIN((lat2 - abs(lat1)) * pi()/180 / 2), 2
+                                    ) + COS(lat2 * pi()/180 ) * COS(abs(lat1) * pi()/180) * POWER(SIN((long2 - long1) * pi()/180 / 2), 2)
+                                )
+                            ) AS distance
+                        FROM 
+                            (
+                                SELECT 
+                                    id,
+                                    ? AS lat2, 
+                                    ? AS long2, 
+                                    lat AS lat1, 
+                                    long_ AS long1
+                                FROM 
+                                    info_to_display
+                                WHERE
+                                    id != ? and gender = ? and lat != 0.0 and long_ != 0.0
+                            ) AS p
+                    ) AS distance_table
+                JOIN 
+                    info_to_display ON info_to_display.id = distance_table.id
+                WHERE 
+                distance < ?
+                AND
+                dob between ? AND ?
+                AND
+                is_verified = 1
+                LIMIT ${dynamicOffset}, 7`;
+    
+                pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+    
+                        const compatibilityPromises = [];
+    
+                        result.forEach(row => {
+                            // Push each compatibility calculation promise into the array
+                            compatibilityPromises.push(
+                                calculateCompatibility(row, id)
+                                    .then(compatibility => {
+                                        // Once the compatibility is calculated, assign it to the row
+                                        row.compatibility = compatibility;
+                                        console.log("Compatibility calculated for row:", row.compatibility);
+                                    })
+                                    .catch(error => {
+                                        // Handle any errors that occur during compatibility calculation
+                                        row.compatibility = 0;
+                                        console.error("Error calculating compatibility for row:", error);
+                                    })
+                            );
+                        });
+    
+                        // Wait for all compatibility calculations to complete
+                        Promise.all(compatibilityPromises)
+                            .then(() => {
+                                resolve(result);
+                            })
+                            .catch(error => {
+                                console.error("Error calculating compatibility for one or more rows:", error);
+                                resolve(result);
+                            });
+                    }
+                });
+
+
+            }
+
+            // query for people with a bio!
+            else if(has_a_bio == 1 && (isVerified == -1 && appPurposeToQueryFor == -1)){
+
+                let queryString = `
+                SELECT 
+                    info_to_display.id,first_name, dob, bio, bucket_list, interests, pet_preference, app_purpose, bitmoji_type, is_verified, job, music_preference, has_tattoos, sleep_schedule, win_my_heart, workout, communication_style, ideal_first_meetup, elo_score, distance, image_data
+                FROM 
+                    (
+                        SELECT 
+                            id,
+                            3958.8 * 2 * ASIN(
+                                SQRT(
+                                    POWER(
+                                        SIN((lat2 - abs(lat1)) * pi()/180 / 2), 2
+                                    ) + COS(lat2 * pi()/180 ) * COS(abs(lat1) * pi()/180) * POWER(SIN((long2 - long1) * pi()/180 / 2), 2)
+                                )
+                            ) AS distance
+                        FROM 
+                            (
+                                SELECT 
+                                    id,
+                                    ? AS lat2, 
+                                    ? AS long2, 
+                                    lat AS lat1, 
+                                    long_ AS long1
+                                FROM 
+                                    info_to_display
+                                WHERE
+                                    id != ? and gender = ? and lat != 0.0 and long_ != 0.0
+                            ) AS p
+                    ) AS distance_table
+                JOIN 
+                    info_to_display ON info_to_display.id = distance_table.id
+                WHERE 
+                distance < ?
+                AND
+                dob between ? AND ?
+                AND
+                bio IS NOT NULL
+                LIMIT ${dynamicOffset}, 7`;
+    
+                pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+    
+                        const compatibilityPromises = [];
+    
+                        result.forEach(row => {
+                            // Push each compatibility calculation promise into the array
+                            compatibilityPromises.push(
+                                calculateCompatibility(row, id)
+                                    .then(compatibility => {
+                                        // Once the compatibility is calculated, assign it to the row
+                                        row.compatibility = compatibility;
+                                        console.log("Compatibility calculated for row:", row.compatibility);
+                                    })
+                                    .catch(error => {
+                                        // Handle any errors that occur during compatibility calculation
+                                        row.compatibility = 0;
+                                        console.error("Error calculating compatibility for row:", error);
+                                    })
+                            );
+                        });
+    
+                        // Wait for all compatibility calculations to complete
+                        Promise.all(compatibilityPromises)
+                            .then(() => {
+                                resolve(result);
+                            })
+                            .catch(error => {
+                                console.error("Error calculating compatibility for one or more rows:", error);
+                                resolve(result);
+                            });
+                    }
+                });
+
+            }
+
+            // query for specific app purpose
+            else if(appPurposeToQueryFor != -1 && (isVerified == -1 && has_a_bio == -1)){
+
+                let queryString = `
+                SELECT 
+                    info_to_display.id,first_name, dob, bio, bucket_list, interests, pet_preference, app_purpose, bitmoji_type, is_verified, job, music_preference, has_tattoos, sleep_schedule, win_my_heart, workout, communication_style, ideal_first_meetup, elo_score, distance, image_data
+                FROM 
+                    (
+                        SELECT 
+                            id,
+                            3958.8 * 2 * ASIN(
+                                SQRT(
+                                    POWER(
+                                        SIN((lat2 - abs(lat1)) * pi()/180 / 2), 2
+                                    ) + COS(lat2 * pi()/180 ) * COS(abs(lat1) * pi()/180) * POWER(SIN((long2 - long1) * pi()/180 / 2), 2)
+                                )
+                            ) AS distance
+                        FROM 
+                            (
+                                SELECT 
+                                    id,
+                                    ? AS lat2, 
+                                    ? AS long2, 
+                                    lat AS lat1, 
+                                    long_ AS long1
+                                FROM 
+                                    info_to_display
+                                WHERE
+                                    id != ? and gender = ? and lat != 0.0 and long_ != 0.0
+                            ) AS p
+                    ) AS distance_table
+                JOIN 
+                    info_to_display ON info_to_display.id = distance_table.id
+                WHERE 
+                distance < ?
+                AND
+                dob between ? AND ?
+                AND
+                app_purpose = ?
+                LIMIT ${dynamicOffset}, 7`;
+    
+                pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery, appPurposeToQueryFor],(err, result, fields) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+    
+                        const compatibilityPromises = [];
+    
+                        result.forEach(row => {
+                            // Push each compatibility calculation promise into the array
+                            compatibilityPromises.push(
+                                calculateCompatibility(row, id)
+                                    .then(compatibility => {
+                                        // Once the compatibility is calculated, assign it to the row
+                                        row.compatibility = compatibility;
+                                        console.log("Compatibility calculated for row:", row.compatibility);
+                                    })
+                                    .catch(error => {
+                                        // Handle any errors that occur during compatibility calculation
+                                        row.compatibility = 0;
+                                        console.error("Error calculating compatibility for row:", error);
+                                    })
+                            );
+                        });
+    
+                        // Wait for all compatibility calculations to complete
+                        Promise.all(compatibilityPromises)
+                            .then(() => {
+                                resolve(result);
+                            })
+                            .catch(error => {
+                                console.error("Error calculating compatibility for one or more rows:", error);
+                                resolve(result);
+                            });
+                    }
+                });
+
+            }
+
+            // fail-safe query: default query
+            else{
+
+                let queryString = `
+                SELECT 
+                    info_to_display.id,first_name, dob, bio, bucket_list, interests, pet_preference, app_purpose, bitmoji_type, is_verified, job, music_preference, has_tattoos, sleep_schedule, win_my_heart, workout, communication_style, ideal_first_meetup, elo_score, distance, image_data
+                FROM 
+                    (
+                        SELECT 
+                            id,
+                            3958.8 * 2 * ASIN(
+                                SQRT(
+                                    POWER(
+                                        SIN((lat2 - abs(lat1)) * pi()/180 / 2), 2
+                                    ) + COS(lat2 * pi()/180 ) * COS(abs(lat1) * pi()/180) * POWER(SIN((long2 - long1) * pi()/180 / 2), 2)
+                                )
+                            ) AS distance
+                        FROM 
+                            (
+                                SELECT 
+                                    id,
+                                    ? AS lat2, 
+                                    ? AS long2, 
+                                    lat AS lat1, 
+                                    long_ AS long1
+                                FROM 
+                                    info_to_display
+                                WHERE
+                                    id != ? and gender = ? and lat != 0.0 and long_ != 0.0
+                            ) AS p
+                    ) AS distance_table
+                JOIN 
+                    info_to_display ON info_to_display.id = distance_table.id
+                WHERE 
+                distance < ?
+                AND
+                dob between ? AND ?
+                LIMIT ${dynamicOffset}, 7`;
+    
+                pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+    
+                        const compatibilityPromises = [];
+    
+                        result.forEach(row => {
+                            // Push each compatibility calculation promise into the array
+                            compatibilityPromises.push(
+                                calculateCompatibility(row, id)
+                                    .then(compatibility => {
+                                        // Once the compatibility is calculated, assign it to the row
+                                        row.compatibility = compatibility;
+                                        console.log("Compatibility calculated for row:", row.compatibility);
+                                    })
+                                    .catch(error => {
+                                        // Handle any errors that occur during compatibility calculation
+                                        row.compatibility = 0;
+                                        console.error("Error calculating compatibility for row:", error);
+                                    })
+                            );
+                        });
+    
+                        // Wait for all compatibility calculations to complete
+                        Promise.all(compatibilityPromises)
+                            .then(() => {
+                                resolve(result);
+                            })
+                            .catch(error => {
+                                console.error("Error calculating compatibility for one or more rows:", error);
+                                resolve(result);
+                            });
+                    }
+                });
+
+            }
+
+        }
+
+
+
+        // QUERY TO SEE EVERYONE WITH NO FILTERS - STILL NEED AGE LOGIC HERE
         else{
 
-            let queryString = 
-            `
-            SELECT 
-                info_to_display.id,first_name, dob, bio, bucket_list, interests, pet_preference, app_purpose, bitmoji_type, is_verified, job, music_preference, has_tattoos, sleep_schedule, win_my_heart, workout, communication_style, ideal_first_meetup, elo_score, distance, image_data
-            FROM 
-                (
-                    SELECT 
-                        id,
-                        3958.8 * 2 * ASIN(
-                            SQRT(
-                                POWER(
-                                    SIN((lat2 - abs(lat1)) * pi()/180 / 2), 2
-                                ) + COS(lat2 * pi()/180 ) * COS(abs(lat1) * pi()/180) * POWER(SIN((long2 - long1) * pi()/180 / 2), 2)
-                            )
-                        ) AS distance
-                    FROM 
-                        (
-                            SELECT 
-                                id,
-                                ? AS lat2, 
-                                ? AS long2, 
-                                lat AS lat1, 
-                                long_ AS long1
-                            FROM 
-                                info_to_display
-                            WHERE
-                                id != ? and gender = 1 or gender = 2 or gender = 3 and lat != 0.0 and long_ != 0.0
-                        ) AS p
-                ) AS distance_table
-            JOIN 
-                info_to_display ON info_to_display.id = distance_table.id
-            WHERE 
-            distance < ?
-            LIMIT ${dynamicOffset}, 7`
-
-
-            pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity],(err, result, fields) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    const compatibilityPromises = [];
-
-                    result.forEach(row => {
-                        compatibilityPromises.push(
-                            calculateCompatibility(row, id)
-                                .then(compatibility => {
-                                    // Once the compatibility is calculated, assign it to the row
-                                    row.compatibility = compatibility;
-                                    console.log("Compatibility calculated for row:", row.compatibility);
-                                    if (row.image_data != null && row.image_data !== '') {
-
-                                        // row.image_data = row.image_data.toString('base64'); // this is SO wrong!! I am dumb!!
-                                        row.image_data = row.image_data.toString();
-                                    }                                    
-                                })
-                                .catch(error => {
-                                    // Handle any errors that occur during compatibility calculation
-                                    row.compatibility = 0;
-                                    console.error("Error calculating compatibility for row:", error);
-                                })
-                        );
-                    });
-
-                    // Wait for all compatibility calculations to complete
-                    Promise.all(compatibilityPromises)
-                        .then(() => {
-                            resolve(result);
-                        })
-                        .catch(error => {
-                            console.error("Error calculating compatibility for one or more rows:", error);
-                            resolve(result);
+            if(isVerified == -1 && has_a_bio == -1 && appPurposeToQueryFor == -1){
+                let queryString = 
+                `
+                SELECT 
+                    info_to_display.id,first_name, dob, bio, bucket_list, interests, pet_preference, app_purpose, bitmoji_type, is_verified, job, music_preference, has_tattoos, sleep_schedule, win_my_heart, workout, communication_style, ideal_first_meetup, elo_score, distance, image_data
+                FROM 
+                    (
+                        SELECT 
+                            id,
+                            3958.8 * 2 * ASIN(
+                                SQRT(
+                                    POWER(
+                                        SIN((lat2 - abs(lat1)) * pi()/180 / 2), 2
+                                    ) + COS(lat2 * pi()/180 ) * COS(abs(lat1) * pi()/180) * POWER(SIN((long2 - long1) * pi()/180 / 2), 2)
+                                )
+                            ) AS distance
+                        FROM 
+                            (
+                                SELECT 
+                                    id,
+                                    ? AS lat2, 
+                                    ? AS long2, 
+                                    lat AS lat1, 
+                                    long_ AS long1
+                                FROM 
+                                    info_to_display
+                                WHERE
+                                    id != ? and gender = 1 or gender = 2 or gender = 3 and lat != 0.0 and long_ != 0.0
+                            ) AS p
+                    ) AS distance_table
+                JOIN 
+                    info_to_display ON info_to_display.id = distance_table.id
+                WHERE 
+                distance < ?
+                AND
+                dob between ? AND ?
+                LIMIT ${dynamicOffset}, 7`
+    
+    
+                pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        const compatibilityPromises = [];
+    
+                        result.forEach(row => {
+                            compatibilityPromises.push(
+                                calculateCompatibility(row, id)
+                                    .then(compatibility => {
+                                        // Once the compatibility is calculated, assign it to the row
+                                        row.compatibility = compatibility;
+                                        console.log("Compatibility calculated for row:", row.compatibility);
+                                        if (row.image_data != null && row.image_data !== '') {
+    
+                                            // row.image_data = row.image_data.toString('base64'); // this is SO wrong!! I am dumb!!
+                                            row.image_data = row.image_data.toString();
+                                        }                                    
+                                    })
+                                    .catch(error => {
+                                        // Handle any errors that occur during compatibility calculation
+                                        row.compatibility = 0;
+                                        console.error("Error calculating compatibility for row:", error);
+                                    })
+                            );
                         });
-                }
-            });
+    
+                        // Wait for all compatibility calculations to complete
+                        Promise.all(compatibilityPromises)
+                            .then(() => {
+                                resolve(result);
+                            })
+                            .catch(error => {
+                                console.error("Error calculating compatibility for one or more rows:", error);
+                                resolve(result);
+                            });
+                    }
+                });
+            }
+
+            // select verified users
+            else if(isVerified == 1 && (has_a_bio == -1 && appPurposeToQueryFor == -1)){
+                let queryString = 
+                `
+                SELECT 
+                    info_to_display.id,first_name, dob, bio, bucket_list, interests, pet_preference, app_purpose, bitmoji_type, is_verified, job, music_preference, has_tattoos, sleep_schedule, win_my_heart, workout, communication_style, ideal_first_meetup, elo_score, distance, image_data
+                FROM 
+                    (
+                        SELECT 
+                            id,
+                            3958.8 * 2 * ASIN(
+                                SQRT(
+                                    POWER(
+                                        SIN((lat2 - abs(lat1)) * pi()/180 / 2), 2
+                                    ) + COS(lat2 * pi()/180 ) * COS(abs(lat1) * pi()/180) * POWER(SIN((long2 - long1) * pi()/180 / 2), 2)
+                                )
+                            ) AS distance
+                        FROM 
+                            (
+                                SELECT 
+                                    id,
+                                    ? AS lat2, 
+                                    ? AS long2, 
+                                    lat AS lat1, 
+                                    long_ AS long1
+                                FROM 
+                                    info_to_display
+                                WHERE
+                                    id != ? and gender = 1 or gender = 2 or gender = 3 and lat != 0.0 and long_ != 0.0
+                            ) AS p
+                    ) AS distance_table
+                JOIN 
+                    info_to_display ON info_to_display.id = distance_table.id
+                WHERE 
+                distance < ?
+                AND
+                dob between ? AND ?
+                AND
+                is_verified = 1
+                LIMIT ${dynamicOffset}, 7`
+    
+    
+                pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        const compatibilityPromises = [];
+    
+                        result.forEach(row => {
+                            compatibilityPromises.push(
+                                calculateCompatibility(row, id)
+                                    .then(compatibility => {
+                                        // Once the compatibility is calculated, assign it to the row
+                                        row.compatibility = compatibility;
+                                        console.log("Compatibility calculated for row:", row.compatibility);
+                                        if (row.image_data != null && row.image_data !== '') {
+    
+                                            // row.image_data = row.image_data.toString('base64'); // this is SO wrong!! I am dumb!!
+                                            row.image_data = row.image_data.toString();
+                                        }                                    
+                                    })
+                                    .catch(error => {
+                                        // Handle any errors that occur during compatibility calculation
+                                        row.compatibility = 0;
+                                        console.error("Error calculating compatibility for row:", error);
+                                    })
+                            );
+                        });
+    
+                        // Wait for all compatibility calculations to complete
+                        Promise.all(compatibilityPromises)
+                            .then(() => {
+                                resolve(result);
+                            })
+                            .catch(error => {
+                                console.error("Error calculating compatibility for one or more rows:", error);
+                                resolve(result);
+                            });
+                    }
+                });
+
+            }
+
+            // select people who have a bio
+            else if(has_a_bio == 1 && (isVerified == -1 && appPurposeToQueryFor == -1)){
+
+                let queryString = 
+                `
+                SELECT 
+                    info_to_display.id,first_name, dob, bio, bucket_list, interests, pet_preference, app_purpose, bitmoji_type, is_verified, job, music_preference, has_tattoos, sleep_schedule, win_my_heart, workout, communication_style, ideal_first_meetup, elo_score, distance, image_data
+                FROM 
+                    (
+                        SELECT 
+                            id,
+                            3958.8 * 2 * ASIN(
+                                SQRT(
+                                    POWER(
+                                        SIN((lat2 - abs(lat1)) * pi()/180 / 2), 2
+                                    ) + COS(lat2 * pi()/180 ) * COS(abs(lat1) * pi()/180) * POWER(SIN((long2 - long1) * pi()/180 / 2), 2)
+                                )
+                            ) AS distance
+                        FROM 
+                            (
+                                SELECT 
+                                    id,
+                                    ? AS lat2, 
+                                    ? AS long2, 
+                                    lat AS lat1, 
+                                    long_ AS long1
+                                FROM 
+                                    info_to_display
+                                WHERE
+                                    id != ? and gender = 1 or gender = 2 or gender = 3 and lat != 0.0 and long_ != 0.0
+                            ) AS p
+                    ) AS distance_table
+                JOIN 
+                    info_to_display ON info_to_display.id = distance_table.id
+                WHERE 
+                distance < ?
+                AND
+                dob between ? AND ?
+                AND
+                bio IS NOT NULL
+                LIMIT ${dynamicOffset}, 7`
+    
+    
+                pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        const compatibilityPromises = [];
+    
+                        result.forEach(row => {
+                            compatibilityPromises.push(
+                                calculateCompatibility(row, id)
+                                    .then(compatibility => {
+                                        // Once the compatibility is calculated, assign it to the row
+                                        row.compatibility = compatibility;
+                                        console.log("Compatibility calculated for row:", row.compatibility);
+                                        if (row.image_data != null && row.image_data !== '') {
+    
+                                            // row.image_data = row.image_data.toString('base64'); // this is SO wrong!! I am dumb!!
+                                            row.image_data = row.image_data.toString();
+                                        }                                    
+                                    })
+                                    .catch(error => {
+                                        // Handle any errors that occur during compatibility calculation
+                                        row.compatibility = 0;
+                                        console.error("Error calculating compatibility for row:", error);
+                                    })
+                            );
+                        });
+    
+                        // Wait for all compatibility calculations to complete
+                        Promise.all(compatibilityPromises)
+                            .then(() => {
+                                resolve(result);
+                            })
+                            .catch(error => {
+                                console.error("Error calculating compatibility for one or more rows:", error);
+                                resolve(result);
+                            });
+                    }
+                });
+
+            }
+
+            // select people with app purpose
+            else if(appPurposeToQueryFor != -1 && (isVerified == -1 && has_a_bio == -1)){
+
+                let queryString = 
+                `
+                SELECT 
+                    info_to_display.id,first_name, dob, bio, bucket_list, interests, pet_preference, app_purpose, bitmoji_type, is_verified, job, music_preference, has_tattoos, sleep_schedule, win_my_heart, workout, communication_style, ideal_first_meetup, elo_score, distance, image_data
+                FROM 
+                    (
+                        SELECT 
+                            id,
+                            3958.8 * 2 * ASIN(
+                                SQRT(
+                                    POWER(
+                                        SIN((lat2 - abs(lat1)) * pi()/180 / 2), 2
+                                    ) + COS(lat2 * pi()/180 ) * COS(abs(lat1) * pi()/180) * POWER(SIN((long2 - long1) * pi()/180 / 2), 2)
+                                )
+                            ) AS distance
+                        FROM 
+                            (
+                                SELECT 
+                                    id,
+                                    ? AS lat2, 
+                                    ? AS long2, 
+                                    lat AS lat1, 
+                                    long_ AS long1
+                                FROM 
+                                    info_to_display
+                                WHERE
+                                    id != ? and gender = 1 or gender = 2 or gender = 3 and lat != 0.0 and long_ != 0.0
+                            ) AS p
+                    ) AS distance_table
+                JOIN 
+                    info_to_display ON info_to_display.id = distance_table.id
+                WHERE 
+                distance < ?
+                AND
+                dob between ? AND ?
+                AND
+                app_purpose = ?
+                LIMIT ${dynamicOffset}, 7`
+    
+    
+                pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery, appPurposeToQueryFor],(err, result, fields) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        const compatibilityPromises = [];
+    
+                        result.forEach(row => {
+                            compatibilityPromises.push(
+                                calculateCompatibility(row, id)
+                                    .then(compatibility => {
+                                        // Once the compatibility is calculated, assign it to the row
+                                        row.compatibility = compatibility;
+                                        console.log("Compatibility calculated for row:", row.compatibility);
+                                        if (row.image_data != null && row.image_data !== '') {
+    
+                                            // row.image_data = row.image_data.toString('base64'); // this is SO wrong!! I am dumb!!
+                                            row.image_data = row.image_data.toString();
+                                        }                                    
+                                    })
+                                    .catch(error => {
+                                        // Handle any errors that occur during compatibility calculation
+                                        row.compatibility = 0;
+                                        console.error("Error calculating compatibility for row:", error);
+                                    })
+                            );
+                        });
+    
+                        // Wait for all compatibility calculations to complete
+                        Promise.all(compatibilityPromises)
+                            .then(() => {
+                                resolve(result);
+                            })
+                            .catch(error => {
+                                console.error("Error calculating compatibility for one or more rows:", error);
+                                resolve(result);
+                            });
+                    }
+                });
+
+            }
+
+            else{
+                let queryString = 
+                `
+                SELECT 
+                    info_to_display.id,first_name, dob, bio, bucket_list, interests, pet_preference, app_purpose, bitmoji_type, is_verified, job, music_preference, has_tattoos, sleep_schedule, win_my_heart, workout, communication_style, ideal_first_meetup, elo_score, distance, image_data
+                FROM 
+                    (
+                        SELECT 
+                            id,
+                            3958.8 * 2 * ASIN(
+                                SQRT(
+                                    POWER(
+                                        SIN((lat2 - abs(lat1)) * pi()/180 / 2), 2
+                                    ) + COS(lat2 * pi()/180 ) * COS(abs(lat1) * pi()/180) * POWER(SIN((long2 - long1) * pi()/180 / 2), 2)
+                                )
+                            ) AS distance
+                        FROM 
+                            (
+                                SELECT 
+                                    id,
+                                    ? AS lat2, 
+                                    ? AS long2, 
+                                    lat AS lat1, 
+                                    long_ AS long1
+                                FROM 
+                                    info_to_display
+                                WHERE
+                                    id != ? and gender = 1 or gender = 2 or gender = 3 and lat != 0.0 and long_ != 0.0
+                            ) AS p
+                    ) AS distance_table
+                JOIN 
+                    info_to_display ON info_to_display.id = distance_table.id
+                WHERE 
+                distance < ?
+                AND
+                dob between ? AND ?
+                LIMIT ${dynamicOffset}, 7`
+    
+    
+                pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        const compatibilityPromises = [];
+    
+                        result.forEach(row => {
+                            compatibilityPromises.push(
+                                calculateCompatibility(row, id)
+                                    .then(compatibility => {
+                                        // Once the compatibility is calculated, assign it to the row
+                                        row.compatibility = compatibility;
+                                        console.log("Compatibility calculated for row:", row.compatibility);
+                                        if (row.image_data != null && row.image_data !== '') {
+    
+                                            // row.image_data = row.image_data.toString('base64'); // this is SO wrong!! I am dumb!!
+                                            row.image_data = row.image_data.toString();
+                                        }                                    
+                                    })
+                                    .catch(error => {
+                                        // Handle any errors that occur during compatibility calculation
+                                        row.compatibility = 0;
+                                        console.error("Error calculating compatibility for row:", error);
+                                    })
+                            );
+                        });
+    
+                        // Wait for all compatibility calculations to complete
+                        Promise.all(compatibilityPromises)
+                            .then(() => {
+                                resolve(result);
+                            })
+                            .catch(error => {
+                                console.error("Error calculating compatibility for one or more rows:", error);
+                                resolve(result);
+                            });
+                    }
+                });
+
+            }
+
         }
     });
 };

@@ -124,8 +124,14 @@ export const createUser = (req) => {
                                                                 const refreshAge = getRandomNumber(7,11);
                                                                 const refreshAgeToDays = refreshAge * 24 * 60 * 60;
                                                                 const proximity = 50;
-                                                                const accessToken = generateAccessAndRefreshToken(user_id, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, wants_to_be_shown, 'filter...', lat, long_, proximity);
-                                                                const refreshToken = generateAccessAndRefreshToken(user_id, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, wants_to_be_shown, 'filter...', lat, long_, proximity);
+                                                                // isVerified, has_a_bio_,lowAge, highAge, appPurpose
+                                                                const isVerified = -1; // default value
+                                                                const has_a_bio = -1; // default value
+                                                                const lowAge = 18; // default value
+                                                                const highAge = 100; // default value
+                                                                const appPurpose = -1; // default value
+                                                                const accessToken = generateAccessAndRefreshToken(user_id, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, wants_to_be_shown, 'filter...', lat, long_, proximity, isVerified, has_a_bio, lowAge, highAge, appPurpose);
+                                                                const refreshToken = generateAccessAndRefreshToken(user_id, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, wants_to_be_shown, 'filter...', lat, long_, proximity, isVerified, has_a_bio, lowAge, highAge, appPurpose);
                                                                 resolve({id: user_id, success: true, access:accessToken, refresh: refreshToken });
                                                             }
                                                         });

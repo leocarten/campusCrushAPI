@@ -23,6 +23,7 @@ import { deleteAcc } from './endpoints/deleteAccount.js';
 import { userInfo } from './endpoints/userInfoForSettingsPage.js';
 import { changePassword } from './endpoints/changePassword.js';
 import { changeUsername } from './endpoints/changeUsername.js';
+import { updateJWT_forFilter } from './endpoints/filter.js';
 
 // ports
 const WS_PORT = 5002; // WebSocket server port
@@ -715,6 +716,49 @@ app.post('/deleteConversation', async (req, res) => {
       const thisUserProfile = await deleteConversation(tokenToUse, convoID, id1, id2, id3);
       // res.json({success: true, results: thisUserProfile});
       if(verifyUser['message']  == "We had to re-assign the access and refresh token"){
+        res.json({success: true, results: thisUserProfile, newAccess: verifyUser['access'], newRefresh: verifyUser['refresh']})
+      }
+      else{
+        res.json({success: true, results: thisUserProfile})
+      }
+    }
+    else if(verifyUser['success'] === -1){
+      res.json({message:-1});
+    }else{
+      res.json({message: "We were unable to proceed in viewPoints route."})
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Internal Server Error viewPoints route.');
+  }
+});
+
+
+app.post('/filter', async (req, res) => {
+  try {
+    const typeOfVerification = req.body['type'];
+    console.log(typeOfVerification);
+    let verifyUser;
+    console.log("You just sent me:",typeOfVerification);
+    if(typeOfVerification === 'access'){
+      console.log("Reached access");
+      verifyUser = await authenticateUser(req,true);
+    }else{
+      console.log("Else access")
+      verifyUser = await authenticateUser(req,false);
+    }
+    if(verifyUser['success'] === true){
+      const tokenToUse = req.body['tokenFromUser'];
+      const isVerified = req.body['isVerified'];
+      const lowAge = req.body['lowAge'];
+      const highAge = req.body['highAge'];
+      const appPurpose = req.body['appPurpose'];
+
+      console.log('token to use from view',tokenToUse);
+      const thisUserProfile = await updateJWT_forFilter(tokenToUse, isVerified, lowAge, highAge, appPurpose);
+      if(verifyUser['message']  == "We had to re-assign the access and refresh token"){
+
+        // still need the user to grab onto the results, not newAccess...
         res.json({success: true, results: thisUserProfile, newAccess: verifyUser['access'], newRefresh: verifyUser['refresh']})
       }
       else{

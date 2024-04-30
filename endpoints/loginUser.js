@@ -26,13 +26,18 @@ export const loginUser = (req) => {
             const genderUserWantsToBeShown = result[0].genderUserWantsToSee;
             const accessAge = getRandomNumber(50,80);
             const accessAgeToMinutes = accessAge * 60;
-            // const accessAge = getRandomNumber(1,3);
-            // const accessAgeToMinutes = accessAge;
+            
+            // isVerified, has_a_bio_,lowAge, highAge, appPurpose
+            const isVerified = -1; // default value
+            const has_a_bio = -1; // default value
+            const lowAge = 18; // default value
+            const highAge = 100; // default value
+            const appPurpose = -1; // default value
 
             const refreshAge = getRandomNumber(7,11);
             const refreshAgeToDays = refreshAge * 24 * 60 * 60;
-            const accessToken = generateAccessAndRefreshToken(userID, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, genderUserWantsToBeShown, 'filter...', lat, long_, proximity);
-            const refreshToken = generateAccessAndRefreshToken(userID, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, genderUserWantsToBeShown, 'filter...', lat, long_, proximity);
+            const accessToken = generateAccessAndRefreshToken(userID, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, genderUserWantsToBeShown, 'filter...', lat, long_, proximity, isVerified, has_a_bio, lowAge, highAge, appPurpose);
+            const refreshToken = generateAccessAndRefreshToken(userID, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, genderUserWantsToBeShown, 'filter...', lat, long_, proximity, isVerified, has_a_bio, lowAge, highAge, appPurpose);
             resolve({id: userID, success: true, access:accessToken, refresh: refreshToken });
           }
           else{
