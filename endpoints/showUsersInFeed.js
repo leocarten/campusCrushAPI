@@ -590,8 +590,6 @@ export const showItemsInFeed = (token, amountToRequest) => {
                     info_to_display ON info_to_display.id = distance_table.id
                 WHERE 
                 distance < ?
-                AND
-                dob between ? AND ?
                 LIMIT ${dynamicOffset}, 7`
     
     
