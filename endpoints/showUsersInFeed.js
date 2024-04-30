@@ -139,6 +139,10 @@ export const showItemsInFeed = (token, amountToRequest) => {
         const lowAgeInQuery = new Date(today.getFullYear() - lowAge, today.getMonth(), today.getDate());
         const highAgeInQuery = new Date(today.getFullYear() - highAge, today.getMonth(), today.getDate());
 
+        // const today = new Date();
+        // const lowBirthDate = new Date(today.getFullYear() - lowAge, today.getMonth(), today.getDate());
+        // const highBirthDate = new Date(today.getFullYear() - highAge, today.getMonth(), today.getDate());
+
         console.log(lowAgeInQuery);
         console.log(highAgeInQuery);
 
@@ -275,8 +279,6 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 WHERE 
                 distance < ?
                 AND
-                dob between ? AND ?
-                AND
                 is_verified = 1
                 LIMIT ${dynamicOffset}, 7`;
     
@@ -353,8 +355,7 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 WHERE 
                 distance < ?
                 AND
-                dob between ? AND ?
-                AND
+
                 bio IS NOT NULL
                 LIMIT ${dynamicOffset}, 7`;
     
@@ -430,8 +431,7 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 WHERE 
                 distance < ?
                 AND
-                dob between ? AND ?
-                AND
+
                 app_purpose = ?
                 LIMIT ${dynamicOffset}, 7`;
     
@@ -506,8 +506,7 @@ export const showItemsInFeed = (token, amountToRequest) => {
                     info_to_display ON info_to_display.id = distance_table.id
                 WHERE 
                 distance < ?
-                AND
-                dob between ? AND ?
+
                 LIMIT ${dynamicOffset}, 7`;
     
                 pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
@@ -590,6 +589,7 @@ export const showItemsInFeed = (token, amountToRequest) => {
                     info_to_display ON info_to_display.id = distance_table.id
                 WHERE 
                 distance < ?
+
                 LIMIT ${dynamicOffset}, 7`
     
     
@@ -667,8 +667,7 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 WHERE 
                 distance < ?
                 AND
-                dob between ? AND ?
-                AND
+
                 is_verified = 1
                 LIMIT ${dynamicOffset}, 7`
     
@@ -749,8 +748,7 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 WHERE 
                 distance < ?
                 AND
-                dob between ? AND ?
-                AND
+
                 bio IS NOT NULL
                 LIMIT ${dynamicOffset}, 7`
     
@@ -834,8 +832,7 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 WHERE 
                 distance < ?
                 AND
-                dob between ? AND ?
-                AND
+
                 app_purpose = ?
                 LIMIT ${dynamicOffset}, 7`
     
@@ -913,8 +910,7 @@ export const showItemsInFeed = (token, amountToRequest) => {
                     info_to_display ON info_to_display.id = distance_table.id
                 WHERE 
                 distance < ?
-                AND
-                dob between ? AND ?
+
                 LIMIT ${dynamicOffset}, 7`
     
     
