@@ -832,17 +832,16 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 WHERE 
                 distance < ?
                 AND
-
                 app_purpose = ?
                 LIMIT ${dynamicOffset}, 7`
     
     
-                pool.query(queryString, [lat, long_, id, proximity, lowAgeInQuery, highAgeInQuery, appPurposeToQueryFor],(err, result, fields) => {
+                pool.query(queryString, [lat, long_, id, proximity, appPurposeToQueryFor],(err, result, fields) => {
                     if (err) {
                         reject(err);
                     } else {
                         const compatibilityPromises = [];
-    
+                        console.log("Executed this one.")
                         result.forEach(row => {
                             compatibilityPromises.push(
                                 calculateCompatibility(row, id)
