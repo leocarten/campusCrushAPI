@@ -164,7 +164,7 @@ export const showItemsInFeed = (token, amountToRequest) => {
 
         // MOST BASIC QUERY WITH NO FILTERS - STILL NEED AGE LOGIC HERE
         if(genderUserWantsToSee == 1 || genderUserWantsToSee == 2 && (isVerified == -1 && has_a_bio == -1 && appPurposeToQueryFor == -1) ){
-
+            console.log('here!@!@');
             let queryString = `
             SELECT 
                 info_to_display.id,first_name, dob, bio, bucket_list, interests, pet_preference, app_purpose, bitmoji_type, is_verified, job, music_preference, has_tattoos, sleep_schedule, win_my_heart, workout, communication_style, ideal_first_meetup, elo_score, distance, image_data
@@ -197,8 +197,6 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 info_to_display ON info_to_display.id = distance_table.id
             WHERE 
             distance < ?
-            AND
-            dob between ? AND ?
             LIMIT ${dynamicOffset}, 7`;
 
             pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
