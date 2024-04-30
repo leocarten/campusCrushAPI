@@ -838,6 +838,8 @@ export const showItemsInFeed = (token, amountToRequest) => {
     
                 pool.query(queryString, [lat, long_, id, proximity, appPurposeToQueryFor],(err, result, fields) => {
                     if (err) {
+                        console.log("uh oh")
+                        console.log(err);
                         reject(err);
                     } else {
                         const compatibilityPromises = [];
