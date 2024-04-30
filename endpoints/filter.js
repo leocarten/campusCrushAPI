@@ -75,6 +75,7 @@ export const updateJWT_forFilter = (token, isVerified, has_a_bio, lowAge, highAg
             if(querryError){
                 resolve(querryError)
             }else{
+                console.log("Yuh, ",appPurpose)
                 const lat = results_[0].lat;
                 const long_ = results_[0].long_;
                 const wants_to_be_shown = results_[0].genderUserWantsToSee;
