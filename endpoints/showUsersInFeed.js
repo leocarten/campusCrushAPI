@@ -807,6 +807,9 @@ export const showItemsInFeed = (token, amountToRequest) => {
             // select people with app purpose
             else if(appPurposeToQueryFor != -1 && (isVerified == -1 && has_a_bio == -1)){
 
+                console.log("Cool, you made it to the correct place.");
+                console.log(appPurposeToQueryFor)
+
                 let queryString = 
                 `
                 SELECT 
