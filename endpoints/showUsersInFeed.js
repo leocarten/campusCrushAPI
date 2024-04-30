@@ -597,7 +597,7 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 LIMIT ${dynamicOffset}, 7`
     
     
-                pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
+                pool.query(queryString, [lat, long_, id, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
                     if (err) {
                         reject(err);
                     } else {
@@ -679,7 +679,7 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 LIMIT ${dynamicOffset}, 7`
     
     
-                pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
+                pool.query(queryString, [lat, long_, id, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
                     if (err) {
                         reject(err);
                     } else {
@@ -763,7 +763,7 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 LIMIT ${dynamicOffset}, 7`
     
     
-                pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
+                pool.query(queryString, [lat, long_, id, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
                     if (err) {
                         reject(err);
                     } else {
@@ -850,7 +850,7 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 LIMIT ${dynamicOffset}, 7`
     
     
-                pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery, appPurposeToQueryFor],(err, result, fields) => {
+                pool.query(queryString, [lat, long_, id, proximity, lowAgeInQuery, highAgeInQuery, appPurposeToQueryFor],(err, result, fields) => {
                     if (err) {
                         reject(err);
                     } else {
@@ -930,7 +930,7 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 LIMIT ${dynamicOffset}, 7`
     
     
-                pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
+                pool.query(queryString, [lat, long_, id, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
                     if (err) {
                         reject(err);
                     } else {
