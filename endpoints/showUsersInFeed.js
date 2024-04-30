@@ -214,6 +214,11 @@ export const showItemsInFeed = (token, amountToRequest) => {
                                     // Once the compatibility is calculated, assign it to the row
                                     row.compatibility = compatibility;
                                     console.log("Compatibility calculated for row:", row.compatibility);
+                                    if (row.image_data != null && row.image_data !== '') {
+    
+                                        // row.image_data = row.image_data.toString('base64'); // this is SO wrong!! I am dumb!!
+                                        row.image_data = row.image_data.toString();
+                                    } 
                                 })
                                 .catch(error => {
                                     // Handle any errors that occur during compatibility calculation
@@ -295,6 +300,11 @@ export const showItemsInFeed = (token, amountToRequest) => {
                                         // Once the compatibility is calculated, assign it to the row
                                         row.compatibility = compatibility;
                                         console.log("Compatibility calculated for row:", row.compatibility);
+                                        if (row.image_data != null && row.image_data !== '') {
+    
+                                            // row.image_data = row.image_data.toString('base64'); // this is SO wrong!! I am dumb!!
+                                            row.image_data = row.image_data.toString();
+                                        } 
                                     })
                                     .catch(error => {
                                         row.compatibility = 0;
@@ -372,6 +382,11 @@ export const showItemsInFeed = (token, amountToRequest) => {
                                         // Once the compatibility is calculated, assign it to the row
                                         row.compatibility = compatibility;
                                         console.log("Compatibility calculated for row:", row.compatibility);
+                                        if (row.image_data != null && row.image_data !== '') {
+    
+                                            // row.image_data = row.image_data.toString('base64'); // this is SO wrong!! I am dumb!!
+                                            row.image_data = row.image_data.toString();
+                                        } 
                                     })
                                     .catch(error => {
                                         row.compatibility = 0;
@@ -448,6 +463,11 @@ export const showItemsInFeed = (token, amountToRequest) => {
                                         // Once the compatibility is calculated, assign it to the row
                                         row.compatibility = compatibility;
                                         console.log("Compatibility calculated for row:", row.compatibility);
+                                        if (row.image_data != null && row.image_data !== '') {
+    
+                                            // row.image_data = row.image_data.toString('base64'); // this is SO wrong!! I am dumb!!
+                                            row.image_data = row.image_data.toString();
+                                        } 
                                     })
                                     .catch(error => {
                                         row.compatibility = 0;
@@ -522,6 +542,11 @@ export const showItemsInFeed = (token, amountToRequest) => {
                                         // Once the compatibility is calculated, assign it to the row
                                         row.compatibility = compatibility;
                                         console.log("Compatibility calculated for row:", row.compatibility);
+                                        if (row.image_data != null && row.image_data !== '') {
+    
+                                            // row.image_data = row.image_data.toString('base64'); // this is SO wrong!! I am dumb!!
+                                            row.image_data = row.image_data.toString();
+                                        } 
                                     })
                                     .catch(error => {
                                         row.compatibility = 0;
