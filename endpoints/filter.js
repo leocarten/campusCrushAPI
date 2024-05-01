@@ -9,19 +9,20 @@ function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export const updateJWT_forFilter = (token, isVerified, has_a_bio, lowAge, highAge, appPurpose) => {
+export const updateJWT_forFilter = (token, isVerified, has_a_bio, lowAge, highAge, appPurpose, proximityFromRequest) => {
   return new Promise((resolve, reject) => {
     // if(verifyToken(token, process.env.ACCESS_SECRET_KEY) != false){
       const decodedToken = jwtDecode(token);
       console.log('the decoded token:',decodedToken);
-      const userID = decodedToken['id'];
-      
+      const userID = decodedToken['id'];      
 
       const original_isVerified = decodedToken['isVerified'];
       const original_has_a_bio = decodedToken['has_a_bio'];
       const original_lowAge = decodedToken['lowAge'];
       const original_highAge = decodedToken['highAge'];
       const original_appPurposeToQueryFor = decodedToken['appPurpose'];
+
+      const proximity = proximityFromRequest;
 
       if(isVerified == 1 && (has_a_bio == -1 && appPurpose == -1)){
         // create 2 new JWTs with isVerified as 1
@@ -37,7 +38,7 @@ export const updateJWT_forFilter = (token, isVerified, has_a_bio, lowAge, highAg
                 const accessAgeToMinutes = accessAge * 60;
                 const refreshAge = getRandomNumber(7,11);
                 const refreshAgeToDays = refreshAge * 24 * 60 * 60;
-                const proximity = 50;
+                // const proximity = 50;
                 const accessToken = generateAccessAndRefreshToken(userID, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, wants_to_be_shown, 'filter...', lat, long_, proximity, 1, -1, 18, 100, -1);
                 const refreshToken = generateAccessAndRefreshToken(userID, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, wants_to_be_shown, 'filter...', lat, long_, proximity, 1, -1, 18, 100, -1);
                 resolve({success: true, message:"New JWT for filter", access: accessToken, refresh: refreshToken});
@@ -60,7 +61,7 @@ export const updateJWT_forFilter = (token, isVerified, has_a_bio, lowAge, highAg
                 const accessAgeToMinutes = accessAge * 60;
                 const refreshAge = getRandomNumber(7,11);
                 const refreshAgeToDays = refreshAge * 24 * 60 * 60;
-                const proximity = 50;
+                // const proximity = 50;
                 const accessToken = generateAccessAndRefreshToken(userID, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, wants_to_be_shown, 'filter...', lat, long_, proximity, -1, 1, 18, 100, -1);
                 const refreshToken = generateAccessAndRefreshToken(userID, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, wants_to_be_shown, 'filter...', lat, long_, proximity, -1, 1, 18, 100, -1);
                 resolve({success: true, message:"New JWT for filter", access: accessToken, refresh: refreshToken});
@@ -83,7 +84,7 @@ export const updateJWT_forFilter = (token, isVerified, has_a_bio, lowAge, highAg
                 const accessAgeToMinutes = accessAge * 60;
                 const refreshAge = getRandomNumber(7,11);
                 const refreshAgeToDays = refreshAge * 24 * 60 * 60;
-                const proximity = 50;
+                // const proximity = 50;
                 const accessToken = generateAccessAndRefreshToken(userID, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, wants_to_be_shown, 'filter...', lat, long_, proximity, -1, -1, 18, 100, appPurpose);
                 const refreshToken = generateAccessAndRefreshToken(userID, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, wants_to_be_shown, 'filter...', lat, long_, proximity, -1, -1, 18, 100, appPurpose);
                 resolve({success: true, message:"New JWT for filter", access: accessToken, refresh: refreshToken});
@@ -105,7 +106,7 @@ export const updateJWT_forFilter = (token, isVerified, has_a_bio, lowAge, highAg
                 const accessAgeToMinutes = accessAge * 60;
                 const refreshAge = getRandomNumber(7,11);
                 const refreshAgeToDays = refreshAge * 24 * 60 * 60;
-                const proximity = 50;
+                // const proximity = 50;
                 const accessToken = generateAccessAndRefreshToken(userID, process.env.ACCESS_SECRET_KEY, 'access', accessAgeToMinutes, wants_to_be_shown, 'filter...', lat, long_, proximity, -1, -1, 18, 100, -1);
                 const refreshToken = generateAccessAndRefreshToken(userID, process.env.REFRESH_SECRET_KEY, 'refresh', refreshAgeToDays, wants_to_be_shown, 'filter...', lat, long_, proximity, -1, -1, 18, 100, -1);
                 resolve({success: true, message:"New JWT for filter", access: accessToken, refresh: refreshToken});

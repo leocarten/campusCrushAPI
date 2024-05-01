@@ -129,6 +129,8 @@ export const showItemsInFeed = (token, amountToRequest) => {
         const long_ = decodedToken['long_'];
         const proximity = decodedToken['proximity'];
 
+        console.log("proximity: ",proximity)
+
         const isVerified = decodedToken['isVerified']
         const has_a_bio = decodedToken['has_a_bio']
         const lowAge = decodedToken['lowAge']
@@ -444,7 +446,6 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 WHERE 
                 distance < ?
                 AND
-
                 app_purpose = ?
                 LIMIT ${dynamicOffset}, 7`;
     

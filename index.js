@@ -756,9 +756,10 @@ app.post('/filter', async (req, res) => {
       const lowAge = req.body['lowAge'];
       const highAge = req.body['highAge'];
       const appPurpose = req.body['appPurpose'];
+      const proximity = req.body['proximity'];
 
       console.log('token to use from view',tokenToUse);
-      const thisUserProfile = await updateJWT_forFilter(tokenToUse, isVerified, has_a_bio, lowAge, highAge, appPurpose);
+      const thisUserProfile = await updateJWT_forFilter(tokenToUse, isVerified, has_a_bio, lowAge, highAge, appPurpose, proximity);
       if(verifyUser['message']  == "We had to re-assign the access and refresh token"){
 
         // still need the user to grab onto the results, not newAccess...
