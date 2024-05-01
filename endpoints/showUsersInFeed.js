@@ -137,6 +137,9 @@ export const showItemsInFeed = (token, amountToRequest) => {
         const highAge = decodedToken['highAge']
         const appPurposeToQueryFor = decodedToken['appPurpose']
 
+        console.log(lowAge);
+        console.log(highAge)
+
         const today = new Date();
         const lowAgeInQuery = new Date(today.getFullYear() - lowAge, today.getMonth(), today.getDate());
         const highAgeInQuery = new Date(today.getFullYear() - highAge, today.getMonth(), today.getDate());
@@ -613,7 +616,8 @@ export const showItemsInFeed = (token, amountToRequest) => {
                     info_to_display ON info_to_display.id = distance_table.id
                 WHERE 
                 distance < ?
-
+                AND
+                TIMESTAMPDIFF(YEAR, dob, CURDATE()) BETWEEN ${lowAge} AND ${highAge}
                 LIMIT ${dynamicOffset}, 7`
     
     
