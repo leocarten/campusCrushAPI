@@ -202,6 +202,8 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 info_to_display ON info_to_display.id = distance_table.id
             WHERE 
             distance < ?
+            AND
+            TIMESTAMPDIFF(YEAR, dob, CURDATE()) BETWEEN ${lowAge} AND ${highAge}
             LIMIT ${dynamicOffset}, 7`;
 
             pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
@@ -288,6 +290,8 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 distance < ?
                 AND
                 is_verified = 1
+                AND
+                TIMESTAMPDIFF(YEAR, dob, CURDATE()) BETWEEN ${lowAge} AND ${highAge}
                 LIMIT ${dynamicOffset}, 7`;
     
                 pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
@@ -370,6 +374,8 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 AND
 
                 bio IS NOT NULL
+                AND
+                TIMESTAMPDIFF(YEAR, dob, CURDATE()) BETWEEN ${lowAge} AND ${highAge}
                 LIMIT ${dynamicOffset}, 7`;
     
                 pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
@@ -450,6 +456,8 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 distance < ?
                 AND
                 app_purpose = ?
+                AND
+                TIMESTAMPDIFF(YEAR, dob, CURDATE()) BETWEEN ${lowAge} AND ${highAge}
                 LIMIT ${dynamicOffset}, 7`;
     
                 pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, appPurposeToQueryFor],(err, result, fields) => {
@@ -528,7 +536,8 @@ export const showItemsInFeed = (token, amountToRequest) => {
                     info_to_display ON info_to_display.id = distance_table.id
                 WHERE 
                 distance < ?
-
+                AND
+                TIMESTAMPDIFF(YEAR, dob, CURDATE()) BETWEEN ${lowAge} AND ${highAge}
                 LIMIT ${dynamicOffset}, 7`;
     
                 pool.query(queryString, [lat, long_, id, genderUserWantsToSee, proximity, lowAgeInQuery, highAgeInQuery],(err, result, fields) => {
@@ -697,6 +706,8 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 AND
 
                 is_verified = 1
+                AND
+                TIMESTAMPDIFF(YEAR, dob, CURDATE()) BETWEEN ${lowAge} AND ${highAge}
                 LIMIT ${dynamicOffset}, 7`
     
     
@@ -778,6 +789,8 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 AND
 
                 bio IS NOT NULL
+                AND
+                TIMESTAMPDIFF(YEAR, dob, CURDATE()) BETWEEN ${lowAge} AND ${highAge}
                 LIMIT ${dynamicOffset}, 7`
     
     
@@ -861,6 +874,8 @@ export const showItemsInFeed = (token, amountToRequest) => {
                 distance < ?
                 AND
                 app_purpose = ?
+                AND
+                TIMESTAMPDIFF(YEAR, dob, CURDATE()) BETWEEN ${lowAge} AND ${highAge}
                 LIMIT ${dynamicOffset}, 7`
     
     
@@ -939,7 +954,8 @@ export const showItemsInFeed = (token, amountToRequest) => {
                     info_to_display ON info_to_display.id = distance_table.id
                 WHERE 
                 distance < ?
-
+                AND
+                TIMESTAMPDIFF(YEAR, dob, CURDATE()) BETWEEN ${lowAge} AND ${highAge}
                 LIMIT ${dynamicOffset}, 7`
     
     
